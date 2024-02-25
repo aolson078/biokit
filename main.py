@@ -32,7 +32,6 @@ def upload_file():
 @app.route('/tree')
 def display_tree():
     # Write logic for displaying tree
-
     return '0'
 
 
