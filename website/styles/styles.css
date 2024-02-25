@@ -21,3 +21,27 @@ footer {
     text-align: center;
     margin-top: 100vh;
 }
+
+.navbar-container {
+    background-color: #333;
+    width: 100%;
+}
+
+.navbar {
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 0px;
+    margin: 0 auto;
+}
+
+.navbar a {
+    color: #fff;
+    text-decoration: none;
+    padding: 20px 30px;
+}
+
+.navbar a:hover {
+    background-color: #555;
+}
