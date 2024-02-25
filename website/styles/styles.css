@@ -14,3 +14,10 @@
 .flex-container h1 {
     position: absolute;
 }
+
+footer {
+    background-color: rgba(0, 0, 0, 0.59);
+    color: white;
+    text-align: center;
+    margin-top: 100vh;
+}
