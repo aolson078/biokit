@@ -1,0 +1,23 @@
+.flex-container {
+    display: flex;
+    justify-content: center;
+    /* border: 1px solid black; */
+    border-radius: 5px;
+}
+
+.flex-container img {
+    width: 100%;
+    height: 100px;
+    z-index: -1;
+}
+
+.flex-container h1 {
+    position: absolute;
+}
+
+footer {
+    background-color: rgba(0, 0, 0, 0.59);
+    color: white;
+    text-align: center;
+    margin-top: 100vh;
+}
