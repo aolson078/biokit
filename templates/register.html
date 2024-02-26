@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>index</title>
+    <title>register</title>
     <link rel="stylesheet" href="static/styles/styles.css">
 </head>
 
@@ -29,10 +29,17 @@
 </header>
 
 <body>
-
+    <div class="container">
+        <h2>Registration</h2>
+        <form action="/register" method="post">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <label for="confirm-password">Confirm Password:</label>
+            <input type="password" id="confirm-password" name="confirm-password" required>
+            <input type="submit" value="Register">
+        </form>
+    </div>
 </body>
-<footer>
-    WAS Software &copy;
-</footer>
-
 </html>

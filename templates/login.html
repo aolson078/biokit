@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8">
-    <title>index</title>
+    <meta charset="UTF-8">
+    <title>login</title>
     <link rel="stylesheet" href="static/styles/styles.css">
 </head>
 
@@ -29,10 +28,15 @@
 </header>
 
 <body>
-
+    <div class="container">
+        <h2>Login</h2>
+        <form action="/login" method="post">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <input type="submit" value="Login">
+        </form>
+    </div>
 </body>
-<footer>
-    WAS Software &copy;
-</footer>
-
 </html>
