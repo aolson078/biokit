@@ -7,7 +7,7 @@ Sola Yun
 Will Hutcheon
  
 ## Nickname
-Biotool
+Biokit
 
 ## Description (about 100 words)
 This app will work as a tool kit to run common bioinformatic algorithms, using nucleotide string data as input. The first algorithm for the prototype will be creating and displaying a phylogenetic tree with persistent data storage.
