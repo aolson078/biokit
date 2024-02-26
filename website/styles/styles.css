@@ -45,3 +45,9 @@ footer {
 .navbar a:hover {
     background-color: #555;
 }
+
+
+.sub-radios {
+    display: none;
+    margin-left: 20px;
+}

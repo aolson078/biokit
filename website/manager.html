@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <title>manager</title>
     <link rel="stylesheet" href="styles/styles.css">
+    <script src="scripts/scripts.js" defer></script>
 </head>
 
 <body>
@@ -28,15 +29,33 @@
         </div>
     </header>
 
+
     <form action="add_action" method="post">
         <label for="reports">Select a report:</label><br>
-        <input type="radio" id="report1" name="report" value="report1">
+        <input type="radio" id="report1" name="report" value="report1" onclick="showSubRadios('report1')">
         <label for="report1">Report 1</label><br>
-        <input type="radio" id="report2" name="report" value="report2">
+        <div id="sub-report1" class="sub-radios">
+            <input type="radio" id="sub-report1-1" name="sub-report1" value="sub-report1-1">
+            <label for="sub-report1-1">Sub Report 1.1</label><br>
+            <input type="radio" id="sub-report1-2" name="sub-report1" value="sub-report1-2">
+            <label for="sub-report1-2">Sub Report 1.2</label><br>
+        </div>
+        <input type="radio" id="report2" name="report" value="report2" onclick="showSubRadios('report2')">
         <label for="report2">Report 2</label><br>
-        <input type="radio" id="report3" name="report" value="report3">
+        <div id="sub-report2" class="sub-radios">
+            <input type="radio" id="sub-report2-1" name="sub-report2" value="sub-report2-1">
+            <label for="sub-report2-1">Sub Report 2.1</label><br>
+            <input type="radio" id="sub-report2-2" name="sub-report2" value="sub-report2-2">
+            <label for="sub-report2-2">Sub Report 2.2</label><br>
+        </div>
+        <input type="radio" id="report3" name="report" value="report3" onclick="showSubRadios('report3')">
         <label for="report3">Report 3</label><br>
-        <!-- <button type="submit">Generate Report</button> -->
+        <div id="sub-report3" class="sub-radios">
+            <input type="radio" id="sub-report3-1" name="sub-report3" value="sub-report3-1">
+            <label for="sub-report2-1">Sub Report 3.1</label><br>
+            <input type="radio" id="sub-report3-2" name="sub-report3" value="sub-report3-2">
+            <label for="sub-report3-2">Sub Report 3.2</label><br>
+        </div>
     </form>
 
     <footer>
