@@ -5,10 +5,12 @@
     <meta charset="utf-8">
     <title>admin</title>
     <link rel="stylesheet" href="../static/styles/styles.css">
+    <script src="../static/scripts/scripts.js" defer></script>
 </head>
 
 <body>
     <header>
+
         <div class="navbar-container">
             <div class="navbar">
                 <a href="index.html">Home</a>
@@ -28,6 +30,45 @@
             <h1>BioKit</h1>
         </div>
     </header>
+
+    <hr>
+
+    <main>
+        <section class="admin-page">
+            <div class="employee-search">
+                <h3>Employee ID</h3>
+                <form id="search-emp">
+                    <input type="text" id="query" name="q" placeholder="Search...">
+                    <button>Search ID</button>
+                </form>
+            </div>
+            <p>
+                Selected Employee ID: <span class="employee-id">123456</span>
+            </p>
+            
+            <h4>Permissions</h4>
+            <form action="/permission" action="/update-permissions" method="post">
+                <label>
+                    <input type="checkbox" name="viewReports"> View Reports
+                </label>
+                <br>
+                <label>
+                    <input type="checkbox" name="deleteReports"> Delete Reports
+                </label>
+                <br>
+                <label>
+                    <input type="checkbox" name="printReports"> Print Reports
+                </label>
+                <br>
+                <label>
+                    <input type="checkbox" name="changeSettings"> Change Compilation Settings
+                </label>
+                <br>
+                <br>
+                <button type="submit">Save Permissions</button>
+            </form>
+        </section>
+    </main>
 
     <footer>
         WAS Software &copy;

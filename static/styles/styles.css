@@ -57,3 +57,24 @@ footer {
     display: none;
     margin-left: 20px;
 }
+
+/*Admin styling*/
+.admin-page{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    height: auto;
+    margin-top: 10px;
+    flex-flow: column;
+}
+
+.employee-search{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    height: auto;
+    margin-top: 10px;
+    flex-flow: column;
+}
