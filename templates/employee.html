@@ -3,21 +3,29 @@
 
 <head>
     <meta charset="utf-8">
-    <title>manager</title>
+    <title>Employee</title>
     <link rel="stylesheet" href="../static/styles/styles.css">
-    <script src="../scripts/scripts.js" defer></script>
+    <script type="text/javascript">
+        window.onload = function() {
+            var url = new URL(window.location.href);
+            var param = url.searchParams.get("parameter");
+            if (param) {
+                document.getElementById("param").textContent = decodeURIComponent(param);
+            }
+        };
+    </script>
 </head>
 
 <body>
     <header>
         <div class="navbar-container">
             <div class="navbar">
-                <a href="index.html">Home</a>
-                <a href="employee.html" class="active">Employee</a>
-                <a href="manager.html">Manager</a>
-                <a href="admin.html">Admin</a>
-                <a href="login.html">Login</a>
-                <a href="register.html">Register</a>
+                <a href="/index.html">Home</a>
+                <a href="/employee.html" class="active">Employee</a>
+                <a href="/manager.html">Manager</a>
+                <a href="/admin.html">Admin</a>
+                <a href="/login.html">Login</a>
+                <a href="/register.html">Register</a>
             </div>
         </div>
         <div class="flex-container">
@@ -31,10 +39,11 @@
         </div>
     </header>
 
+    <p id="param"></p>
     <hr>
 
     <div class="flex-container">
-        <form action="/search" method="GET">
+        <form action="/search" method="POST">
             <input type="text" name="search" placeholder="Search...">
             <button type="submit">Search</button>
             <button type="submit" name="browse-computer">Browse Computer</button>
@@ -42,6 +51,11 @@
         </form>
     </div>
 
+<!--    <div>-->
+<!--        {% if selected_result %}-->
+<!--        <p>Result: {{ selected_result }}</p>-->
+<!--        {% endif %}-->
+<!--    </div>-->
 
         <form action="add_action" method="post" style="text-align:center">
             <h3>Select a report from Employee 1</h3>
