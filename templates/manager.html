@@ -13,10 +13,11 @@
         <div class="navbar-container">
             <div class="navbar">
                 <a href="index.html">Home</a>
-                <a href="login.html">Login</a>
-                <a href="register.html">Register</a>
+                <a href="employee.html">Employee</a>
                 <a href="manager.html" class="active">Manager</a>
                 <a href="admin.html">Admin</a>
+                <a href="login.html">Login</a>
+                <a href="register.html">Register</a>
             </div>
         </div>
         <div class="flex-container">
@@ -42,7 +43,7 @@
     </div>
 
     <form action="add_action" method="post">
-        <h3>Select a report</h3>
+        <h3>Select a report (Any Employee)</h3>
         <input type="radio" id="report1" name="report" value="report1">
         <label for="report1">Report 1</label>
         <button type="button" onclick="modifyReport('report1')">Modify</button>
@@ -59,7 +60,7 @@
         <button type="button" onclick="deleteReport('report3')">Delete</button>
         <br>
 
-        <button type="button" onclick="generateReport()">Generate Report</button>
+        <button type="button" onclick="generateReport()">Generate New Report</button>
     </form>
 
     <footer>
