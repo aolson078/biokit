@@ -5,15 +5,7 @@
     <meta charset="utf-8">
     <title>Employee</title>
     <link rel="stylesheet" href="../static/styles/styles.css">
-    <script type="text/javascript">
-        window.onload = function() {
-            var url = new URL(window.location.href);
-            var param = url.searchParams.get("parameter");
-            if (param) {
-                document.getElementById("param").textContent = decodeURIComponent(param);
-            }
-        };
-    </script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </head>
 
 <body>
@@ -26,6 +18,7 @@
                 <a href="/admin.html">Admin</a>
                 <a href="/login.html">Login</a>
                 <a href="/register.html">Register</a>
+                <a href="/clear_session">Clear Session</a>
             </div>
         </div>
         <div class="flex-container">
@@ -39,8 +32,11 @@
         </div>
     </header>
 
-    <p id="param"></p>
-    <hr>
+
+        <div class="card-container">
+
+        </div>
+
 
     <div class="flex-container">
         <form action="/search" method="POST">
@@ -50,12 +46,6 @@
             <button type="submit" name="upload">Upload</button>
         </form>
     </div>
-
-<!--    <div>-->
-<!--        {% if selected_result %}-->
-<!--        <p>Result: {{ selected_result }}</p>-->
-<!--        {% endif %}-->
-<!--    </div>-->
 
         <form action="add_action" method="post" style="text-align:center">
             <h3>Select a report from Employee 1</h3>

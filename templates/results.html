@@ -10,7 +10,7 @@
         <ul>
         {% for result in results %}
             <li>{{ result }}<br>
-                <button onclick="location.href='{{ url_for('employee', parameter=result) }}'">Select</button><br><br>
+                <button onclick="location.href='{{ url_for('employee', selected_result=result) }}'">Select</button><br><br>
             </li>
 
         {% endfor %}

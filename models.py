@@ -1,5 +1,6 @@
 from Bio import Entrez
 from custom_exceptions import InvalidQueryException
+from flask import session
 
 
 # Queries the selected database for term and returns the record with the nucleotide string

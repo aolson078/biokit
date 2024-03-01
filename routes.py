@@ -2,7 +2,8 @@ from flask import (
     render_template,
     redirect,
     url_for,
-    request
+    request,
+    session
 )
 
 from app import create_app
@@ -26,6 +27,12 @@ def home():
 def home1():
     return redirect(url_for("index"))
 
+@app.route('/clear_session', methods=['GET'])
+def clear_session():
+    session.clear()
+    return redirect(url_for("employee"))
+
+
 
 @app.route("/search", methods=["POST"], strict_slashes=False)
 def search():
@@ -38,7 +45,14 @@ def search():
 @app.route('/employee.html/', methods=("GET", "POST"), strict_slashes=False)
 @app.route('/employee.html/<selected_result>', methods=("GET", "POST"), strict_slashes=False)
 def employee(selected_result=None):
-    return render_template('employee.html', title="Employee", selected_result=selected_result)
+    if selected_result:
+        if 'results' not in session:
+            session['results'] = []
+        # Store results in session
+        session['results'].append(selected_result)
+        session.modified = True
+    return render_template('employee.html', title="Employee")
+
 
 # Manager
 @app.route('/manager.html/', methods=("GET", "POST"), strict_slashes=False)
@@ -65,4 +79,5 @@ def login():
 
 
 if __name__ == "__main__":
+    app.secret_key = 'your-secret-key'
     app.run(debug=True)
