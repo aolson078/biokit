@@ -13,7 +13,7 @@
 //};
 
 window.onload = function() {
-    localStorage.clear();
+//    localStorage.clear();
     retrieveInputs();
 };
 
@@ -54,6 +54,42 @@ function retrieveInputs() {
         }
     }
 }
+
+
+function showSubRadios(reportId) {
+    var subRadios = document.querySelectorAll('.sub-radios');
+    subRadios.forEach(function (subRadio) {
+        subRadio.style.display = 'none';
+    });
+    var subRadioId = 'sub-' + reportId;
+    var subRadioElement = document.getElementById(subRadioId);
+    if (subRadioElement) {
+        subRadioElement.style.display = 'block';
+    }
+}
+
+function changeUsername() {
+    const userDropdown = document.getElementById('user-dropdown');
+    const user_id = userDropdown.value;
+    const new_username = document.getElementById('usernameInput').value
+
+    // AJAX request to Flask route
+    fetch(`/change_username/${user_id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ new_username })
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log('Username changed successfully');
+        } else {
+            console.error('Error changing username')}
+    })
+}
+
+
 //function retrieveInputs() {
 //    let keys = Object.keys(localStorage);
 //    for (let key of keys) {

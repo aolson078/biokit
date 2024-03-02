@@ -5,85 +5,116 @@
     <meta charset="utf-8">
     <title>admin</title>
     <link rel="stylesheet" href="../static/styles/styles.css">
-    <script src="../static/scripts/scripts.js" defer></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        document.getElementById('user-dropdown').addEventListener('change', function() {
+        const selectedUserId = document.getElementById('user-dropdown').value;
+        console.log('Selected User ID:', selectedUserId);});
+
+
+        const changeUsernameBtn = document.getElementById('changeUsernameBtn');
+        const usernameInput = document.getElementById('usernameInput');
+
+
+
+        usernameInput.addEventListener('change', (event) => {
+        const newUsername = event.target.value;
+        console.log(`New username: ${newUsername}`);
+        });
+
+        document.getElementById('user-dropdown').addEventListener('change', function() {
+        const selectedUserId = document.getElementById('user-dropdown').value;
+        console.log('Selected User ID:', selectedUserId);});
+
+
+
+    </script>
 </head>
 
 <body>
-    <header>
+<header>
 
-        <div class="navbar-container">
-            <div class="navbar">
-                <a href="index.html">Home</a>
-                <a href="employee.html">Employee</a>
-                <a href="manager.html">Manager</a>
-                <a href="admin.html"class="active">Admin</a>
-                <a href="login.html">Login</a>
-                <a href="register.html">Register</a>
-            </div>
+    <div class="navbar-container">
+        <div class="navbar">
+            <a href="index.html">Home</a>
+            <a href="employee.html">Employee</a>
+            <a href="manager.html">Manager</a>
+            <a href="admin.html" class="active">Admin</a>
+            <a href="login.html">Login</a>
+            <a href="register.html">Register</a>
         </div>
-        <div class="flex-container">
-            <!-- https://www.umassmed.edu/globalassets/morningside-graduate-school-of-biomedical-sciences/images/academics/cancer-bio-header.jpg -->
-            <img src="../static/images/cells0.jpg" alt="BioHeader0">
-            <!-- https://www.bruker.com/en/applications/academia-life-science/cell-biology/_jcr_content/root/overviewstage/desktopImage.coreimg.82.1280.png/1603581061247/cell-and-molecular-biology.png -->
-            <img src="../static/images/cell-and-molecular-biology.png" alt="BioHeader1">
-            <!-- https://carleton.ca/biology/wp-content/uploads/dna-3539309_1920-1-1.jpg -->
-            <img src="../static/images/dna0.jpg" alt="BioHeader2">
-            <h1>BioKit</h1>
-        </div>
-    </header>
+    </div>
+    <div class="flex-container">
+        <!-- https://www.umassmed.edu/globalassets/morningside-graduate-school-of-biomedical-sciences/images/academics/cancer-bio-header.jpg -->
+        <img src="../static/images/cells0.jpg" alt="BioHeader0">
+        <!-- https://www.bruker.com/en/applications/academia-life-science/cell-biology/_jcr_content/root/overviewstage/desktopImage.coreimg.82.1280.png/1603581061247/cell-and-molecular-biology.png -->
+        <img src="../static/images/cell-and-molecular-biology.png" alt="BioHeader1">
+        <!-- https://carleton.ca/biology/wp-content/uploads/dna-3539309_1920-1-1.jpg -->
+        <img src="../static/images/dna0.jpg" alt="BioHeader2">
+        <h1>BioKit</h1>
+    </div>
+</header>
 
-    <hr>
+<hr>
 
-    <main>
-        <section class="admin-page">
-            <div class="employee-search">
-                <h3>Employee ID</h3>
-                <form id="search-emp">
-                    <input type="text" id="query" name="q" placeholder="Search...">
-                    <button>Search ID</button>
-                </form>
-            </div>
-            <p>
-                Selected Employee ID: <span class="employee-id">123456</span>
-            </p>
-
-             <form action="add_action" method="post" style="text-align:center">
-                <h3>Account controls</h3>
-                <button type="button" onclick="changePassword">Change username</button>
-                <button type="button" onclick="changePassword">Change password</button>
-                <button type="button" onclick="changePassword">Delete user</button>
-                <br>
-             </form>
-
-            <h3>Permissions</h3>
-            <form action="/permission" action="/update-permissions" method="post">
-                <label>
-                    <input type="checkbox" name="viewReports"> View Reports
-                </label>
-                <br>
-                <label>
-                    <input type="checkbox" name="deleteReports"> Delete Reports
-                </label>
-                <br>
-                <label>
-                    <input type="checkbox" name="printReports"> Print Reports
-                </label>
-                <br>
-                <label>
-                    <input type="checkbox" name="changeSettings"> Change Compilation Settings
-                </label>
-                <br>
-                <br>
-                <div style="text-align:center">
-                    <button type="submit">Save Permissions</button>
-                </div>
+<main>
+    <section class="admin-page">
+        <div class="employee-search">
+            <h3>Select User</h3>
+            <form id="select-user-form">
+                <label for="user-dropdown">Choose a user:</label>
+                <select id="user-dropdown" name="user">
+                    {% for user in users %}
+                    <option value="{{ user.id }}">{{ user.username }}</option>
+                    {% endfor %}
+                </select>
+                <button>Select User</button>
             </form>
-        </section>
-    </main>
+        </div>
+        <p>
+            Selected User ID: <span class="user-id">123456</span>
+        </p>
 
-    <footer>
-        WAS Software &copy;
-    </footer>
+        <form action="add_action" method="post" style="text-align:center">
+            <h3>Account controls</h3>
+            <button type="button" id="change-username-button" onclick="changeUsername()">Change username</button>
+            <button type="button" onclick="changePassword">Change password</button>
+            <br><br>
+            <button type="button" onclick="createUser">Create user</button>
+            <button type="button" onclick="deleteUser">Delete user</button>
+            <br>
+            <input type="text" id="usernameInput">
+        </form>
+
+        <h3>Permissions</h3>
+        <form action="/permission" action="/update-permissions" method="post">
+            <label>
+                <input type="checkbox" name="viewReports"> View Reports
+            </label>
+            <br>
+            <label>
+                <input type="checkbox" name="deleteReports"> Delete Reports
+            </label>
+            <br>
+            <label>
+                <input type="checkbox" name="printReports"> Print Reports
+            </label>
+            <br>
+            <label>
+                <input type="checkbox" name="changeSettings"> Change Compilation Settings
+            </label>
+            <br>
+            <br>
+            <div style="text-align:center">
+                <button type="submit">Save Permissions</button>
+            </div>
+        </form>
+    </section>
+</main>
+
+<footer>
+    WAS Software &copy;
+</footer>
 
 </body>
 

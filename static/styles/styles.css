@@ -77,6 +77,10 @@ footer {
     flex-flow: column;
 }
 
+.hidden-input{
+    display: none;
+}
+
 .employee-search{
     display: flex;
     justify-content: center;

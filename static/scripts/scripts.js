@@ -1,11 +1,14 @@
-function showSubRadios(reportId) {
-    var subRadios = document.querySelectorAll('.sub-radios');
-    subRadios.forEach(function (subRadio) {
-        subRadio.style.display = 'none';
-    });
-    var subRadioId = 'sub-' + reportId;
-    var subRadioElement = document.getElementById(subRadioId);
-    if (subRadioElement) {
-        subRadioElement.style.display = 'block';
-    }
-}
+
+// Moved to static/script.js, move back if need be
+
+//function showSubRadios(reportId) {
+//    var subRadios = document.querySelectorAll('.sub-radios');
+//    subRadios.forEach(function (subRadio) {
+//        subRadio.style.display = 'none';
+//    });
+//    var subRadioId = 'sub-' + reportId;
+//    var subRadioElement = document.getElementById(subRadioId);
+//    if (subRadioElement) {
+//        subRadioElement.style.display = 'block';
+//    }
+//}
