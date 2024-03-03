@@ -166,7 +166,6 @@ def logout():
     return redirect(url_for('login'))
 
 
-
 # Routes for the db ----------------------------------------------------------------------------------------------------
 
 @app.route("/delete_user/<int:user_id>", methods=["DELETE"])
@@ -181,6 +180,7 @@ def deleteUser(user_id):
             return f"User ID {user_id} not found", 404
     except Exception as e:
         return f"Error deleting user: {str(e)}", 500
+
 
 @app.route("/change_username/<int:user_id>", methods=["PUT"])
 def changeUsername(user_id):
@@ -199,19 +199,23 @@ def changeUsername(user_id):
         return f"Error changing username: {str(e)}", 500
 
 
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!! MAKE SURE TO HASH PASSWORD w BCRYPT!!!!!!!!!!!!!!!!!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!! MAKE SURE TO HASH PASSWORD w BCRYPT!!!!!!!!!!!!!!!!!
 @app.route("/change_password/<int:user_id>", methods=["PUT"])
-def changePassword(user_id, new_password):
+def changePassword(user_id):
     try:
+        data = request.get_json()  # Retrieve data from request body
+        new_password = data.get('new_password')
+
         user = User.query.get(user_id)
         if user:
-            db.session.update(user).values(password=new_password).where(User.id == user_id)
+            user.password = new_password
             db.session.commit()
             return f"User ID {user_id} password changed successfully"
         else:
             return f"User ID {user_id} not found", 404
     except Exception as e:
         return f"Error changing password: {str(e)}", 500
+
 
 if __name__ == "__main__":
     app.run(debug=True)

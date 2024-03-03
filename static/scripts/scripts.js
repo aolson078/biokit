@@ -63,7 +63,7 @@ function changePassword() {
     const userDropdown = document.getElementById('user-dropdown');
     const user_id = userDropdown.value;
     const new_password = document.getElementById('passwordInput').value
-
+    console.log(new_password)
     // AJAX request to Flask route
     fetch(`/change_password/${user_id}`, {     // Get change password route
         method: 'PUT',
