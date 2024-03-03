@@ -6,8 +6,6 @@
     <title>admin</title>
     <link rel="stylesheet" href="../static/styles/styles.css">
     <script src='static/scripts/scripts.js'></script>
-    <script>
-    </script>
 </head>
 
 <body>
@@ -20,7 +18,6 @@
             <a href="manager.html">Manager</a>
             <a href="admin.html" class="active">Admin</a>
             <a href="login.html">Login</a>
-            <a href="register.html">Register</a>
         </div>
     </div>
     <div class="flex-container">
@@ -50,17 +47,20 @@
                 <button>Select User</button>
             </form>
         </div>
-        <p>
-            Selected User ID: <span class="user-id">123456</span>
-        </p>
+
+        <p>Selected User ID: <span class="user-id">None selected</span></p>
 
         <form action="add_action" method="post" style="text-align:center">
             <h3>Account controls</h3>
+
+            <a href="register">
+                <button type="button" id="create-user-button">Create user</button>
+            </a>
+
+            <button type="button" id="delete-user-button" onclick="deleteUser()">Delete user</button>
+            <br><br>
             <button type="button" id="change-username-button" onclick="changeUsername()">Change username</button>
             <button type="button" id="change-password-button" onclick="changePassword()">Change password</button>
-            <br><br>
-            <button type="button" onclick="createUser">Create user</button>
-            <button type="button" onclick="deleteUser">Delete user</button>
             <br><br>
             <label for="usernameInput">New username: </label>
             <input type="text" name="usernameInput" id="usernameInput">

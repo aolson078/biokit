@@ -8,23 +8,15 @@ from flask import (
     request
 )
 
-from datetime import timedelta
 from sqlalchemy.exc import (
-    IntegrityError,
-    DataError,
-    DatabaseError,
-    InterfaceError,
-    InvalidRequestError,
+    InvalidRequestError
 )
 from werkzeug.routing import BuildError
 
-from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
+from flask_bcrypt import check_password_hash
 
 from flask_login import (
-    UserMixin,
     login_user,
-    LoginManager,
-    current_user,
     logout_user,
     login_required,
 )
@@ -100,7 +92,6 @@ def admin():
     users = User.query.all()
     return render_template('admin.html', title="Admin", users=users)
 
-
 # # Register
 # @app.route('/register.html/', methods=("GET", "POST"), strict_slashes=False)
 # def register():
@@ -113,7 +104,7 @@ def admin():
 #     return render_template("login.html")
 
 # Login route
-@app.route("/login/", methods=("GET", "POST"), strict_slashes=False)
+@app.route("/login.html/", methods=("GET", "POST"), strict_slashes=False)
 def login():
     form = login_form()
 
@@ -132,7 +123,7 @@ def login():
 
 
 # Register route
-@app.route("/register/", methods=("GET", "POST"), strict_slashes=False)
+@app.route("/register", methods=("GET", "POST"), strict_slashes=False)
 def register():
     form = register_form()
     if form.validate_on_submit():

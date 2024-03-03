@@ -4,7 +4,6 @@ from app import db
 from flask_login import UserMixin
 
 
-
 # UserMixin gives us premade methods for authentication and user management
 class User(UserMixin, db.Model):
 	__tablename__ = 'user'
@@ -34,4 +33,3 @@ def fetch_record(query):
 	if len(records) == 0:
 		raise InvalidQueryException(query, database)
 	return records
-

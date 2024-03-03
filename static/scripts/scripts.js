@@ -15,11 +15,30 @@ function showSubRadios(reportId) {
 
 
 // --------------------------------------------------------------------------------------------------------------------
-// These are for the drop down menus in the admin page to change username and password
+// These are for the drop down menus in the admin page and to change/create username and password
+
+// Puts user ID into Selected user on page
+window.onload = function() {
+    const params = new URLSearchParams(window.location.search);
+    const userId = params.get('user'); // get the user parameter from the URL
+
+    if (userId) {
+        const userIdSpan = document.querySelector('.user-id'); // select the span with the class "user-id"
+        if (userIdSpan) {
+            userIdSpan.textContent = userId; // set the text content of the span to the user ID
+        } else {
+            console.error('Could not find user ID span');
+        }
+    } else {
+        console.error('No user ID in URL');
+    }
+};
+
 
 
 document.getElementById('user-dropdown').addEventListener('change', function() {
     const selectedUserId = document.getElementById('user-dropdown').value;
+    document.querySelector('.user-id').textContent = selectedUserId;
     console.log('Selected User ID:', selectedUserId);});
 
 
