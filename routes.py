@@ -17,6 +17,7 @@ from flask_bcrypt import check_password_hash
 
 from flask_login import (
     login_user,
+
     logout_user,
     login_required,
 )
@@ -92,16 +93,7 @@ def admin():
     users = User.query.all()
     return render_template('admin.html', title="Admin", users=users)
 
-# # Register
-# @app.route('/register.html/', methods=("GET", "POST"), strict_slashes=False)
-# def register():
-#     return render_template('register.html')
 
-
-# # Login
-# @app.route('/login.html/', methods=("GET", "POST"), strict_slashes=False)
-# def login():
-#     return render_template("login.html")
 
 # Login route
 @app.route("/login.html/", methods=("GET", "POST"), strict_slashes=False)
@@ -141,13 +133,14 @@ def register():
             db.session.add(new_user)
             db.session.commit()
             flash(f"Account created", "success")
-            return redirect(url_for("login"))
+            return redirect(url_for('admin'))
 
         except InvalidRequestError:
             db.session.rollback()
             flash(f"Something went wrong!", "danger")
 
     return render_template("auth.html", form=form)
+
 
 
 @app.route("/logout")

@@ -76,16 +76,12 @@
                     <div class="text-center">
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-block btn-primary mb-3"> {{ btn_action }}</button>
+                            <button type="submit" class="btn btn-block btn-primary mb-3">Submit {{ btn_action }}</button>
                         </div>
 
                         <p>
                             {% if request.path != '/register/' %}
-                            New here?
-                            <a href="{{url_for('register')}}">Create account</a>
                             {% else %}
-                            Already have an account?
-                            <a href="{{url_for('login')}}">Login</a>
                             {% endif %}
                         </p>
 
