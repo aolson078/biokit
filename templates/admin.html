@@ -5,29 +5,8 @@
     <meta charset="utf-8">
     <title>admin</title>
     <link rel="stylesheet" href="../static/styles/styles.css">
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src='static/scripts/scripts.js'></script>
     <script>
-        document.getElementById('user-dropdown').addEventListener('change', function() {
-        const selectedUserId = document.getElementById('user-dropdown').value;
-        console.log('Selected User ID:', selectedUserId);});
-
-
-        const changeUsernameBtn = document.getElementById('changeUsernameBtn');
-        const usernameInput = document.getElementById('usernameInput');
-
-
-
-        usernameInput.addEventListener('change', (event) => {
-        const newUsername = event.target.value;
-        console.log(`New username: ${newUsername}`);
-        });
-
-        document.getElementById('user-dropdown').addEventListener('change', function() {
-        const selectedUserId = document.getElementById('user-dropdown').value;
-        console.log('Selected User ID:', selectedUserId);});
-
-
-
     </script>
 </head>
 
@@ -82,8 +61,12 @@
             <br><br>
             <button type="button" onclick="createUser">Create user</button>
             <button type="button" onclick="deleteUser">Delete user</button>
-            <br>
-            <input type="text" id="usernameInput">
+            <br><br>
+            <label for="usernameInput">New username: </label>
+            <input type="text" name="usernameInput" id="usernameInput">
+            <br><br>
+            <label for="passwordInput">New password: </label>
+            <input type="text" name="passwordInput" id="passwordInput">
         </form>
 
         <h3>Permissions</h3>
