@@ -1,4 +1,8 @@
 
+
+
+
+
 function showSubRadios(reportId) {
     var subRadios = document.querySelectorAll('.sub-radios');
     subRadios.forEach(function (subRadio) {

@@ -1,67 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="utf-8">
-    <title>Employee</title>
-    <link rel="stylesheet" href="../static/styles/styles.css">
-    <script src="static/scripts/scripts.js"></script>
-</head>
+{% block title %}
+employee
+{% endblock %}
 
-<body>
-    <header>
-        <div class="navbar-container">
-            <div class="navbar">
-                <a href="/index.html">Home</a>
-                <a href="/employee.html" class="active">Employee</a>
-                <a href="/manager.html">Manager</a>
-                <a href="/admin.html">Admin</a>
-                <a href="/login.html">Login</a>
-                <a href="/clear_session">Clear Session</a>
-            </div>
-        </div>
-        <div class="flex-container">
-            <!-- https://www.umassmed.edu/globalassets/morningside-graduate-school-of-biomedical-sciences/images/academics/cancer-bio-header.jpg -->
-            <img src="../static/images/cells0.jpg" alt="BioHeader0">
-            <!-- https://www.bruker.com/en/applications/academia-life-science/cell-biology/_jcr_content/root/overviewstage/desktopImage.coreimg.82.1280.png/1603581061247/cell-and-molecular-biology.png -->
-            <img src="../static/images/cell-and-molecular-biology.png" alt="BioHeader1">
-            <!-- https://carleton.ca/biology/wp-content/uploads/dna-3539309_1920-1-1.jpg -->
-            <img src="../static/images/dna0.jpg" alt="BioHeader2">
-            <h1>BioKit</h1>
-        </div>
-    </header>
-
-
-        <div class="card-container">
-
-        </div>
+{% block content %}
+<div class="card-container"></div>
 
 <!--  Possibly use this for search to remain on same page??:  <form action="{{ request.path }}" method="POST" class="card-body">-->
 
-    <div class="flex-container">
-        <form action="/search" method="POST">
-            <input type="text" name="search" placeholder="Search...">
-            <button type="submit">Search</button>
-            <button type="submit" name="browse-computer">Browse Computer</button>
-            <button type="submit" name="upload">Upload</button>
-        </form>
-    </div>
+<div class="flex-container">
+    <form action="/search" method="POST">
+        <input type="text" name="search" placeholder="Search...">
+        <button type="submit">Search</button>
+        <button type="submit" name="browse-computer">Browse Computer</button>
+        <button type="submit" name="upload">Upload</button>
+    </form>
+</div>
+<div>
+    <form action="add_action" method="post" style="text-align:center">
+        <h3>Select a report from Employee 1</h3>
+        <input type="radio" id="report1" name="report" value="report1">
+        <label for="report1" >Report 1</label>
+        <button type="button" onclick="modifyReport('report1')" >Modify</button>
+        <button type="button" onclick="deleteReport('report1')">Delete (Needs approval)</button>
+        <br>
+        <br>
+        <button type="button" onclick="generateReport()" >Generate New Report</button>
+    </form>
+</div>
 
-        <form action="add_action" method="post" style="text-align:center">
-            <h3>Select a report from Employee 1</h3>
-            <input type="radio" id="report1" name="report" value="report1">
-            <label for="report1" >Report 1</label>
-            <button type="button" onclick="modifyReport('report1')" >Modify</button>
-            <button type="button" onclick="deleteReport('report1')">Delete (Needs approval)</button>
-            <br>
-            <br>
-            <button type="button" onclick="generateReport()" >Generate New Report</button>
-        </form>
-    </div>
-
-    <footer>
-        WAS Software &copy;
-    </footer>
-</body>
-
-</html>
+{% endblock %}

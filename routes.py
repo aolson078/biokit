@@ -40,7 +40,7 @@ def load_user(user_id):
 # Home
 @app.route('/', methods=("GET", "POST"), strict_slashes=False)
 def index():
-    return render_template('index.html', title="Home")
+    return render_template('index.html', title="Home", active_page='home')
 
 
 @app.route("/index.html")
@@ -78,20 +78,20 @@ def employee(selected_result=None):
         # Store results in session
         session['results'].append(selected_result)
         session.modified = True
-    return render_template('employee.html', title="Employee")
+    return render_template('employee.html', title="Employee", active_page='employee')
 
 
 # Manager
 @app.route('/manager.html/', methods=("GET", "POST"), strict_slashes=False)
 def manager():
-    return render_template('manager.html', title="Manager")
+    return render_template('manager.html', title="Manager", active_page='manager')
 
 
 # Admin
 @app.route('/admin.html/', methods=("GET", "POST"), strict_slashes=False)
 def admin():
     users = User.query.all()
-    return render_template('admin.html', title="Admin", users=users)
+    return render_template('admin.html', title="Admin", users=users, active_page='admin')
 
 
 
@@ -111,7 +111,7 @@ def login():
         except Exception as e:
             flash(e, "danger")
 
-    return render_template("auth.html", form=form)
+    return render_template("auth.html", form=form, active_page='login')
 
 
 # Register route

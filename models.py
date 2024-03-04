@@ -1,18 +1,30 @@
 from Bio import Entrez
-
 from custom_exceptions import InvalidQueryException
-from app import create_app, db, migrate
+from app import create_app, db
 from flask_login import UserMixin
 
 
 # UserMixin gives us premade methods for authentication and user management
 class User(UserMixin, db.Model):
 	__tablename__ = 'user'
+	# for ease of use
+	table = __tablename__
 
 	id = db.Column(db.Integer, primary_key=True)
 	username = db.Column(db.String(80), unique=True, nullable=False)
 	email = db.Column(db.String(120), unique=True, nullable=False)
 	password = db.Column(db.String(300), nullable=False, unique=True)
+
+	# array that will hold all currently active (but separate) documents for each User. Pickle serializes it for storage
+	#document_list = db.Column(db.PickleType, nullable=True)
+	#num_documents = 0
+
+	# looks up user in db and adds document to list
+	def add_document(self, document):
+		if self.document_list is None:
+			self.document_list = []
+		self.document_list.append(document)
+		db.session.commit()
 
 	def __repr__(self):
 		return '<User: %r>' % self.username
@@ -29,8 +41,30 @@ class Record(db.Model):
 	sequence_info = db.Column(db.String(100))
 	nucleotides = db.Column(db.Text, nullable=False)
 
+	# SAMPLE COMPUTED DATA STORE NOT FINAL PART OF RECORD, (stuff that is calculated w only 1 record)
+	# siRNA = db.Column(db.Text, nullable=False)
+	# nuc_string_index = db.Column(db.Text, nullable=False)
+	# secondary_structure_prediction = db.Column(db.String(100))
+
 	def __repr__(self):
 		return '<Organism: %r, NucID: %r, GeneInfo: %r>' % self.organism, self.nucleotide_id, self.gene_info
+
+
+# the document class represents the final product. It will contain the computed data from the bio processes
+class Document(db.Model):
+	__tablename__ = 'document'
+	id = db.Column(db.Integer, primary_key=True)
+	nucleotide_id = db.Column(db.String(20), unique=True, nullable=False)
+	organism = db.Column(db.String(80), nullable=False)
+	gene_info = db.Column(db.String(100), nullable=False)
+	allele_info = db.Column(db.String(100))
+	sequence_info = db.Column(db.String(100))
+	nucleotides = db.Column(db.Text, nullable=False)
+
+	# SAMPLE COMPUTED DATA STORE NOT FINAL PART OF RECORD, (stuff that is calculated w > 1 record)
+	# phylo_tree = db.Column(db.PickleType nullable=True)
+    # dot_line_graph = db.Column(db.PickleType nullable=True)
+
 
 
 # queries the selected database for term and returns the record with the nucleotide string
@@ -40,7 +74,7 @@ def fetch_records(query):
 	# nucleotide, gene, or protein for db
 	database = "nucleotide"
 	# number of desired responses per query
-	return_max = 1
+	return_max = 3
 	# fetch nucleotide record related to term
 	IDs = Entrez.read(Entrez.esearch(db=database, term=query, field="Organism", retmax=return_max))["IdList"]
 	records = []
@@ -96,11 +130,9 @@ def parse_records(query):
 
 		add_to_db(new_record)
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
 	app = create_app()
 	with app.app_context():
 		db.create_all()
-		parse_records("Human")
 	app.run()
-

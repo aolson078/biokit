@@ -1,38 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="utf-8">
-    <title>manager</title>
-    <link rel="stylesheet" href="../static/styles/styles.css">
-    <script src="static/scripts/scripts.js"></script>
-</head>
+{% extends "base.html" %}
 
-<body>
-    <header>
-        <div class="navbar-container">
-            <div class="navbar">
-                <a href="/index.html">Home</a>
-                <a href="/employee.html">Employee</a>
-                <a href="/manager.html" class="active">Manager</a>
-                <a href="/admin.html">Admin</a>
-                <a href="/login.html">Login</a>
-            </div>
-        </div>
-        <div class="flex-container">
-            <!-- https://www.umassmed.edu/globalassets/morningside-graduate-school-of-biomedical-sciences/images/academics/cancer-bio-header.jpg -->
-            <img src="../static/images/cells0.jpg" alt="BioHeader0">
-            <!-- https://www.bruker.com/en/applications/academia-life-science/cell-biology/_jcr_content/root/overviewstage/desktopImage.coreimg.82.1280.png/1603581061247/cell-and-molecular-biology.png -->
-            <img src="../static/images/cell-and-molecular-biology.png" alt="BioHeader1">
-            <!-- https://carleton.ca/biology/wp-content/uploads/dna-3539309_1920-1-1.jpg -->
-            <img src="../static/images/dna0.jpg" alt="BioHeader2">
-            <h1>BioKit</h1>
-        </div>
-    </header>
+{% block title %}
+admin
+{% endblock %}
 
-    <hr>
-
-    <div class="flex-container">
+{% block content %}
+<div class="flex-container">
         <form action="/search" method="GET">
             <input type="text" name="search" placeholder="Search...">
             <button type="submit">Search</button>
@@ -64,10 +38,4 @@
         <br>
         <button type="button" onclick="generateReport()">Generate New Report</button>
     </form>
-
-    <footer>
-        WAS Software &copy;
-    </footer>
-</body>
-
-</html>
+{% endblock %}
