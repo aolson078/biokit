@@ -1,6 +1,7 @@
 from Bio import Entrez
+
 from custom_exceptions import InvalidQueryException
-from app import db
+from app import create_app, db, migrate
 from flask_login import UserMixin
 
 
@@ -17,14 +18,31 @@ class User(UserMixin, db.Model):
 		return '<User: %r>' % self.username
 
 
-# Queries the selected database for term and returns the record with the nucleotide string
-def fetch_record(query):
+class Record(db.Model):
+	__tablename__ = 'record'
+
+	id = db.Column(db.Integer, primary_key=True)
+	nucleotide_id = db.Column(db.String(20), unique=True, nullable=False)
+	organism = db.Column(db.String(80), nullable=False)
+	gene_info = db.Column(db.String(100), nullable=False)
+	allele_info = db.Column(db.String(100))
+	sequence_info = db.Column(db.String(100))
+	nucleotides = db.Column(db.Text, nullable=False)
+
+	def __repr__(self):
+		return '<Organism: %r, NucID: %r, GeneInfo: %r>' % self.organism, self.nucleotide_id, self.gene_info
+
+
+# queries the selected database for term and returns the record with the nucleotide string
+def fetch_records(query):
 	Entrez.email = "aolson078@gmail.com"
 	Entrez.apikey = "4a1d5a80996f3691a67335ded0b79299c708"
 	# nucleotide, gene, or protein for db
 	database = "nucleotide"
-	# Fetch nucleotide record related to term
-	IDs = Entrez.read(Entrez.esearch(db=database, term=query, field="Organism", retmax=3))["IdList"]
+	# number of desired responses per query
+	return_max = 1
+	# fetch nucleotide record related to term
+	IDs = Entrez.read(Entrez.esearch(db=database, term=query, field="Organism", retmax=return_max))["IdList"]
 	records = []
 	for ID in IDs:
 		handle = Entrez.efetch(db=database, id=ID, rettype="fasta", retmod="text")
@@ -33,3 +51,56 @@ def fetch_record(query):
 	if len(records) == 0:
 		raise InvalidQueryException(query, database)
 	return records
+
+
+# adds and commits new record to database
+def add_to_db(record):
+	db.session.add(record)
+	db.session.commit()
+
+
+# parses fasta file and creates a database entry for each query result
+def parse_records(query):
+	records = fetch_records(query)
+	for record in records:
+		lines = record.split("\n")
+		# first line contains the description
+		description_line = lines[0]
+		# rest of the lines contains the nucleotide sequence
+		nucleotides = "".join(lines[1:])
+
+		info = description_line.split(" ")
+		nucleotide_id = info[0][1:]  # Remove the '>' character
+		organism = " ".join(info[1:3])
+		description = " ".join(info[3:]).split(",")
+
+		if len(description) == 3:
+			gene_info = description[0]
+			allele_info = description[1][1:]
+			sequence_info = description[2][1:]
+		elif len(description) == 2:
+			gene_info = description[0]
+			allele_info = "N/A"
+			sequence_info = description[1][1:]
+		else:
+			gene_info = ' '.join(description)
+			allele_info = "N/A"
+			sequence_info = "N/A"
+
+		new_record = Record(nucleotide_id=nucleotide_id,
+		                    organism=organism,
+		                    gene_info=gene_info,
+		                    allele_info=allele_info,
+		                    sequence_info=sequence_info,
+		                    nucleotides=nucleotides)
+
+		add_to_db(new_record)
+
+if __name__ == '__main__':
+
+	app = create_app()
+	with app.app_context():
+		db.create_all()
+		parse_records("Human")
+	app.run()
+

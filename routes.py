@@ -26,7 +26,7 @@ import models
 from app import create_app, db, login_manager, bcrypt
 from models import User
 from forms import login_form, register_form
-from models import fetch_record
+from models import fetch_records
 
 app = create_app()
 
@@ -64,7 +64,7 @@ def clear_session():
 def search():
     # Get data from employee form
     query = request.form.get("search")
-    results = fetch_record(query)
+    results = fetch_records(query)
     return render_template('results.html', query=query, results=results)
 
 
@@ -199,6 +199,8 @@ def changePassword(user_id):
             return f"User ID {user_id} not found", 404
     except Exception as e:
         return f"Error changing password: {str(e)}", 500
+
+
 
 
 if __name__ == "__main__":
