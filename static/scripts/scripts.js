@@ -56,6 +56,10 @@ document.getElementById('user-dropdown').addEventListener('change', function() {
     const selectedUserId = document.getElementById('user-dropdown').value;
     console.log('Selected User ID:', selectedUserId);});
 
+// make delete user function (Will)
+function deleteUser() {
+
+}
 
 function changeUsername() {
     const userDropdown = document.getElementById('user-dropdown');
@@ -115,6 +119,7 @@ function generateCard(input) {
         `
         <div class="card">
         <h3>Result:</h3>
+        // whats being put on the card
         <p>${input}</p>
         <a href = "http://supercoolwebsite.com">Click here!</a>
         </div>
