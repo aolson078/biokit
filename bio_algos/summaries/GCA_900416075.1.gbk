@@ -1,0 +1,50 @@
+LOCUS       BJ467306                 662 bp    mRNA    linear   EST 23-MAY-2002
+DEFINITION  BJ467306 K. Sato unpublished cDNA library, cv. Haruna Nijo
+            germination shoots Hordeum vulgare subsp. vulgare cDNA clone
+            bags26j17 3', mRNA sequence.
+ACCESSION   BJ467306
+VERSION     BJ467306.1
+DBLINK      BioSample: SAMN00170079
+KEYWORDS    EST.
+SOURCE      Hordeum vulgare subsp. vulgare (domesticated barley)
+  ORGANISM  Hordeum vulgare subsp. vulgare
+            Eukaryota; Viridiplantae; Streptophyta; Embryophyta; Tracheophyta;
+            Spermatophyta; Magnoliopsida; Liliopsida; Poales; Poaceae; BOP
+            clade; Pooideae; Triticodae; Triticeae; Hordeinae; Hordeum.
+REFERENCE   1  (bases 1 to 662)
+  AUTHORS   Sato,K., Saisho,D. and Takeda,K.
+  TITLE     Barley EST sequencing project in NIG and Okayama Univ
+  JOURNAL   Unpublished (2002)
+COMMENT     Contact: Tadasu Shin-i
+            Genome Biology Lab., Center For Genetic Resource Information
+            National Institute of Genetics
+            1111 Yata, Mishima, Shizuoka 411-8540, Japan
+            Tel: 81-55-981-6856
+            Fax: 81-55-981-6855
+            Email: tshini@genes.nig.ac.jp, URL: http://dolphin.lab.nig.ac.jp.
+FEATURES             Location/Qualifiers
+     source          1..662
+                     /organism="Hordeum vulgare subsp. vulgare"
+                     /mol_type="mRNA"
+                     /cultivar="Haruna Nijo"
+                     /sub_species="vulgare"
+                     /db_xref="taxon:112509"
+                     /clone="bags26j17"
+                     /tissue_type="shoots"
+                     /clone_lib="SAMN00170079 K. Sato unpublished cDNA library,
+                     cv. Haruna Nijo germination shoots"
+                     /dev_stage="germination"
+ORIGIN
+        1 atctgtcctc ttttttttat ggtatgaata tctgtcctcc aaattgccaa gcatctacat
+       61 caatcgctat gatacgagca tgacaaccaa atctggacgt gtaaatgcga agcaaagtcc
+      121 cagtctcccc tgacggcgac tgaagctgac tcacaattgg agtataacac aacaaaagat
+      181 gcagcatcat tgatattttc agagactaat taccctgtga cgaaacggat gatgcccatc
+      241 acagtcctga ttaacttgta acaggacatc accacatgcg gtacaatctt tccagggtta
+      301 agggtaaggc gataatctcg cgatcctgat ggccgaatga gaatgatctt catgtaccac
+      361 ttgtctgaat ttctgaaagg catatgcaaa cctgatctac aattgtgtcc gaaaagcaca
+      421 agtttcttct gcctaccctt gtttcagccg tccattcgaa tatcgatagc tcgaccgcgg
+      481 gtcaacagga cagtcccatt aggactcacc agtggagtgg agttacatcg gtggaaagac
+      541 gagcagaagt gcacaagttg tgtcattgtg cagatcctgg ctccaacaat gtcatctcca
+      601 gatctgcagc atatcggcac aatcatcttt tgttgtccct gtcaaagccc caagttcatc
+      661 tc
+//

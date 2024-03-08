@@ -15,15 +15,15 @@ class User(UserMixin, db.Model):
 	email = db.Column(db.String(120), unique=True, nullable=False)
 	password = db.Column(db.String(300), nullable=False, unique=True)
 
-	# array that will hold all currently active (but separate) documents for each User. Pickle serializes it for storage
-	#document_list = db.Column(db.PickleType, nullable=True)
-	#num_documents = 0
+	# array that will hold all currently active (but separate) report for each User. Pickle serializes it for storage
+	# report_list = db.Column(db.PickleType, nullable=True)
+	# num_documents = 0
 
 	# looks up user in db and adds document to list
-	def add_document(self, document):
-		if self.document_list is None:
-			self.document_list = []
-		self.document_list.append(document)
+	def add_report(self, report):
+		if self.report_list is None:
+			self.report_list = []
+		self.report_list.append(report)
 		db.session.commit()
 
 	def __repr__(self):
@@ -50,9 +50,9 @@ class Record(db.Model):
 		return '<Organism: %r, NucID: %r, GeneInfo: %r>' % self.organism, self.nucleotide_id, self.gene_info
 
 
-# the document class represents the final product. It will contain the computed data from the bio processes
-class Document(db.Model):
-	__tablename__ = 'document'
+# the report class represents the final product. It will contain the computed data from the bio processes
+class Report(db.Model):
+	__tablename__ = 'report'
 	id = db.Column(db.Integer, primary_key=True)
 	nucleotide_id = db.Column(db.String(20), unique=True, nullable=False)
 	organism = db.Column(db.String(80), nullable=False)
@@ -61,10 +61,11 @@ class Document(db.Model):
 	sequence_info = db.Column(db.String(100))
 	nucleotides = db.Column(db.Text, nullable=False)
 
-	# SAMPLE COMPUTED DATA STORE NOT FINAL PART OF RECORD, (stuff that is calculated w > 1 record)
-	# phylo_tree = db.Column(db.PickleType nullable=True)
-    # dot_line_graph = db.Column(db.PickleType nullable=True)
+# SAMPLE COMPUTED DATA STORE NOT FINAL PART OF RECORD, (stuff that is calculated w > 1 record)
+# phylo_tree = db.Column(db.PickleType nullable=True)
 
+
+# dot_line_graph = db.Column(db.PickleType nullable=True)
 
 
 # queries the selected database for term and returns the record with the nucleotide string

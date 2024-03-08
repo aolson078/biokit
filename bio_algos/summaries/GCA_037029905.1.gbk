@@ -1,0 +1,65 @@
+LOCUS       BQ626503                 643 bp    mRNA    linear   EST 18-DEC-2010
+DEFINITION  pz11a04.y1 Pratylenchus penetrans mixed stage SL1 TOPO v1
+            Pratylenchus penetrans cDNA 5', mRNA sequence.
+ACCESSION   BQ626503
+VERSION     BQ626503.1
+DBLINK      BioSample: SAMN00170672
+KEYWORDS    EST.
+SOURCE      Pratylenchus penetrans
+  ORGANISM  Pratylenchus penetrans
+            Eukaryota; Metazoa; Ecdysozoa; Nematoda; Chromadorea; Rhabditida;
+            Tylenchina; Tylenchomorpha; Tylenchoidea; Pratylenchidae;
+            Pratylenchinae; Pratylenchus.
+REFERENCE   1  (bases 1 to 643)
+  AUTHORS   McCarter,J., Clifton,S., Chiapelli,B., Pape,D., Martin,J., Wylie,T.,
+            Dante,M., Marra,M., Hillier,L., Kucaba,T., Theising,B., Bowers,Y.,
+            Gibbons,M., Ritter,E., Bennett,J., Franklin,C., Tsagareishvili,R.,
+            Ronko,I., Kennedy,S., Maguire,L., Beck,C., Underwood,K., Steptoe,M.,
+            Allen,M., Person,B., Swaller,T., Harvey,N., Schurk,R., Kohn,S.,
+            Shin,T., Jackson,Y., Cardenas,M., McCann,R., Waterston,R. and
+            Wilson,R.
+  TITLE     The Washington Univ. Nematode EST Project, 1999
+  JOURNAL   Unpublished
+COMMENT     Contact: McCarter JP
+            The Washington Univ. Nematode EST Project, 1999
+            Washington University School of Medicine
+            4444 Forest Park Parkway, Box 8501, St. Louis, MO 63108, USA
+            Tel: 314 286 1800
+            Fax: 314 286 1810
+            Email: est@watson.wustl.edu
+            The library was constructed by Claire Murphy and Dr. James McCarter
+            at Washington University, St. Louis. RNA was provided by Andrew
+            Kloek of Divergence Inc., St. Louis, MO.
+            Seq primer: SL1 primer
+            High quality sequence stop: 525.
+FEATURES             Location/Qualifiers
+     source          1..643
+                     /organism="Pratylenchus penetrans"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:45929"
+                     /clone_lib="SAMN00170672 Pratylenchus penetrans mixed stage
+                     SL1 TOPO v1"
+                     /dev_stage="mixed stage"
+                     /lab_host="DH10B (Invitrogen)"
+                     /note="Vector: pCRII-TOPO (Invitrogen); Site_1: EcoRI;
+                     Site_2: EcoRI; The library was constructed by Claire Murphy
+                     and Dr. James McCarter at Washington University, St. Louis.
+                     Oligo(dT)-SL1 PCR based library. cDNA PCR products of size
+                     >400 nucleotides containing SL1 on the 5' end and oligo(dT)
+                     on the 3' end were non-directionally cloned into
+                     pCRII-TOPO(Invitrogen) following the Topo TA cloning
+                     protocol. RNA was provided by Andrew Kloek of Divergence,
+                     Inc., St. Louis, MO."
+ORIGIN
+        1 tcatttgcca attctttccc catttttgca ttttctctca agccaattca tccatccatc
+       61 cttttctcct caaaaagccc aaaacttcat aaaacaacaa aaatggccct tgacaattgc
+      121 ctccggattt tgctgcccct tttggttttg agcagctttt tgacgatttc agcccgggcc
+      181 agcccatcaa attggctgcg ttggggcgcc aacaccaatg ccaatgggca tcaacaacaa
+      241 caacaaaagg gacaaaacca gaataacaat ggagtggccc ctactgctga cgatgtggaa
+      301 cagcaaaaag aaatgttgaa ccgcgatctg cttgcagcca agcaatactt ccaaagccaa
+      361 caaatgccac aaaagccgca acaattggca caatatttgg ccatgaacaa tccaatggaa
+      421 tatgaggagg aggcggaaca gcagcagcag caaccaatgg aggagggaga tgaattggcg
+      481 gaagaggcca aagcaaaaag ggcccaaaca tttgtccgat tcggcaaacg agcccaaaca
+      541 tttgttagat ttggcaaacg ggcgcaaaca ttcgttagat ttggaaggga tgtgcaacgt
+      601 gtccaacagg aggatgagca gcaaaagaag acgaattgaa gag
+//

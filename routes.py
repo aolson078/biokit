@@ -9,15 +9,13 @@ from flask import (
 )
 
 from sqlalchemy.exc import (
-    InvalidRequestError
-)
-from werkzeug.routing import BuildError
+    InvalidRequestError)
+
 
 from flask_bcrypt import check_password_hash
 
 from flask_login import (
     login_user,
-
     logout_user,
     login_required,
 )
