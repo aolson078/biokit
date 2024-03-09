@@ -1,16 +1,20 @@
 from Bio.Blast import NCBIWWW, NCBIXML
 from Bio.SeqUtils import MeltingTemp, molecular_weight
-
 from bio_algos.utilities import GC_content, dna_to_rna
 from sklearn.metrics import jaccard_score
 
 
-# small interfering RNA design. Silences chosen genes for therapeutic uses and research
-
-# selects sequence within gene for siRNA design
 def select_target_sequence(seq, target_length=21):
-	# represents gc % range that selected sequence should be in for siRNA design.
-	# increase range of bounds if need to get better results (Total range difference shouldn't go above .4)
+	"""
+	    Selects a target sequence within the given gene for siRNA design. The selected sequence
+	    should have a GC content within a specified range to balance off-target risk, stability,
+	    and specificity.
+
+	    :param seq: String representing the gene sequence.
+	    :param target_length: Length of the target sequence to be selected. Default is 21.
+	    :return: Tuple containing the selected target sequence and its GC content.
+	    :raises ValueError: If no valid target sequence is found within the specified GC content range.
+	"""
 	lower_bound = .3  # lowering lower bound reduces off-target risk, but reduces stability and specificity
 	upper_bound = .5  # raising upper bound increases stability, but reduces stability and increases off-target risk
 
@@ -33,7 +37,13 @@ def select_target_sequence(seq, target_length=21):
 
 
 def design_siRNA(target_sequence):
-	# Generate all possible 21-nt siRNA sequences
+	"""
+	    Generates potential 21-nt siRNA sequences from the given target sequence. The generated sequences
+	    follow common design rules for effective siRNA, including starting with 'A' or 'U' and avoiding long GC stretches.
+
+	    :param target_sequence: String representing the target sequence from which to design siRNAs.
+	    :return: List of potential siRNA sequences.
+	"""
 	siRNA_candidates = []
 	for i in range(len(target_sequence) - 20):
 		candidate = target_sequence[i:i + 21]
@@ -47,11 +57,16 @@ def design_siRNA(target_sequence):
 	return siRNA_candidates
 
 
-# 1. Design siRNA duplex. Consists of 2 strands
-# 1: Sense strand, corresponds to target mRNA, and 2. Antisense, guides RNA-induced silencing complex (RISC)
-# Sense strand is same as the target mRNA, Antisense strand is the complement of the sense strand.
-# Antisense has 2-nucleotide overhang at 3' end (3rd carbon w/ hydroxyl group) of the antisense (Usually UU or TT)
 def create_rna_strands(target_sequence, overhang="UU"):
+	"""
+	    Creates the sense and antisense RNA strands. The sense strand is the same as the target mRNA sequence,
+	    the antisense strand is the complement of the
+	    sense strand with a 2-nucleotide overhang at the 3' end.
+
+	    :param target_sequence: String representing the target mRNA sequence.
+	    :param overhang: String representing the 2-nucleotide overhang to add to the 3' end of the antisense strand. Default is "UU".
+	    :return: Tuple containing the sense and antisense RNA strands.
+	"""
 	complements = {"A": "U", "U": "A", "C": "G", "G": "C"}
 
 	# Create complement RNA (sense strand)
@@ -64,19 +79,37 @@ def create_rna_strands(target_sequence, overhang="UU"):
 	return sense_strand, antisense_strand
 
 
-# 2. Check for off-target effects (occurs when siRNA binds to unintended mRNA sequences
-# Consider thermodynamic stability (melting temp) ((Tm)) and seed region complementarity
-
-
-# 2.1. Sequence Similarity search
 def calculate_similarity(sense_strand, antisense_strand):
+	"""
+	Calculates the similarity between the sense and antisense RNA strands using the Jaccard similarity
+	coefficient.
+
+	:param sense_strand: String representing the sense RNA strand.
+	:param antisense_strand: String representing the antisense RNA strand.
+	:return: Float representing the Jaccard similarity coefficient between the sense and antisense strands.
+	"""
 	sense_list = list(sense_strand)
 	antisense_list = list(antisense_strand)
 	return jaccard_score(sense_list, antisense_list[:-2], average='micro')
 
 
-#  2.2 Seed Region Analysis
 def seed_region_analysis(sense_strand, utr_sequences, seed_region_lengths=None):
+	"""
+	    Analyzes the seed region of the sense RNA strand for matches in the provided 3' UTR
+	    sequences. The seed region is a contiguous subsequence of the sense strand. The function checks for matches of
+	    each possible seed region within the 3' UTR sequences.
+
+	    :param sense_strand: String representing the sense RNA strand.
+	    :param utr_sequences: List of strings representing the 3' UTR sequences to check for matches.
+	    :param seed_region_lengths: List of integers representing the lengths of the seed regions to check.
+	                                Default is [6, 7, 8].
+	    :return: List of dictionaries with info about the seed regions that have at least one
+	             match in the 3' UTR sequences.
+	             - 'seed_region': The seed region sequence.
+	             - 'seed_length': The length of the seed region.
+	             - 'start_pos': The starting position of the seed region within the sense strand.
+	             - 'matches': The number of matches found in the 3' UTR sequences.
+	"""
 	if seed_region_lengths is None:
 		seed_region_lengths = [6, 7, 8]
 	matches = []
@@ -108,21 +141,42 @@ def seed_region_analysis(sense_strand, utr_sequences, seed_region_lengths=None):
 		print("No alternative seed regions found.")
 
 
-# 2.3 Thermodynamic stability
-# Na= concentration of Na ions in solution (100 millimolar)  Dnac= dna concentration in nanomolars, higher more stable
 def calculate_melting_temp(seq):
+	"""
+	  Calculates the melting temp of the RNA sequence using the nearest-neighbor (NN) method using BioPython's
+	  MeltingTemp class.
+	  Na= concentration of Na ions in solution (100 millimolar).
+	  Dnac= dna concentration in nanomolars. Higher values are more stable
+
+	  :param seq: String representing the RNA sequence.
+	  :return: Float representing the melting temperature (Tm) of the given RNA sequence in Celsius.
+	"""
+
 	tm = MeltingTemp.Tm_NN(seq, dnac1=100, Na=100, nn_table=MeltingTemp.RNA_NN1, saltcorr=7)
 	return tm
 
 
-# Weight in grams per mole
 def calculate_molecular_weight(seq):
+	"""
+	    Calculates the molecular weight of the RNA seq with BioPythons molecular_weight function.
+	    The molecular weight is calculated based on the average weights of the RNA bases,
+	     considering the sequence's length.
+
+	    :param seq: String representing the RNA sequence.
+	    :return: Float representing the molecular weight of the given RNA sequence in grams/mole.
+	"""
 	mw = molecular_weight(seq, seq_type="RNA")
 	return mw
 
 
-# Untranslated Regions (region after stop codon)
-def get_3utrs(sequence):
+def get_3utrs(seq):
+	"""
+		Extracts the 3' untranslated regions (3' UTRs) from the RNA seq. Searches for stop and start codons in the
+		sequence, and identifies the regions between them as the 3' UTRs.
+
+		:param seq: String representing the RNA sequence.
+		:return: List of strings representing the 3' UTRs found in the given mRNA sequence.
+	"""
 	start_codon = 'AUG'
 	stop_codons = ['UAA', 'UAG', 'UGA']
 	three_utrs = []
@@ -130,14 +184,14 @@ def get_3utrs(sequence):
 	start_index = 0
 	while True:
 		# Find the start codon index
-		start_codon_index = sequence.find(start_codon, start_index)
+		start_codon_index = seq.find(start_codon, start_index)
 		if start_codon_index == -1:
 			break
 
 		# Find the stop codon index
 		stop_codon_index = float('inf')
 		for stop_codon in stop_codons:
-			temp_index = sequence.find(stop_codon, start_codon_index + 3)
+			temp_index = seq.find(stop_codon, start_codon_index + 3)
 			if temp_index != -1 and temp_index < stop_codon_index:
 				stop_codon_index = temp_index
 
@@ -145,7 +199,7 @@ def get_3utrs(sequence):
 			break
 
 		# Extract the 3' UTR
-		three_utr = sequence[stop_codon_index + 3:]
+		three_utr = seq[stop_codon_index + 3:]
 		three_utrs.append(three_utr)
 
 		start_index = stop_codon_index + 3
@@ -153,11 +207,11 @@ def get_3utrs(sequence):
 	return three_utrs
 
 
-# 2.4 Design algos (siDirect, siRNA Wizard, DSIR)  2.5 Experiment Validation (qPCR or microarrays)
 
 def search_genome(sequence):
 	"""
     This function searches the given sequence against the genome and returns a list of similar sequences.
+
     :param sequence: The input sequence to search for.
     :return list: A list of similar sequences found in the genome.
     """
@@ -182,9 +236,11 @@ def search_genome(sequence):
 # 3. Evaluate siRNA Efficacy
 def predict_efficiency(siRNA_sequence):
 	"""
-    Predict siRNA efficiency based on set heuristics.
-    0 - least efficient
-    10 - most efficient
+	    Predicts the efficiency of the given siRNA sequence based on GC content, molecular weight,
+	    melting temperature, and specific nucleotides at certain positions.
+
+	    :param siRNA_sequence: String representing the siRNA sequence.
+	    :return: Integer representing the predicted efficiency score of the given siRNA sequence.
     """
 	gc_content = GC_content(siRNA_sequence)
 	mole_weight = calculate_molecular_weight(siRNA_sequence)
@@ -278,7 +334,6 @@ if __name__ == "__main__":
 		if score == max_score:
 			final_candidates.append(candidate)
 
-
-
-
 	print("Most efficient siRNA candidates: ", final_candidates)
+	print("These are the optimal targets for siRNA design, they have high target specificity, with the lowest "
+	      "off-target effects (unwanted effects on other genes, and longest half-life and stability")
