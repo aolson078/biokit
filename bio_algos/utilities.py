@@ -51,10 +51,10 @@ stop_codons = ["UAG", "UAA", "UGA"]
 
 def dna_to_rna(dna_sequence):
 	"""
-	Converts a DNA sequence to an RNA sequence.
-	:param: dna_sequence (str): The input DNA sequence.
-	:return: str: The corresponding RNA sequence.
-	"""
+        Converts a DNA sequence to an RNA sequence.
+        :param: dna_sequence (str): The input DNA sequence.
+        :return: str: The corresponding RNA sequence.
+    """
 	# Define the mapping for complementary base pairs
 	complement = {'A': 'U', 'T': 'A', 'C': 'G', 'G': 'C'}
 
@@ -76,11 +76,12 @@ def dna_to_rna(dna_sequence):
 
 	return rna_sequence
 
+
 def generate_tree(file):
 	"""
-    Generates and displays phylogenetic tree from aligned sequences in FASTA file
-    :param file: Filepath of FASTA file to generate tree from
-	"""
+        Generates and displays phylogenetic tree from aligned sequences in FASTA file
+        :param file: Filepath of FASTA file to generate tree from
+    """
 	# Normalize sequences from FASTA file
 	normalize_fasta(file, "./uploads/normal.fasta")
 
@@ -113,10 +114,10 @@ def generate_tree(file):
 # Takes FASTA file as input and formats each sequence, so they are the same length, then outputs to a new FASTA
 def normalize_fasta(file, output):
 	"""
-	Formats sequences in FASTA file so they are the same length
-	:param file: Filepath to FASTA file
-	:param output: Desired filepath to output FASTA file
-	"""
+        Formats sequences in FASTA file so they are the same length
+        :param file: Filepath to FASTA file
+        :param output: Desired filepath to output FASTA file
+    """
 	# Read sequences from input FASTA file
 	sequences = list(SeqIO.parse(input, "fasta"))
 
@@ -135,11 +136,11 @@ def normalize_fasta(file, output):
 
 def GC_content(sequence):
 	"""
-    Calculates GC content, higher GC content implies higher thermal stability
-    due to GC pairs having 3 hydrogen bonds instead of AT's 2
-    :param sequence: String sequence of nucleotide bases
-    :return: GC percentage
-	"""
+        Calculates GC content, higher GC content implies higher thermal stability
+        due to GC pairs having 3 hydrogen bonds instead of AT's 2
+        :param sequence: String sequence of nucleotide bases
+        :return: GC percentage
+    """
 	gc_count = 0
 	for nuc in sequence:
 		if nuc in ["G", "C"]:
@@ -149,11 +150,11 @@ def GC_content(sequence):
 
 def transcribe_dna(sequence):
 	"""
-    Takes codon(set of 3 nucleotides), transcribes to Amino Acid.
-    If less than 3 nucleo. left, won't add incomplete codon
-    :param sequence: String sequence of nucleotide bases
-    :return: trasncribed DNA sequence
-	"""
+        Takes codon(set of 3 nucleotides), transcribes to Amino Acid.
+        If less than 3 nucleo. left, won't add incomplete codon
+        :param sequence: String sequence of nucleotide bases
+        :return: trasncribed DNA sequence
+    """
 	transcribed = ""
 	removed = ""
 	while len(sequence) % 3 != 0:
@@ -164,31 +165,52 @@ def transcribe_dna(sequence):
 	return transcribed
 
 
-def align_sequences(sequences):
+def align_sequences(sequences, seq_type="nucleotide"):
 	"""
-    Aligns two or more sequences using pairwise alignment.
-    :param sequences: List of sequences
-    :return: Aligned sequences
+        Aligns two sequences using the Needleman-Wunsch algorithm.
+        https://en.wikipedia.org/wiki/Needleman%E2%80%93Wunsch_algorithm
+
+        :param sequences: List of sequences
+        :param seq_type: Type of genetic sequence to run alignment on. "nucleotide", "protein", "genome", or None
+        :return: Aligned sequences with the highest score
     """
 	if len(sequences) < 2:
 		raise ValueError("There must be at least two sequences to align")
 
+	# Create a new PairwiseAligner object
 	aligner = Align.PairwiseAligner()
+
+	# Adjust the scoring system based on the sequence type (If seq_type==None, the only scoring is +1 for match)
+	if seq_type == 'nucleotide':
+		aligner.match_score = 3
+		aligner.mismatch_score = -3
+		aligner.open_gap_score = -7
+		aligner.extend_gap_score = -2
+	elif seq_type == 'protein':
+		aligner.open_gap_score = -10
+		aligner.extend_gap_score = -1
+	elif seq_type == 'genome':
+		aligner.match_score = 1
+		aligner.mismatch_score = -1
+		aligner.open_gap_score = -5
+		aligner.extend_gap_score = -.5
+
+	# Use the aligner to align the sequences
 	alignments = aligner.align(sequences[0], sequences[1])
-	alignment = ""
-	for a in alignments:
-		alignment = a
-	return alignment
+
+	result = next(alignments)
+
+	# Print all alignments and their scores
+	return result
 
 
 def read_sequences_from_file(file="../uploads/normal.fasta", file_type="fasta"):
 	"""
-    Reads sequences from a file and returns a list of sequence records.
-    :param file: Path to the input file
-    :param file_type: File format ex: 'fasta', 'genbank'
-    :return: List of sequence records
+        Reads sequences from a file and returns a list of sequence records.
+        :param file: Path to the input file
+        :param file_type: File format ex: 'fasta', 'genbank'
+        :return: List of sequence records
     """
 	return [record.seq for record in SeqIO.parse(file, file_type)]
-
 
 
