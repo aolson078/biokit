@@ -172,7 +172,7 @@ def align_sequences(sequences, seq_type="nucleotide"):
 
         :param sequences: List of sequences
         :param seq_type: Type of genetic sequence to run alignment on. "nucleotide", "protein", "genome", or None
-        :return: Aligned sequences with the highest score
+        :return: Aligned sequences, and score
     """
 	if len(sequences) < 2:
 		raise ValueError("There must be at least two sequences to align")
@@ -201,7 +201,7 @@ def align_sequences(sequences, seq_type="nucleotide"):
 	result = next(alignments)
 
 	# Print all alignments and their scores
-	return result
+	return result, result.score
 
 
 def read_sequences_from_file(file="../uploads/normal.fasta", file_type="fasta"):
@@ -212,5 +212,4 @@ def read_sequences_from_file(file="../uploads/normal.fasta", file_type="fasta"):
         :return: List of sequence records
     """
 	return [record.seq for record in SeqIO.parse(file, file_type)]
-
 
