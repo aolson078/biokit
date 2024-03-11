@@ -81,12 +81,12 @@ def create_rna_strands(target_sequence, overhang="UU"):
 
 def calculate_similarity(sense_strand, antisense_strand):
 	"""
-	Calculates the similarity between the sense and antisense RNA strands using the Jaccard similarity
-	coefficient.
+		Calculates the similarity between the sense and antisense RNA strands using the Jaccard similarity
+		coefficient.
 
-	:param sense_strand: String representing the sense RNA strand.
-	:param antisense_strand: String representing the antisense RNA strand.
-	:return: Float representing the Jaccard similarity coefficient between the sense and antisense strands.
+		:param sense_strand: String representing the sense RNA strand.
+		:param antisense_strand: String representing the antisense RNA strand.
+		:return: Float representing the Jaccard similarity coefficient between the sense and antisense strands.
 	"""
 	sense_list = list(sense_strand)
 	antisense_list = list(antisense_strand)
@@ -143,13 +143,13 @@ def seed_region_analysis(sense_strand, utr_sequences, seed_region_lengths=None):
 
 def calculate_melting_temp(seq):
 	"""
-	  Calculates the melting temp of the RNA sequence using the nearest-neighbor (NN) method using BioPython's
-	  MeltingTemp class.
-	  Na= concentration of Na ions in solution (100 millimolar).
-	  Dnac= dna concentration in nanomolars. Higher values are more stable
+		Calculates the melting temp of the RNA sequence using the nearest-neighbor (NN) method using BioPython's
+		MeltingTemp class.
+		Na= concentration of Na ions in solution (100 millimolar).
+		Dnac= dna concentration in nanomolars. Higher values are more stable
 
-	  :param seq: String representing the RNA sequence.
-	  :return: Float representing the melting temperature (Tm) of the given RNA sequence in Celsius.
+		:param seq: String representing the RNA sequence.
+		:return: Float representing the melting temperature (Tm) of the given RNA sequence in Celsius.
 	"""
 
 	tm = MeltingTemp.Tm_NN(seq, dnac1=100, Na=100, nn_table=MeltingTemp.RNA_NN1, saltcorr=7)
@@ -210,10 +210,10 @@ def get_3utrs(seq):
 
 def search_genome(sequence):
 	"""
-    This function searches the given sequence against the genome and returns a list of similar sequences.
+	    This function searches the given sequence against the genome and returns a list of similar sequences.
 
-    :param sequence: The input sequence to search for.
-    :return list: A list of similar sequences found in the genome.
+	    :param sequence: The input sequence to search for.
+	    :return list: A list of similar sequences found in the genome.
     """
 	# Perform a BLAST search against the appropriate genome database
 	result_handle = NCBIWWW.qblast("blastn", "nt", sequence)  # Replace "nt" with the desired database
