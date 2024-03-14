@@ -3,21 +3,25 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="../static/styles/styles.css">
+    <script src='static/scripts/scripts.js'></script>
 </head>
-
 <body>
     <header>
         <div class="navbar-container">
             <div class="navbar">
-                <a href="/index.html">Home</a>
-                <a href="/employee.html">Employee</a>
-                <a href="/manager.html">Manager</a>
-                <a href="/admin.html">Admin</a>
-                <a href="/login.html" class="active">Login</a>
+                <a href="/index" {% if active_page == 'home' %}class="active"{% endif %}>Home</a>
+
+
+                <a href="/employee.html" {% if active_page == 'employee' %}class="active"{% endif %}>Employee</a>
+                <a href="/manager.html" {% if active_page == 'manager' %}class="active"{% endif %}>Manager</a>
+                <a href="/admin.html" {% if active_page == 'admin' %}class="active"{% endif %}>Admin</a>
+                <a href="/login.html" {% if active_page == 'login' %}class="active"{% endif %}>Login</a>
             </div>
         </div>
+
         <div class="flex-container">
             <!-- https://www.umassmed.edu/globalassets/morningside-graduate-school-of-biomedical-sciences/images/academics/cancer-bio-header.jpg -->
             <img src="../static/images/cells0.jpg" alt="BioHeader0">
@@ -29,26 +33,16 @@
         </div>
     </header>
 
-    <hr>
-
-    <div class="container"  style="text-align:center">
-        <h2>Login</h2>
-        <form action="/login" method="post">
-            <label for="username">Username:</label>
-            <br>
-            <input type="text" id="username" name="username" required>
-            <br><br>
-            <label for="password">Password:</label>
-            <br>
-            <input type="password" id="password" name="password" required>
-            <br><br>
-            <input type="submit" value="Login">
-        </form>
-    </div>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
 
     <footer>
-        WAS Software &copy;
+        WAS Software &copy;2024
     </footer>
-</body>
 
+
+
+</body>
 </html>

@@ -1,48 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="utf-8">
-    <title>index</title>
-    <link rel="stylesheet" href="../static/styles/styles.css">
-</head>
+{% block title %}
+index
+{% endblock %}
 
-<body>
-    <header>
-        <div class="navbar-container">
-            <div class="navbar">
-                <a href="/index.html" class="active">Home</a>
-                <a href="/employee.html">Employee</a>
-                <a href="/manager.html">Manager</a>
-                <a href="/admin.html">Admin</a>
-                <a href="/login.html">Login</a>
-            </div>
-        </div>
-        <div class="flex-container">
-            <!-- https://www.umassmed.edu/globalassets/morningside-graduate-school-of-biomedical-sciences/images/academics/cancer-bio-header.jpg -->
-            <img src="../static/images/cells0.jpg" alt="BioHeader0">
-            <!-- https://www.bruker.com/en/applications/academia-life-science/cell-biology/_jcr_content/root/overviewstage/desktopImage.coreimg.82.1280.png/1603581061247/cell-and-molecular-biology.png -->
-            <img src="../static/images/cell-and-molecular-biology.png" alt="BioHeader1">
-            <!-- https://carleton.ca/biology/wp-content/uploads/dna-3539309_1920-1-1.jpg -->
-            <img src="../static/images/dna0.jpg" alt="BioHeader2">
-            <h1>BioKit</h1>
-        </div>
-        <h1 style="text-align:center">An easy to use toolkit for Bioinformatics research</h1>
-        <h3 style="text-align:center">A W.A.S. software product created by Alex Olson, Sola Yun, Will Hutcheon</h3>
-        <div class="flex-container-body">
-            <figure>
-                <!-- https://miro.medium.com/v2/resize:fit:900/1*Y3LCRCdu9XViUBBEiGGUiQ.png -->
-                <img src="../static/images/treeexample.png" alt="treeexample">
-                <figcaption style="text-align:center">Phylogenetic tree showing the three domains of life</figcaption>
-            </figure>
-        </div>
-    </header>
-
-    <hr>
-
-    <footer>
-        WAS Software &copy;
-    </footer>
-</body>
-
-</html>
+{% block content %}
+<h1 style="text-align:center">An easy to use toolkit for Bioinformatics research</h1>
+<h3 style="text-align:center">A W.A.S. software product created by Alex Olson, Sola Yun, Will Hutcheon</h3>
+<div class="flex-container-body">
+<figure>
+    <!-- https://miro.medium.com/v2/resize:fit:900/1*Y3LCRCdu9XViUBBEiGGUiQ.png -->
+    <img src="../static/images/treeexample.png" alt="treeexample">
+    <figcaption style="text-align:center">Phylogenetic tree showing the three domains of life</figcaption>
+</figure>
+{% endblock %}

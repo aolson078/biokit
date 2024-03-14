@@ -9,15 +9,13 @@ from flask import (
 )
 
 from sqlalchemy.exc import (
-    InvalidRequestError
-)
-from werkzeug.routing import BuildError
+    InvalidRequestError)
+
 
 from flask_bcrypt import check_password_hash
 
 from flask_login import (
     login_user,
-
     logout_user,
     login_required,
 )
@@ -26,7 +24,7 @@ import models
 from app import create_app, db, login_manager, bcrypt
 from models import User
 from forms import login_form, register_form
-from models import fetch_record
+from models import fetch_records
 
 app = create_app()
 
@@ -40,7 +38,7 @@ def load_user(user_id):
 # Home
 @app.route('/', methods=("GET", "POST"), strict_slashes=False)
 def index():
-    return render_template('index.html', title="Home")
+    return render_template('index.html', title="Home", active_page='home')
 
 
 @app.route("/index.html")
@@ -64,7 +62,7 @@ def clear_session():
 def search():
     # Get data from employee form
     query = request.form.get("search")
-    results = fetch_record(query)
+    results = fetch_records(query)
     return render_template('results.html', query=query, results=results)
 
 
@@ -78,20 +76,20 @@ def employee(selected_result=None):
         # Store results in session
         session['results'].append(selected_result)
         session.modified = True
-    return render_template('employee.html', title="Employee")
+    return render_template('employee.html', title="Employee", active_page='employee')
 
 
 # Manager
 @app.route('/manager.html/', methods=("GET", "POST"), strict_slashes=False)
 def manager():
-    return render_template('manager.html', title="Manager")
+    return render_template('manager.html', title="Manager", active_page='manager')
 
 
 # Admin
 @app.route('/admin.html/', methods=("GET", "POST"), strict_slashes=False)
 def admin():
     users = User.query.all()
-    return render_template('admin.html', title="Admin", users=users)
+    return render_template('admin.html', title="Admin", users=users, active_page='admin')
 
 
 
@@ -111,7 +109,7 @@ def login():
         except Exception as e:
             flash(e, "danger")
 
-    return render_template("auth.html", form=form)
+    return render_template("auth.html", form=form, active_page='login')
 
 
 # Register route
@@ -199,6 +197,8 @@ def changePassword(user_id):
             return f"User ID {user_id} not found", 404
     except Exception as e:
         return f"Error changing password: {str(e)}", 500
+
+
 
 
 if __name__ == "__main__":
