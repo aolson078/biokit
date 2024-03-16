@@ -99,3 +99,10 @@ rna_sequence = dna_to_rna(
 
 
 print(sequence_profile(rna_sequence))
+amino_dict = amino_acid_composition(rna_sequence)
+
+hydrophobicity_score = hydrophobicity(amino_dict)
+
+secondary_structure = ss_propensity(amino_dict)
+
+print(amino_dict, hydrophobicity_score, secondary_structure)

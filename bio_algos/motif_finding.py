@@ -104,3 +104,48 @@ print("Standard deviation: %0.2f" % pssm.std())
 print("--------------------------------------------------")
 
 # 17.6
+# Searches search_seq for substring and returns tuple with position(s) and sequence(s) if found
+def search_exact_motif(search_seq=Seq("TACACTGCATTACAACCCAAGCATTA")):
+    matches = []
+    for pos, seq in search_seq.search(m.alignment):
+        matches.append((pos, seq))
+    return matches
+
+
+def search_reverse_complement(search_seq=Seq("TACACTGCATTACAACCCAAGCATTA")):
+    matches = []
+    for pos, seq in search_seq.search(r.alignment):
+        matches.append((pos, seq))
+    return matches
+
+
+# Searches search_seq for substring with position specific score matrix threshold (in log2, so 3 == x8)
+def search_by_pssm_score(search_seq=Seq("TACACTGCATTACAACCCAAGCATTA")):
+    for position, score in pssm.search(search_seq, threshold=3.0):
+        print("Position %d: score = %5.3f" % (position, score))
+
+
+print(search_exact_motif())
+print("--------------------------")
+print(search_reverse_complement())
+print("--------------------------")
+print(search_by_pssm_score())
+print("--------------------------")
+
+
+print("--------------------------")
+# Setting score thresholds (score space distribution grows expo. w/ seq length, so we need to limit it)
+
+distribution = pssm.distribution(background=background, precision=10**4)
+
+# Set false_pos rate (Prob of finding motif in background generated sequence)
+threshold = distribution.threshold_fpr(0.01)
+print("%5.3f" % threshold)
+
+# Set false_neg (Prob of not finding instance generated from motif)
+threshold = distribution.threshold_fnr(0.1)
+print("%5.3f" % threshold)
+
+# Set treshold to relation between neg and pos
+threshold = distribution.threshold_balanced(1000)
+print("%5.3f" % threshold)

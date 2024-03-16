@@ -190,7 +190,7 @@ def changePassword(user_id):
 
         user = User.query.get(user_id)
         if user:
-            user.password = new_password
+            user.password = bcrypt.generate_password_hash(new_password),
             db.session.commit()
             return f"User ID {user_id} password changed successfully"
         else:
