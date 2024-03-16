@@ -34,20 +34,36 @@ class Record(db.Model):
 	__tablename__ = 'record'
 
 	id = db.Column(db.Integer, primary_key=True)
-	nucleotide_id = db.Column(db.String(20), unique=True, nullable=False)
-	organism = db.Column(db.String(80), nullable=False)
-	gene_info = db.Column(db.String(100), nullable=False)
+	nucleotide_id = db.Column(db.String(20), unique=True)
+	organism = db.Column(db.String(80))
+	gene_info = db.Column(db.String(100))
 	allele_info = db.Column(db.String(100))
 	sequence_info = db.Column(db.String(100))
-	nucleotides = db.Column(db.Text, nullable=False)
+	nucleotides = db.Column(db.Text)
+
+
+
 
 	# SAMPLE COMPUTED DATA STORE NOT FINAL PART OF RECORD, (stuff that is calculated w only 1 record)
 	# siRNA = db.Column(db.Text, nullable=False)
-	# nuc_string_index = db.Column(db.Text, nullable=False)
 	# secondary_structure_prediction = db.Column(db.String(100))
 
-	def __repr__(self):
-		return '<Organism: %r, NucID: %r, GeneInfo: %r>' % self.organism, self.nucleotide_id, self.gene_info
+
+	def calculate_gc_content(self):
+		"""
+		        Calculates GC content, higher GC content implies higher thermal stability
+		        due to GC pairs having 3 hydrogen bonds instead of AT's 2
+		        :param sequence: String sequence of nucleotide bases
+		        :return: GC percentage
+		"""
+		gc_count = 0
+		for nuc in self.nucleotides:
+			if nuc in ["G", "C"]:
+				gc_count += 1
+		return gc_count / len(self.nucleotides)
+
+	# def __repr__(self):
+	# 	return '<Organism: %r, NucID: %r, GeneInfo: %r>' % self.organism, self.nucleotide_id, self.gene_info
 
 
 # the report class represents the final product. It will contain the computed data from the bio processes

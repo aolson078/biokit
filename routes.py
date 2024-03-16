@@ -66,16 +66,40 @@ def search():
     return render_template('results.html', query=query, results=results)
 
 
+
+
+
+
+
 # Employee
 @app.route('/employee.html/', methods=("GET", "POST"), strict_slashes=False)
 @app.route('/employee.html/<selected_result>', methods=("GET", "POST"), strict_slashes=False)
 def employee(selected_result=None):
     if selected_result:
-        if 'results' not in session:
-            session['results'] = []
-        # Store results in session
-        session['results'].append(selected_result)
-        session.modified = True
+        # Extract gene data from the selected_result from URL param, and extract relevant information
+        lines = selected_result.split(" ")
+        nucleotide_id = lines[0][1::]
+        lines = lines[1::]
+        nucleotides = lines[-1]
+        lines = lines[0:-1]
+        organism = lines[0] + " " + lines[1]
+        lines = lines[2:]
+        gene_info = " ".join(lines)
+        nucleotides = ''.join(x for x in nucleotides if not x.islower())
+
+
+        # Create the Record object
+        record = models.Record(
+            nucleotide_id=nucleotide_id,
+            organism=organism,
+            gene_info=gene_info,
+            nucleotides="".join(str(part) for part in nucleotides)  # Concatenate nucleotides
+        )
+
+        # # Add the object to the session and commit to the database
+        db.session.add(record)
+        db.session.commit()
+
     return render_template('employee.html', title="Employee", active_page='employee')
 
 
@@ -181,7 +205,6 @@ def changeUsername(user_id):
         return f"Error changing username: {str(e)}", 500
 
 
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!! MAKE SURE TO HASH PASSWORD w BCRYPT!!!!!!!!!!!!!!!!!
 @app.route("/change_password/<int:user_id>", methods=["PUT"])
 def changePassword(user_id):
     try:
