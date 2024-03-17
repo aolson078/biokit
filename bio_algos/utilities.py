@@ -56,7 +56,7 @@ def dna_to_rna(dna_sequence):
         :return: str: The corresponding RNA sequence.
     """
 	# Define the mapping for complementary base pairs
-	complement = {'A': 'U', 'T': 'A', 'C': 'G', 'G': 'C'}
+	complement = {'A': 'U', 'T': 'A', 'C': 'G', 'G': 'C', '\n': ""}
 
 	# Initialize an empty string to store the RNA sequence
 	rna_sequence = ''
@@ -140,7 +140,7 @@ def GC_content(sequence):
         due to GC pairs having 3 hydrogen bonds instead of AT's 2
         :param sequence: String sequence of nucleotide bases
         :return: GC percentage
-    """
+	"""
 	gc_count = 0
 	for nuc in sequence:
 		if nuc in ["G", "C"]:

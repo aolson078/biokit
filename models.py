@@ -20,6 +20,9 @@ class User(UserMixin, db.Model):
 	# num_documents = 0
 
 	# looks up user in db and adds document to list
+	def __init__(self):
+		self.report_list = None
+
 	def add_report(self, report):
 		if self.report_list is None:
 			self.report_list = []
@@ -37,16 +40,15 @@ class Record(db.Model):
 	nucleotide_id = db.Column(db.String(20), unique=True)
 	organism = db.Column(db.String(80))
 	gene_info = db.Column(db.String(100))
-	allele_info = db.Column(db.String(100))
-	sequence_info = db.Column(db.String(100))
 	nucleotides = db.Column(db.Text)
 
-
-
-
-	# SAMPLE COMPUTED DATA STORE NOT FINAL PART OF RECORD, (stuff that is calculated w only 1 record)
-	# siRNA = db.Column(db.Text, nullable=False)
-	# secondary_structure_prediction = db.Column(db.String(100))
+	# single record calculations
+	gc_content = db.Column(db.Float)
+	siRNA = db.Column(db.Text)
+	sense_similarity = db.Column(db.Float)
+	melting_temp = db.Column(db.Float)
+	molecular_weight = db.Column(db.Float)
+	secondary_structure_prediction = db.Column(db.String(100))
 
 
 	def calculate_gc_content(self):
@@ -62,26 +64,18 @@ class Record(db.Model):
 				gc_count += 1
 		return gc_count / len(self.nucleotides)
 
-	# def __repr__(self):
-	# 	return '<Organism: %r, NucID: %r, GeneInfo: %r>' % self.organism, self.nucleotide_id, self.gene_info
-
-
 # the report class represents the final product. It will contain the computed data from the bio processes
 class Report(db.Model):
 	__tablename__ = 'report'
 	id = db.Column(db.Integer, primary_key=True)
-	nucleotide_id = db.Column(db.String(20), unique=True, nullable=False)
-	organism = db.Column(db.String(80), nullable=False)
-	gene_info = db.Column(db.String(100), nullable=False)
-	allele_info = db.Column(db.String(100))
-	sequence_info = db.Column(db.String(100))
+	# holds ids of all nuc strings used in calculations
+	nucleotide_ids = db.Column(db.String(20), unique=True, nullable=False)
+	organisms = db.Column(db.String(80), nullable=False)
 	nucleotides = db.Column(db.Text, nullable=False)
 
-# SAMPLE COMPUTED DATA STORE NOT FINAL PART OF RECORD, (stuff that is calculated w > 1 record)
-# phylo_tree = db.Column(db.PickleType nullable=True)
+	phylo_tree = db.Column(db.PickleType, nullable=True)
 
-
-# dot_line_graph = db.Column(db.PickleType nullable=True)
+	dot_line_graph = db.Column(db.PickleType, nullable=True)
 
 
 # queries the selected database for term and returns the record with the nucleotide string

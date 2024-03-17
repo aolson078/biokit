@@ -15,15 +15,16 @@ def select_target_sequence(seq, target_length=21):
 	    :return: Tuple containing the selected target sequence and its GC content.
 	    :raises ValueError: If no valid target sequence is found within the specified GC content range.
 	"""
-	lower_bound = .3  # lowering lower bound reduces off-target risk, but reduces stability and specificity
-	upper_bound = .5  # raising upper bound increases stability, but reduces stability and increases off-target risk
+	lower_bound = .1  # lowering lower bound reduces off-target risk, but reduces stability and specificity
+	upper_bound = .9  # raising upper bound increases stability, but reduces stability and increases off-target risk
 
 	gc_bounds = (lower_bound, upper_bound)
 	# number of positions to move target sequence so that it falls in the desired gc_content bounds
 	offset = 0
 	# prevents infinite loop if no suitable target found
 	max_offset = len(seq) - target_length
-
+	print(seq[offset:target_length + offset])
+	print(GC_content(seq[offset:target_length + offset]))
 	# if gc_content of target ! in bounds, and there offset < max offset, increment offset and recalculate gc_content
 	while (gc_content := GC_content(seq[offset:target_length + offset])) < gc_bounds[0] \
 			or gc_content > gc_bounds[1]:
@@ -169,43 +170,6 @@ def calculate_molecular_weight(seq):
 	return mw
 
 
-def get_3utrs(seq):
-	"""
-		Extracts the 3' untranslated regions (3' UTRs) from the RNA seq. Searches for stop and start codons in the
-		sequence, and identifies the regions between them as the 3' UTRs.
-
-		:param seq: String representing the RNA sequence.
-		:return: List of strings representing the 3' UTRs found in the given mRNA sequence.
-	"""
-	start_codon = 'AUG'
-	stop_codons = ['UAA', 'UAG', 'UGA']
-	three_utrs = []
-
-	start_index = 0
-	while True:
-		# Find the start codon index
-		start_codon_index = seq.find(start_codon, start_index)
-		if start_codon_index == -1:
-			break
-
-		# Find the stop codon index
-		stop_codon_index = float('inf')
-		for stop_codon in stop_codons:
-			temp_index = seq.find(stop_codon, start_codon_index + 3)
-			if temp_index != -1 and temp_index < stop_codon_index:
-				stop_codon_index = temp_index
-
-		if stop_codon_index == float('inf'):
-			break
-
-		# Extract the 3' UTR
-		three_utr = seq[stop_codon_index + 3:]
-		three_utrs.append(three_utr)
-
-		start_index = stop_codon_index + 3
-
-	return three_utrs
-
 
 
 def search_genome(sequence):
@@ -286,10 +250,7 @@ def predict_efficiency(siRNA_sequence):
 	return score
 
 
-# Perform SNP and Off-Target Filtration
-# Check for single nucleotide polymorphisms (SNPs) in target region
-# Filter out siRNAs that have significant off-target matches
-
+# -----------------------------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
 	rna_sequence = dna_to_rna(
 		"GAAGCTGGACAGAGCCGGTTCCTGGAAAGAGCTGGTTCCCTGGCAGGCTGGAGGGCAGGAGCTGGGGCCACGCTGGTCTGGGATAGTTGGGCAGGGAGACGGAGTCTCGAT"
@@ -325,26 +286,23 @@ if __name__ == "__main__":
 
 	print("Molecular weight: ", calculate_molecular_weight(rna_sequence))
 
-	utrs = get_3utrs(rna_sequence)
+	candidates1 = design_siRNA(rna_sequence)
 
-	seed_region_analysis(sense, utrs)
+	print("possible siRNA candidates: ", candidates1)
 
-	candidates = design_siRNA(rna_sequence)
+	efficiency_score = {}
 
-	print("possible siRNA candidates: ", candidates)
-
-	efficiency_scores = {}
-
-	for candidate in candidates:
-		efficiency_scores[candidate] = predict_efficiency(candidate)
+	for candidate1 in candidates1:
+		efficiency_score[candidate1] = predict_efficiency(candidate1)
 
 	final_candidates = []
 
-	max_score = max(efficiency_scores.values())
+	max_score = max(efficiency_score.values())
 
-	for candidate, score in efficiency_scores.items():
-		if score == max_score:
-			final_candidates.append(candidate)
+	for candidate1, score1 in efficiency_score.items():
+		if score1 == max_score:
+			final_candidates.append(candidate1)
+
 
 	print("Most efficient siRNA candidates: ", final_candidates)
 	print("These are the optimal targets for siRNA design, they have high target specificity, with the lowest "

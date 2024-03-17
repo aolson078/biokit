@@ -1,5 +1,4 @@
 from flask import (
-    Flask,
     render_template,
     redirect,
     flash,
@@ -11,7 +10,6 @@ from flask import (
 from sqlalchemy.exc import (
     InvalidRequestError)
 
-
 from flask_bcrypt import check_password_hash
 
 from flask_login import (
@@ -22,9 +20,10 @@ from flask_login import (
 
 import models
 from app import create_app, db, login_manager, bcrypt
-from models import User
+from bio_algos.siRNA import *
+from bio_algos.utilities import *
 from forms import login_form, register_form
-from models import fetch_records
+from models import fetch_records, User
 
 app = create_app()
 
@@ -76,7 +75,7 @@ def search():
 @app.route('/employee.html/<selected_result>', methods=("GET", "POST"), strict_slashes=False)
 def employee(selected_result=None):
     if selected_result:
-        # Extract gene data from the selected_result from URL param, and extract relevant information
+        # extract gene data from the selected_result from URL param, and extract relevant information
         lines = selected_result.split(" ")
         nucleotide_id = lines[0][1::]
         lines = lines[1::]
@@ -87,16 +86,58 @@ def employee(selected_result=None):
         gene_info = " ".join(lines)
         nucleotides = ''.join(x for x in nucleotides if not x.islower())
 
+        # convert DNA nuc string to RNA
 
-        # Create the Record object
+        rna_seq = dna_to_rna(nucleotides)
+
+        # calculate siRNA target and gc content
+        siRNA_target, gc_content = select_target_sequence(rna_seq)
+        # compute sense and antisense strands https://en.wikipedia.org/wiki/Sense_(molecular_biology)
+        sense_strand, antisense_strand = create_rna_strands(siRNA_target)
+        # calculate similarity between sense and antisense strands (Uses Jaccard similarity coefficient)
+        # minimizes off target effects and maximizes siRNA efficiency
+        sense_similarity = calculate_similarity(sense_strand, antisense_strand)
+        mole_weight = calculate_molecular_weight(rna_seq)
+        melting_temp = calculate_melting_temp(rna_seq)
+
+        # generates potential siRNA sequences from RNA
+        siRNA_candidates = design_siRNA(rna_seq)
+
+        efficiency_scores = {}
+
+        for candidate in siRNA_candidates:
+            efficiency_scores[candidate] = predict_efficiency(candidate)
+
+        final_candidates = []
+
+        max_score = max(efficiency_scores.values())
+
+        for candidate, score in efficiency_scores.items():
+            if score == max_score:
+                final_candidates.append(candidate)
+
+        siRNA_choice = final_candidates[0]
+
+        # create the Record object
         record = models.Record(
             nucleotide_id=nucleotide_id,
             organism=organism,
             gene_info=gene_info,
-            nucleotides="".join(str(part) for part in nucleotides)  # Concatenate nucleotides
+            nucleotides="".join(str(part) for part in nucleotides), # Concatenate nucleotides
+
+            # perform single record calculations
+            gc_content=gc_content,
+            sense_similarity=sense_similarity,
+            molecular_weight=mole_weight,
+            melting_temp=melting_temp,
+            siRNA=siRNA_choice
         )
 
-        # # Add the object to the session and commit to the database
+
+
+
+
+        # add the object to the session and commit to the database
         db.session.add(record)
         db.session.commit()
 
