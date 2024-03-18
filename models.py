@@ -44,10 +44,12 @@ class Record(db.Model):
 
 	# single record calculations
 	gc_content = db.Column(db.Float)
+	amino_acids = db.Column(db.Text)
 	siRNA = db.Column(db.Text)
 	sense_similarity = db.Column(db.Float)
 	melting_temp = db.Column(db.Float)
 	molecular_weight = db.Column(db.Float)
+	hydrophobicity = db.Column(db.Float)
 	secondary_structure_prediction = db.Column(db.String(100))
 
 

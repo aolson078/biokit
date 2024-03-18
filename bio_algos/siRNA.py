@@ -15,8 +15,8 @@ def select_target_sequence(seq, target_length=21):
 	    :return: Tuple containing the selected target sequence and its GC content.
 	    :raises ValueError: If no valid target sequence is found within the specified GC content range.
 	"""
-	lower_bound = .1  # lowering lower bound reduces off-target risk, but reduces stability and specificity
-	upper_bound = .9  # raising upper bound increases stability, but reduces stability and increases off-target risk
+	lower_bound = .3  # lowering lower bound reduces off-target risk, but reduces stability and specificity
+	upper_bound = .7  # raising upper bound increases stability, but reduces stability and increases off-target risk
 
 	gc_bounds = (lower_bound, upper_bound)
 	# number of positions to move target sequence so that it falls in the desired gc_content bounds
@@ -267,43 +267,43 @@ if __name__ == "__main__":
 		"CCAGGTCTGAGGGGTCCCATCCTGGCCCCAAAGACCCCTGAGAGGCCCATGGACAGTCCTGTGTCTGGATGAGGAGGACTCAGTGCTGGCAGATGGCAGTGGAAGCTGCCC"
 		"TGTGCAACTGTGCTGGCTGCCTCCTGAAGGAAGCCCTCCTGGACTGCTTCTTTTGGCTCTCCGACAACTCCGGCCAATAAACACTTTCTGAATTGA")
 
-	result = select_target_sequence(rna_sequence)
-	selected_target = result[0]
-	gc = result[1]
+	# result = select_target_sequence(rna_sequence)
+	# selected_target = result[0]
+	# gc = result[1]
+	#
+	# print(f"Selected target sequence: {selected_target}")
+	# print(f"GC content of target: {gc:.4f}")
+	#
+	# cRNA = create_rna_strands(selected_target)
+	# sense = cRNA[0]
+	# antisense = cRNA[1]
+	#
+	# similarity = calculate_similarity(sense, antisense)
+	#
+	# print("Similarity between strands: ", similarity)
+	#
+	# print("Melting temperature: ", calculate_melting_temp(rna_sequence))
+	#
+	# print("Molecular weight: ", calculate_molecular_weight(rna_sequence))
+	#
+	# candidates1 = design_siRNA(rna_sequence)
+	#
+	# print("possible siRNA candidates: ", candidates1)
+	#
+	# efficiency_score = {}
+	#
+	# for candidate1 in candidates1:
+	# 	efficiency_score[candidate1] = predict_efficiency(candidate1)
+	#
+	# final_candidates = []
+	#
+	# max_score = max(efficiency_score.values())
+	#
+	# for candidate1, score1 in efficiency_score.items():
+	# 	if score1 == max_score:
+	# 		final_candidates.append(candidate1)
 
-	print(f"Selected target sequence: {selected_target}")
-	print(f"GC content of target: {gc:.4f}")
 
-	cRNA = create_rna_strands(selected_target)
-	sense = cRNA[0]
-	antisense = cRNA[1]
-
-	similarity = calculate_similarity(sense, antisense)
-
-	print("Similarity between strands: ", similarity)
-
-	print("Melting temperature: ", calculate_melting_temp(rna_sequence))
-
-	print("Molecular weight: ", calculate_molecular_weight(rna_sequence))
-
-	candidates1 = design_siRNA(rna_sequence)
-
-	print("possible siRNA candidates: ", candidates1)
-
-	efficiency_score = {}
-
-	for candidate1 in candidates1:
-		efficiency_score[candidate1] = predict_efficiency(candidate1)
-
-	final_candidates = []
-
-	max_score = max(efficiency_score.values())
-
-	for candidate1, score1 in efficiency_score.items():
-		if score1 == max_score:
-			final_candidates.append(candidate1)
-
-
-	print("Most efficient siRNA candidates: ", final_candidates)
+	# print("Most efficient siRNA candidates: ", final_candidates)
 	print("These are the optimal targets for siRNA design, they have high target specificity, with the lowest "
 	      "off-target effects (unwanted effects on other genes, and longest half-life and stability")
