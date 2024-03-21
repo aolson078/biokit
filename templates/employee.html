@@ -13,8 +13,20 @@ employee
     <form action="/search" method="POST">
         <input type="text" name="search" placeholder="Search...">
         <button type="submit">Search</button>
-        <button type="submit" name="browse-computer">Browse Computer</button>
-        <button type="submit" name="upload">Upload</button>
+
+        <button type="button" onclick="compileReport()">Compile Report</button>
+
+        <script>
+            // Define the function globally
+            function compileReport() {
+                console.log("!!!!!!!!!!!!!!!!!!!!!!");
+                window.location.href = '/compile_report';
+            }
+            // Add an event listener to the button
+            const button = document.getElementById("compileButton");
+            button.addEventListener("click", compileReport);
+        </script>
+
     </form>
 </div>
 <div>

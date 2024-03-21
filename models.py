@@ -7,17 +7,11 @@ from flask_login import UserMixin
 # UserMixin gives us premade methods for authentication and user management
 class User(UserMixin, db.Model):
 	__tablename__ = 'user'
-	# for ease of use
-	table = __tablename__
 
 	id = db.Column(db.Integer, primary_key=True)
 	username = db.Column(db.String(80), unique=True, nullable=False)
 	email = db.Column(db.String(120), unique=True, nullable=False)
 	password = db.Column(db.String(300), nullable=False, unique=True)
-
-	# array that will hold all currently active (but separate) report for each User. Pickle serializes it for storage
-	# report_list = db.Column(db.PickleType, nullable=True)
-	# num_documents = 0
 
 	# looks up user in db and adds document to list
 	def __init__(self):
@@ -52,32 +46,25 @@ class Record(db.Model):
 	hydrophobicity = db.Column(db.Float)
 	secondary_structure_prediction = db.Column(db.String(100))
 
+	#report_id = db.Column(db.Integer, db.ForeignKey('report.id'), nullable=False)
 
-	def calculate_gc_content(self):
-		"""
-		        Calculates GC content, higher GC content implies higher thermal stability
-		        due to GC pairs having 3 hydrogen bonds instead of AT's 2
-		        :param sequence: String sequence of nucleotide bases
-		        :return: GC percentage
-		"""
-		gc_count = 0
-		for nuc in self.nucleotides:
-			if nuc in ["G", "C"]:
-				gc_count += 1
-		return gc_count / len(self.nucleotides)
 
 # the report class represents the final product. It will contain the computed data from the bio processes
 class Report(db.Model):
 	__tablename__ = 'report'
 	id = db.Column(db.Integer, primary_key=True)
 	# holds ids of all nuc strings used in calculations
-	nucleotide_ids = db.Column(db.String(20), unique=True, nullable=False)
-	organisms = db.Column(db.String(80), nullable=False)
-	nucleotides = db.Column(db.Text, nullable=False)
+	nucleotide_ids = db.Column(db.JSON)
+	organisms = db.Column(db.JSON)
+	nucleotides = db.Column(db.JSON)
 
 	phylo_tree = db.Column(db.PickleType, nullable=True)
 
 	dot_line_graph = db.Column(db.PickleType, nullable=True)
+
+	#records = db.relationship('Record', backref='report', lazy='dynamic')
+#	employee_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+	#user = db.relationship('User', backref='reports')
 
 
 # queries the selected database for term and returns the record with the nucleotide string
@@ -98,50 +85,6 @@ def fetch_records(query):
 	if len(records) == 0:
 		raise InvalidQueryException(query, database)
 	return records
-
-
-# adds and commits new record to database
-def add_to_db(record):
-	db.session.add(record)
-	db.session.commit()
-
-
-# parses fasta file and creates a database entry for each query result
-def parse_records(query):
-	records = fetch_records(query)
-	for record in records:
-		lines = record.split("\n")
-		# first line contains the description
-		description_line = lines[0]
-		# rest of the lines contains the nucleotide sequence
-		nucleotides = "".join(lines[1:])
-
-		info = description_line.split(" ")
-		nucleotide_id = info[0][1:]  # Remove the '>' character
-		organism = " ".join(info[1:3])
-		description = " ".join(info[3:]).split(",")
-
-		if len(description) == 3:
-			gene_info = description[0]
-			allele_info = description[1][1:]
-			sequence_info = description[2][1:]
-		elif len(description) == 2:
-			gene_info = description[0]
-			allele_info = "N/A"
-			sequence_info = description[1][1:]
-		else:
-			gene_info = ' '.join(description)
-			allele_info = "N/A"
-			sequence_info = "N/A"
-
-		new_record = Record(nucleotide_id=nucleotide_id,
-		                    organism=organism,
-		                    gene_info=gene_info,
-		                    allele_info=allele_info,
-		                    sequence_info=sequence_info,
-		                    nucleotides=nucleotides)
-
-		add_to_db(new_record)
 
 
 if __name__ == '__main__':

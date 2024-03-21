@@ -69,6 +69,37 @@ def search():
 	return render_template('results.html', query=query, results=results)
 
 
+@app.route('/compile_report', methods=["Get", "POST"], strict_slashes=False)
+def compile_report():
+	try:
+		records = models.Record.query.all()
+
+		nucleotide_ids = []
+		organisms = []
+		nucleotides = []
+
+		# Print each record to the console
+		for record in records:
+			nucleotide_ids.append(record.nucleotide_id)
+			organisms.append(record.organism)
+			nucleotides.append(record.nucleotides)
+
+		# create the Record object
+		report = models.Report(
+			nucleotide_ids=nucleotide_ids,
+			organisms=organisms,
+			nucleotides=nucleotides,
+		)
+
+		db.session.add(report)
+		db.session.commit()
+
+		return render_template('employee.html', title="Employee", active_page='employee')
+
+	except Exception as e:
+		return f"Error compiling report: {str(e)}"
+
+
 # Employee
 @app.route('/employee.html/', methods=("GET", "POST"), strict_slashes=False)
 @app.route('/employee.html/<selected_result>', methods=("GET", "POST"), strict_slashes=False)
@@ -83,7 +114,11 @@ def employee(selected_result=None):
 
 		lines = lines[0:-1]
 		organism = lines[0] + " " + lines[1]
+		for i in range(len(lines)):
+			if lines[i] == 'of':
+				lines[i] = ''
 		lines = lines[2:]
+
 		gene_info = " ".join(lines)
 		nucleotides = ''.join(x for x in nucleotides if not x.islower())
 
@@ -144,7 +179,7 @@ def employee(selected_result=None):
 			secondary_structure_prediction=secondary_structure
 		)
 
-		# add the object to the session and commit to the database
+		# Add the objects to the session and commit to the database
 		db.session.add(record)
 		db.session.commit()
 

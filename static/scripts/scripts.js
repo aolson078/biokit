@@ -15,7 +15,10 @@ function showSubRadios(reportId) {
     }
 }
 
-
+function compileReport() {
+        console.log("!!!!!!!!!!!!!!!!!!!!!!");
+        window.location.href = '/compile_report';
+    }
 
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -155,39 +158,4 @@ function retrieveInputs() {
     }
 }
 
-
-// Figure out if these are still needed!
-
-
-//window.onload = function() {
-//    localStorage.clear();
-////    sessionStorage.clear();
-//    var url = new URL(window.location.href);
-//    var param = url.searchParams.get("parameter");
-//    if (param) {
-//        let decodedParam = decodeURIComponent(param);
-//        let card = generateCard(decodedParam);
-//        appendCard(card);
-//        storeInput(decodeURIComponent(param));
-//    }
-//    retrieveInputs();
-//};
-
-
-//document.addEventListener("DOMContentLoaded", function() {
-//  let form = document.querySelector("form[action='/search']");
-//
-//  form.addEventListener("submit", function(event) {
-//    let input = document.querySelector("input[name='search']").value;
-//
-//      console.log(input);
-//      storeInput(input);
-//      let card = generateCard(input);
-//      appendCard(card);
-//      console.log("appended card:", card);
-//      form.submit(); // This line submits the form programmatically
-//
-//  });
-//});
-
-// --------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
