@@ -21,6 +21,7 @@ from flask_login import (
 	login_required,
 )
 
+import bio_algos.dot_plot
 import models
 from app import create_app, db, login_manager, bcrypt
 from bio_algos.sequence_profile import amino_acid_composition, hydrophobicity, ss_propensity
@@ -78,7 +79,6 @@ def compile_report():
 		organisms = []
 		nucleotides = []
 
-		# Print each record to the console
 		for record in records:
 			nucleotide_ids.append(record.nucleotide_id)
 			organisms.append(record.organism)
@@ -93,6 +93,18 @@ def compile_report():
 
 		db.session.add(report)
 		db.session.commit()
+
+		# create phylo tree
+		report.phylo_tree = generate_tree(nucleotides,
+		                                  output_file=f"./bio_algos/graphs/phylo_tree/tree{report.id}.tree")
+
+		# create dot line graph
+		report.dot_line_graph = bio_algos.dot_plot.dot_plot(nucleotides,
+		                                                    output_file=f"./bio_algos/graphs/dot_plot/dot{report.id}.png")
+
+		db.session.commit()
+
+		# Phylo.draw(Phylo.read(report.phylo_tree, "newick"))
 
 		return render_template('employee.html', title="Employee", active_page='employee')
 

@@ -15,15 +15,15 @@ from bio_algos import utilities
 """
 
 
-def dot_plot(alignment):
-	# Extract the aligned sequences
+def dot_plot(alignment, output_file):
+	# extract the aligned sequences
 	seq1 = alignment[0]
 	seq2 = alignment[1]
 
-	# Create a matrix of zeros len(seq1) x len(seq2)
+	# create a matrix of zeros len(seq1) x len(seq2)
 	matrix = np.zeros((len(seq1), len(seq2)))
 
-	# Fill in 1s where bases match
+	# fill in 1s where bases match
 	for i in range(len(seq1)):
 		for j in range(len(seq2)):
 			if seq1[i] == seq2[j]:
@@ -32,7 +32,7 @@ def dot_plot(alignment):
 	# Set figure size in inches
 	plt.figure(figsize=(10, 10))
 
-	# Create a dot plot from the matrix
+	# create a dot plot from the matrix
 	plt.imshow(matrix, cmap='Greys', interpolation='None')
 
 	plt.xticks([0, len(seq2) - 1], ['0', str(len(seq2) - 1)], fontsize=8, rotation=90)  # Display start and end indices
@@ -42,17 +42,20 @@ def dot_plot(alignment):
 	plt.ylabel('Sequence 1')
 	plt.title('Dot Plot Comparison of Sequenced Nucleotides')
 
-	# Show the plot
-	plt.show()
+	# save plot
+	plt.savefig(output_file)
+
+	return output_file
 
 
-# Align the sequences
-aligned, score = utilities.align_sequences([
-	"GAAGCTGGACAGGTGTCTGGATGAGGAAGCTGCCCTGTGCAACTGTGCTGGCTGCCTCCTAACACTTTCTGAATTGA",
-	"GCCATGGGGCACACTGCTTCAATGGCCGCGGAGGACACCGAGGCTGTGAGCGCTGTGCA"])
-# Print the alignment and its score
-print(aligned)
-print("Alignment score: ", score)
+if __name__ == "__main__":
+	# align the sequences
+	aligned, score = utilities.align_sequences([
+		"GAAGCTGGACAGGTGTCTGGATGAGGAAGCTGCCCTGTGCAACTGTGCTGGCTGCCTCCTAACACTTTCTGAATTGA",
+		"GCCATGGGGCACACTGCTTCAATGGCCGCGGAGGACACCGAGGCTGTGAGCGCTGTGCA"])
+	# print the alignment and its score
+	print(aligned)
+	print("Alignment score: ", score)
 
-# Create a dot plot of the aligned sequences
-dot_plot(aligned)
+	# Create a dot plot of the aligned sequences
+	dot_plot(aligned)

@@ -170,8 +170,6 @@ def calculate_molecular_weight(seq):
 	return mw
 
 
-
-
 def search_genome(sequence):
 	"""
 	    This function searches the given sequence against the genome and returns a list of similar sequences.
