@@ -46,7 +46,6 @@ class Record(db.Model):
 	hydrophobicity = db.Column(db.Float)
 	secondary_structure_prediction = db.Column(db.String(100))
 
-	#report_id = db.Column(db.Integer, db.ForeignKey('report.id'), nullable=False)
 
 
 # the report class represents the final product. It will contain the computed data from the bio processes
@@ -58,9 +57,8 @@ class Report(db.Model):
 	organisms = db.Column(db.JSON)
 	nucleotides = db.Column(db.JSON)
 
-	phylo_tree = db.Column(db.PickleType, nullable=True)
-
-	dot_line_graph = db.Column(db.PickleType, nullable=True)
+	phylo_tree = db.Column(db.String(30), nullable=True)
+	dot_line_graph = db.Column(db.String(30), nullable=True)
 
 	#records = db.relationship('Record', backref='report', lazy='dynamic')
 #	employee_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)

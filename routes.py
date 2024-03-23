@@ -24,6 +24,7 @@ from flask_login import (
 import bio_algos.dot_plot
 import models
 from app import create_app, db, login_manager, bcrypt
+from bio_algos.phylo_tree import generate_tree
 from bio_algos.sequence_profile import amino_acid_composition, hydrophobicity, ss_propensity
 from bio_algos.siRNA import *
 from bio_algos.utilities import *
@@ -95,8 +96,21 @@ def compile_report():
 		db.session.commit()
 
 		# create phylo tree
+		organisms = report.organisms
+
+		count = {}
+
+		# Iterate through the list and update the count of each element
+		for i in range(len(organisms)):
+			if organisms[i] in count:
+				count[organisms[i]] += 1
+				organisms[i] = f"{organisms[i]}{count[organisms[i]]}"
+			else:
+				count[organisms[i]] = 1
+
 		report.phylo_tree = generate_tree(nucleotides,
-		                                  output_file=f"./bio_algos/graphs/phylo_tree/tree{report.id}.tree")
+		                                  "./bio_algos/graphs/phylo_tree/tree{report.id}.tree",
+		                                  organisms)
 
 		# create dot line graph
 		report.dot_line_graph = bio_algos.dot_plot.dot_plot(nucleotides,

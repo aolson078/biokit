@@ -1,5 +1,5 @@
-from Bio import Phylo, AlignIO, SeqIO, Align
-from Bio.Phylo.TreeConstruction import DistanceCalculator, DistanceTreeConstructor
+from Bio import SeqIO, Align
+
 from Bio.Seq import Seq
 
 # DNA codon table for nucleotide transcription
@@ -77,39 +77,6 @@ def dna_to_rna(dna_sequence):
 	return rna_sequence
 
 
-def generate_tree(file):
-	"""
-        Generates and displays phylogenetic tree from aligned sequences in FASTA file
-        :param file: Filepath of FASTA file to generate tree from
-    """
-	# Normalize sequences from FASTA file
-	normalize_fasta(file, "./uploads/normal.fasta")
-
-	# Concat sequences from FASTA file
-	sequences = AlignIO.read("./uploads/normal.fasta", "fasta")
-
-	# Create distance calculator object (Identity model calculates proportion of mismatches in sequence)
-	calculator = DistanceCalculator('identity')
-
-	# Calculate distance matrix (Represents pairwise distance between sequences)
-	distance_matrix = calculator.get_distance(sequences)
-	print("Calculated distance matrix:")
-	print(distance_matrix)
-
-	print()
-	print("****************************************************")
-	print()
-
-	#  Construct phylogenetic tree using UPGMA algorithm (unweighted pair group method w/ arithmetic mean)
-	# Clade is the linear descendants on a phylo tree: https://en.wikipedia.org/wiki/Cladistics
-	constructor = DistanceTreeConstructor()
-	tree = constructor.upgma(distance_matrix)
-	print("Calculated tree from distance matrix:")
-	print(tree)
-
-	# Draw phylogenetic tree (Read documentation for customization)
-	Phylo.draw(tree)
-
 
 # Takes FASTA file as input and formats each sequence, so they are the same length, then outputs to a new FASTA
 def normalize_fasta(file, output):
@@ -140,7 +107,7 @@ def GC_content(sequence):
         due to GC pairs having 3 hydrogen bonds instead of AT's 2
         :param sequence: String sequence of nucleotide bases
         :return: GC percentage
-	"""
+    """
 	gc_count = 0
 	for nuc in sequence:
 		if nuc in ["G", "C"]:
@@ -213,3 +180,8 @@ def read_sequences_from_file(file="../uploads/normal.fasta", file_type="fasta"):
     """
 	return [record.seq for record in SeqIO.parse(file, file_type)]
 
+
+# Example usage:
+nucleotide_sequences = [
+	"TCTTTCTGAAGCCCCTCCCAGTTCTAGTTCTATCTTTTTCCTGCATCCTGTCTGGAAGTTAGAAGGAAACAGACCACAGACCTGGTCCCCAAAAGAAATGGAGGCAATAGGTTTTGAGGGGCATGGGGACGGGGTTCAGCCTCCAGGGTCCTACACACAAATCAGTCAGTGGCCCAGAAGACCCCCCTCGGAATCGGAGCAGGGAGGATGGGGAGTGTGAGGGGTATCCTTGATGCTTGTGTGTCCCCAACTTTCCAAATCCCCGCCCCCGCGATGGAGAAGAAACCGAGACAGAAGGTGCAGGGCCCACTACCGCTTCCTCCAGATGAGCTCATGGGTTTCTCCACCAAGGAAGTTTTCCGCTGGTTGAATGATTCTTTCCCCGCCCTCCTCTCGCCCCACGGGCATATAAAGGCAGTTGTTGGCACACCCAGCCAGCAGACGCTCCCTCAGCAAGGACAGCAGAGGACCAG",
+	"AGCCATTCTGTCCTCCTTTTGTTAGAGTTCGGCTGTGCCTTCGGTCCTTACCTACTGGTTCGCAATCCGGCGCCATCGCGCTTTGGGCGAGCATGGTGATGGGGAGTAGCGAGGTGGGAACCGAGCTGACGTCTGTCTGGTCTTGGCGACCGTGGCGCGCGACCGGGAGGACTGGCCGGAGCATGTCTCCAGGAGACGGGTCAATGGTGCGGAGGTGACGCAGGAGCTCTTGGTGTGACCTGGGCCTATGTATGATACCACAGGAGCTTGACCGAGGATGCTCTGGTGTTTTAATAAGTGACCCCTTTTTCTGAAGATGTTGGGTGGTTAATGAAAGAAGGAATTGTATTCTTGGCGATGTCTGAAAGAAATGTGTGGCTTTGAAAGAAGATTATGAAATATACAGGAAAGGAGTGAAATCAAAGGATGTTTTTCCATGATAGAGTAATGTTTACACATGTATTCAGTAATGTGAAGATTTATATAAGGCCTGGTGACCTCAGTTAATTCCTGGGATCCACAGTGTGGAAGAAGAGACCTGACTCCTGAAAGTTGTCTTCTGACCACATATACATAATAAGTAAACAAATGTAATTTTGAAATCTCAAAATAGTAAAGTTAAAAAACATAAGAATGCTGCTGTTTTCTGAAATGTAAGCATGATGCAAAGGACTTGTGACAGTTTTGTTTAAACTTTATCTTCTTGAAATGAGAAAGGGATTAAACTGTCAAAAGAATTAAACTCTTTGTAATTCTTTCCCTTTTTGTAAAGATTTATTTGTAACGGTAATGCCGTCTGCAGTGCCCTCGGTGAGGCTGGAGTGACAGGCAGCTGTGAGCTGTGTGAGATGGGTGTTGGAAACTGAACTCTCCTGCCTCTGGATGAGCAGTAAGCTCTCTTAACTACTGAGCCGCCTCCAGCCCAGCTTTGTGAAAATGAATTTGAAGTCTTGCGTTGTGGAGAAAAAGCAAGAGTGCGTGCTGTGCTGGAATGTTGTGACTGTCAATGAACTGAAACTTCCTGTCCGAGTTGCTTTCTGTGGAGGGCTAGCTCAGACAGGTGACCTCATGCACATTCCTCAATGCAGGAAGCACATTAAATGACGTAGCTACCTAATAAAAATAGCCAGTTTGTCGTCCCTGTGCCACTGCCTTAGCTGCTGCTTGCTCATTTGTACTGTAATAATAAACAGTTTTCTCCTGC"]
