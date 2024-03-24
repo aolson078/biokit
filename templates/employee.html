@@ -7,39 +7,53 @@ employee
 {% block content %}
 <div class="card-container"></div>
 
-<!--  Possibly use this for search to remain on same page??:  <form action="{{ request.path }}" method="POST" class="card-body">-->
-
 <div class="flex-container">
     <form action="/search" method="POST">
         <input type="text" name="search" placeholder="Search...">
         <button type="submit">Search</button>
-
         <button type="button" onclick="compileReport()">Compile Report</button>
-
-        <script>
-            // Define the function globally
-            function compileReport() {
-                console.log("!!!!!!!!!!!!!!!!!!!!!!");
-                window.location.href = '/compile_report';
-            }
-            // Add an event listener to the button
-            const button = document.getElementById("compileButton");
-            button.addEventListener("click", compileReport);
-        </script>
-
     </form>
 </div>
+
 <div>
     <form action="add_action" method="post" style="text-align:center">
         <h3>Select a report from Employee 1</h3>
-        <input type="radio" id="report1" name="report" value="report1">
-        <label for="report1" >Report 1</label>
-        <button type="button" onclick="modifyReport('report1')" >Modify</button>
-        <button type="button" onclick="deleteReport('report1')">Delete (Needs approval)</button>
+        {% for report in reports %}
+        <input type="radio" id="report{{ loop.index }}" name="report" value="report{{ loop.index }}">
+        <label for="report{{ loop.index }}">Report {{ loop.index }}</label>
+        <button type="button" onclick="displayReport('{{ report.id }}')">Display</button>
+        <button type="button" onclick="modifyReport('{{ report.id }}')">Modify</button>
+        <button type="button" onclick="deleteReport('{{ report.id }}')">Delete</button>
         <br>
+        {% endfor %}
         <br>
-        <button type="button" onclick="generateReport()" >Generate New Report</button>
+        <button type="button" onclick="generateReport()">Generate New Report</button>
     </form>
 </div>
 
+<script>
+    function compileReport() {
+        console.log("!!!!!!!!!!!!!!!!!!!!!!");
+        window.location.href = '/compile_report';
+    }
+
+    function displayReport(reportId) {
+        window.location.href = '/display_report/' + reportId;
+    }
+
+    function modifyReport(reportId) {
+        // Implement the modify report functionality
+        console.log("Modify Report: " + reportId);
+    }
+
+    function deleteReport(reportId) {
+        // Implement the delete report functionality
+        console.log("Delete Report: " + reportId);
+    }
+
+    function generateReport() {
+        // Implement the generate report functionality
+        console.log("Generate New Report");
+    }
+</script>
 {% endblock %}

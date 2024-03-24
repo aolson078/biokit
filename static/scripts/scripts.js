@@ -112,7 +112,8 @@ function changePassword() {
 
 
 // --------------------------------------------------------------------------------------------------------------------
-// These are for the employee screen, to populate the cards
+// These are for the employee screen, to populate the cards (Maybe take this out and display
+// cards on seperate route
 
 window.onload = function() {
 //    localStorage.clear();

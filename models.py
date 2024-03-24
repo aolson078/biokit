@@ -46,7 +46,14 @@ class Record(db.Model):
 	hydrophobicity = db.Column(db.Float)
 	secondary_structure_prediction = db.Column(db.String(100))
 
+	report_id = db.Column(db.Integer, db.ForeignKey('report.id'))
+	reports = db.relationship('Report', secondary='report_record', backref='associated_records')
 
+
+report_record = db.Table('report_record',
+    db.Column('report_id', db.Integer, db.ForeignKey('report.id'), primary_key=True),
+    db.Column('record_id', db.Integer, db.ForeignKey('record.id'), primary_key=True)
+)
 
 # the report class represents the final product. It will contain the computed data from the bio processes
 class Report(db.Model):
@@ -60,8 +67,8 @@ class Report(db.Model):
 	phylo_tree = db.Column(db.String(30), nullable=True)
 	dot_line_graph = db.Column(db.String(30), nullable=True)
 
-	#records = db.relationship('Record', backref='report', lazy='dynamic')
-#	employee_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+	records = db.relationship('Record', secondary='report_record', backref='associated_reports')
+	#employee_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 	#user = db.relationship('User', backref='reports')
 
 
@@ -72,7 +79,7 @@ def fetch_records(query):
 	# nucleotide, gene, or protein for db
 	database = "nucleotide"
 	# number of desired responses per query
-	return_max = 3
+	return_max = 5
 	# fetch nucleotide record related to term
 	IDs = Entrez.read(Entrez.esearch(db=database, term=query, field="Organism", retmax=return_max))["IdList"]
 	records = []

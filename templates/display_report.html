@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}
+report
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h1>Report {{ report.id }}</h1>
+    </div>
+    <div class="card-body">
+        <p><strong>Title:</strong> {{ report.organisms }}</p>
+        <p><strong>Content:</strong> {{ report.nucleotide_ids }}</p>
+
+        <h3>Records:</h3>
+        <ul>
+            {% for record in report.records %}
+            <li>
+                <p><strong>Organism:</strong> <span class="organism-name"> {{ record.organism }} </span></p>
+                <p><strong>Primary Structure:</strong> <span class="primary-structure">{{ record.nucleotides }} </span></p>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .card {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin: 20px auto;
+        max-width: 600px;
+    }
+
+    .card-header {
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px;
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .organism-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+    }
+
+    .primary-structure {
+    word-wrap: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* # of lines before truncating */
+    -webkit-box-orient: vertical;
+    }
+</style>
+{% endblock %}

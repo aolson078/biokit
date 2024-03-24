@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="../static/styles/styles.css">
-    <script src='static/scripts/scripts.js'></script>
+    {% block scripts %}{% endblock %}
+    {% block styles %}{% endblock %}
 </head>
 <body>
     <header>
@@ -38,11 +39,10 @@
         {% endblock %}
     </main>
 
-    <footer>
+   <footer>
         WAS Software &copy;2024
     </footer>
 
-
-
+    <script src="{{ url_for('static', filename='./scripts/scripts.js') }}"></script>
 </body>
 </html>

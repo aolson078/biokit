@@ -31,7 +31,6 @@ def dot_plot(alignment, output_file):
 
 	# Set figure size in inches
 	plt.figure(figsize=(10, 10))
-
 	# create a dot plot from the matrix
 	plt.imshow(matrix, cmap='Greys', interpolation='None')
 
