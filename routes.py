@@ -1,4 +1,4 @@
-import pickle
+
 import re
 
 from flask import (
@@ -107,10 +107,14 @@ def compile_report():
             else:
                 count[organisms[i]] = 1
 
-        report.phylo_tree = generate_tree(nucleotides, output_file=f"./bio_algos/graphs/phylo_tree/tree{report.id}.png", ids=organisms)
+        phylo_tree_path = f"./bio_algos/graphs/phylo_tree/tree{report.id}.png"
+        generate_tree(nucleotides, output_file=phylo_tree_path, ids=organisms)
+        report.phylo_tree = phylo_tree_path
 
         # create dot line graph
-        report.dot_line_graph = bio_algos.dot_plot.dot_plot(nucleotides, output_file=f"./bio_algos/graphs/dot_plot/dot{report.id}.png")
+        dot_line_graph_path = f"./bio_algos/graphs/dot_plot/dot{report.id}.png"
+        bio_algos.dot_plot.dot_plot(nucleotides, output_file=dot_line_graph_path)
+        report.dot_line_graph = dot_line_graph_path
 
         db.session.commit()
 
@@ -118,7 +122,6 @@ def compile_report():
 
     except Exception as e:
         return f"Error compiling report: {str(e)}"
-
 
 
 # Display Report

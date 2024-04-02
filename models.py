@@ -63,13 +63,10 @@ class Report(db.Model):
 	nucleotide_ids = db.Column(db.JSON)
 	organisms = db.Column(db.JSON)
 	nucleotides = db.Column(db.JSON)
-
 	phylo_tree = db.Column(db.String(30), nullable=True)
 	dot_line_graph = db.Column(db.String(30), nullable=True)
-
 	records = db.relationship('Record', secondary='report_record', backref='associated_reports')
-	#employee_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-	#user = db.relationship('User', backref='reports')
+
 
 
 # queries the selected database for term and returns the record with the nucleotide string

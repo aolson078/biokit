@@ -7,6 +7,7 @@ from Bio.Seq import Seq
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
+
 def align_sequences(sequences, ids):
     """
         Aligns a list of nucleotide sequences by adding gaps to make them the same length
@@ -56,17 +57,21 @@ def generate_tree(sequences, output_file, ids):
     constructor = DistanceTreeConstructor()
     tree = constructor.upgma(distance_matrix)
 
+    print("Generated tree:")
+    Phylo.draw_ascii(tree)
+
     # remove inner node labels
     for clade in tree.find_clades():
-        if clade.confidence is not None:
-            clade.confidence = None
+       if clade.confidence is not None:
+          clade.confidence = None
 
-    # create a matplotlib figure and canvas
+    # create a matplotlib figure
     fig = plt.figure(figsize=(10, 8))
-    canvas = FigureCanvas(fig)
 
+    # draw the tree on the figure
+    axes = fig.add_subplot(1, 1, 1)
+    Phylo.draw(tree, axes=axes)
 
     # save the figure as a PNG image file
-    canvas.print_figure(output_file, format='png', dpi=300, bbox_inches='tight')
+    fig.savefig(output_file, format='png', dpi=300, bbox_inches='tight')
     plt.close(fig)
-

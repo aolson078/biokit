@@ -132,43 +132,43 @@ def transcribe_dna(sequence):
 	return transcribed
 
 
-# def align_sequences(sequences, seq_type="nucleotide"):
-# 	"""
-#         Aligns two sequences using the Needleman-Wunsch algorithm.
-#         https://en.wikipedia.org/wiki/Needleman%E2%80%93Wunsch_algorithm
-#
-#         :param sequences: List of sequences
-#         :param seq_type: Type of genetic sequence to run alignment on. "nucleotide", "protein", "genome", or None
-#         :return: Aligned sequences, and score
-#     """
-# 	if len(sequences) < 2:
-# 		raise ValueError("There must be at least two sequences to align")
-#
-# 	# Create a new PairwiseAligner object
-# 	aligner = Align.PairwiseAligner()
-#
-# 	# Adjust the scoring system based on the sequence type (If seq_type==None, the only scoring is +1 for match)
-# 	if seq_type == 'nucleotide':
-# 		aligner.match_score = 3
-# 		aligner.mismatch_score = -3
-# 		aligner.open_gap_score = -7
-# 		aligner.extend_gap_score = -2
-# 	elif seq_type == 'protein':
-# 		aligner.open_gap_score = -10
-# 		aligner.extend_gap_score = -1
-# 	elif seq_type == 'genome':
-# 		aligner.match_score = 1
-# 		aligner.mismatch_score = -1
-# 		aligner.open_gap_score = -5
-# 		aligner.extend_gap_score = -.5
-#
-# 	# Use the aligner to align the sequences
-# 	alignments = aligner.align(sequences[0], sequences[1])
-#
-# 	result = next(alignments)
-#
-# 	# Print all alignments and their scores
-# 	return result, result.score
+def align_sequences(sequences, seq_type="nucleotide"):
+	"""
+        Aligns two sequences using the Needleman-Wunsch algorithm.
+        https://en.wikipedia.org/wiki/Needleman%E2%80%93Wunsch_algorithm
+
+        :param sequences: List of sequences
+        :param seq_type: Type of genetic sequence to run alignment on. "nucleotide", "protein", "genome", or None
+        :return: Aligned sequences, and score
+    """
+	if len(sequences) < 2:
+		raise ValueError("There must be at least two sequences to align")
+
+	# Create a new PairwiseAligner object
+	aligner = Align.PairwiseAligner()
+
+	# Adjust the scoring system based on the sequence type (If seq_type==None, the only scoring is +1 for match)
+	if seq_type == 'nucleotide':
+		aligner.match_score = 3
+		aligner.mismatch_score = -3
+		aligner.open_gap_score = -7
+		aligner.extend_gap_score = -2
+	elif seq_type == 'protein':
+		aligner.open_gap_score = -10
+		aligner.extend_gap_score = -1
+	elif seq_type == 'genome':
+		aligner.match_score = 1
+		aligner.mismatch_score = -1
+		aligner.open_gap_score = -5
+		aligner.extend_gap_score = -.5
+
+	# Use the aligner to align the sequences
+	alignments = aligner.align(sequences[0], sequences[1])
+
+	result = next(alignments)
+
+	# Print all alignments and their scores
+	return result, result.score
 
 
 # def read_sequences_from_file(file="../uploads/normal.fasta", file_type="fasta"):
