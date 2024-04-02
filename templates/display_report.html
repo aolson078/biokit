@@ -19,6 +19,14 @@ report
             <li>
                 <p><strong>Organism:</strong> <span class="organism-name"> {{ record.organism }} </span></p>
                 <p><strong>Primary Structure:</strong> <span class="primary-structure">{{ record.nucleotides }} </span></p>
+                <p><strong>GC content:</strong> <span class="gc-content">{{ record.gc_content }} </span></p>
+                <p><strong>Amino Acids:</strong> <span class="amino-acids">{{ record.amino_acids }} </span></p>
+                <p><strong>siRNA Prediction:</strong> <span class="siRNA">{{ record.siRNA }} </span></p>
+                <p><strong>siRNA Sense Strand Similarity:</strong> <span class="sense-strand">{{ record.sense_similarity }} </span></p>
+                <p><strong>Melting Temperature:</strong> <span class="melting-temperature">{{ record.melting_temp }} </span></p>
+                <p><strong>Molecular Weight:</strong> <span class="molecular-weight">{{ record.molecular_weight }} </span></p>
+                <p><strong>Hydrophobicity:</strong> <span class="hydrophobicity">{{ record.hydrophobicity }} </span></p>
+                <p><strong>Secondary Structure Prediction</strong> <span class="secondary-structure">{{ record.secondary_structure_prediction }} </span></p>
             </li>
             {% endfor %}
         </ul>
