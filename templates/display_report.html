@@ -1,35 +1,128 @@
 {% extends "base.html" %}
 
 {% block title %}
-report
+Report
 {% endblock %}
 
 {% block content %}
-<div class="card">
-    <div class="card-header">
-        <h1>Report {{ report.id }}</h1>
-    </div>
-    <div class="card-body">
-        <p><strong>Title:</strong> {{ report.organisms }}</p>
-        <p><strong>Content:</strong> {{ report.nucleotide_ids }}</p>
+<div class="container">
 
-        <h3>Records:</h3>
-        <ul>
-            {% for record in report.records %}
-            <li>
-                <p><strong>Organism:</strong> <span class="organism-name"> {{ record.organism }} </span></p>
-                <p><strong>Primary Structure:</strong> <span class="primary-structure">{{ record.nucleotides }} </span></p>
-                <p><strong>GC content:</strong> <span class="gc-content">{{ record.gc_content }} </span></p>
-                <p><strong>Amino Acids:</strong> <span class="amino-acids">{{ record.amino_acids }} </span></p>
-                <p><strong>siRNA Prediction:</strong> <span class="siRNA">{{ record.siRNA }} </span></p>
-                <p><strong>siRNA Sense Strand Similarity:</strong> <span class="sense-strand">{{ record.sense_similarity }} </span></p>
-                <p><strong>Melting Temperature:</strong> <span class="melting-temperature">{{ record.melting_temp }} </span></p>
-                <p><strong>Molecular Weight:</strong> <span class="molecular-weight">{{ record.molecular_weight }} </span></p>
-                <p><strong>Hydrophobicity:</strong> <span class="hydrophobicity">{{ record.hydrophobicity }} </span></p>
-                <p><strong>Secondary Structure Prediction</strong> <span class="secondary-structure">{{ record.secondary_structure_prediction }} </span></p>
-            </li>
-            {% endfor %}
-        </ul>
+        <h1 class="display-4 mb-4">Report {{ report.id }}</h1>
+        <div class="mb-4">
+            <p class="lead mb-0"><strong>Title:</strong></p>
+            <p class="mb-0">{{ report.organisms }}</p>
+        </div>
+        <div>
+            <p class="mb-0"><strong>Content:</strong></p>
+            <p>{{ report.nucleotide_ids }}</p>
+
+    </div>
+
+    <hr>
+
+    <div class="mt-4 mb-3">Records:</div>
+    <div class="row justify-content-center">
+        {% for record in report.records %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card mb-4">
+                <div style="text-align: center;" class="card-body">
+
+                    <h5 class="card-title">{{ record.organism }}</h5>
+                    <div style="font-size: 20px;"><strong>Primary Structure:</strong></div>
+                        <div class="tooltip">
+                            <p style="font-size: 9px">
+                                <strong>
+                                The sequence of nucleotides
+                                linked with peptide bonds that form a polypeptide chain
+                                </strong>
+                            </p>
+                            <br>
+                        <div style="text-align: center; font-size: 12px"; class="primary-structure">{{ record.nucleotides }}</p>
+
+                    </div>
+                    <hr>
+
+                     <div style="font-size: 20px;"><strong>GC content:</strong></div>
+                    <p style="font-size: 9px"><strong>
+                        The percentage of G/C nucleotides, signifying denser areas
+                        of coding DNA,
+                        due to having 3 hydrogen bonds instead of 2 in A/T pairs.
+                    </strong></p>
+                    <br>
+                    <div style="text-align: center; font-size: 12px">{{ (record.gc_content * 100) | round(2) }}%</div>
+
+                    <hr>
+                     <div style="font-size: 20px;"><strong>Melting Temperature:</strong></div>
+                            <p style="font-size: 9px"><strong>
+                            The melting temperature of the molecule in Fahrenheit. A higher GC content will have a higher
+                                a more inherent stability and a higher melting point.
+                            </strong></p>
+                    <br>
+                    <div style="text-align: center; font-size: 12px">{{ record.melting_temp | round(2) }} F</div>
+
+                    <hr>
+                     <div style="font-size: 20px;"><strong>Molecular Weight:</strong></div>
+                    <br>
+                            <p style="font-size: 9px"><strong>
+                            The combined weight of the nucleotide string.
+                            </strong></p>
+                    <div style="text-align: center; font-size: 12px">{{ ((record.molecular_weight / 1000)  | round(2)) }} g/mol</div>
+
+                    <hr>
+                     <div style="font-size: 20px;"><strong>Hydrophobicity:</strong></div>
+                            <p style="font-size: 9px">
+                                <strong>
+                                    The relative chance that a given molecule will be hydrophilic
+                                    or hydrophobic based on its nucleotide composition.
+                                </strong>
+                            </p>
+                            <br>
+                    <div style="text-align: center; font-size: 12px">{{ record.hydrophobicity | round(2) }}</div>
+
+                    <hr>
+                     <div style="font-size: 20px;"><strong>Amino Acids:</strong></div>
+                    <p style="font-size: 9px"><strong>
+                        Takes a codon made out of every 3 nucleotides, and translates it to the letter
+                        signifying the amino acid it codes for.
+                    </strong></p>
+                    <br>
+                    <div style="text-align: center; font-size: 12px; word-wrap: break-word;">{{ record.amino_acids }}</div>
+
+                    <hr>
+                     <div style="font-size: 20px;"><strong>siRNA Prediction:</strong></div>
+                            <p style="font-size: 9px"><strong>
+                                Small interfering RNA is a non-coding section of RNA that switches of the expression of the selected gene.
+                                Candidates are discovered, and then selected based on chosen heuristic values, primarily its precision, meaning
+                                the siRNA targets the desired gene, but has minimum side effects on other genes in the same sequence.
+                            </strong></p>
+                    <br>
+                    <div style="text-align: center; font-size: 12px"> {{ record.siRNA }} </div>
+
+
+                    <hr>
+                     <div style="font-size: 20px;"><strong>siRNA Sense Strand Similarity:</strong></div>
+                            <p style="font-size: 9px"><strong>
+                                An siRNA consists of a sense and anti-sense strand. The sense strand is similar to the target mRNA
+                                that is selected to be silenced, so it will always be similar, but a higher % similarity causes more off-target
+                                effects, and reduced effectiveness and specificity.
+                            </strong></p>
+                    <br>
+                    <div style="text-align: center; font-size: 12px"> {{ record.sense_similarity | round(2) }} </div>
+                    <hr>
+
+
+                     <div style="font-size: 20px;"><strong>Secondary Structure Prediction:</strong></div>
+                    <p style="font-size: 9px"><strong>
+                        Predicts whether the given nucleotide string is more likely to
+                        form an alpha-helix or a beta-sheet structure.
+                    </strong></p>
+                            <br>
+                    <div style="text-align: center; font-size: 12px">{{ record.secondary_structure_prediction }}</div>
+                    <hr>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}
@@ -37,40 +130,19 @@ report
 {% block styles %}
 <style>
     .card {
-        background-color: #f8f9fa;
-        border: 1px solid #dee2e6;
-        border-radius: 4px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        margin: 20px auto;
-        max-width: 600px;
+        height: 100%;
     }
 
-    .card-header {
-        background-color: #007bff;
-        color: #fff;
-        padding: 10px;
-        border-top-left-radius: 4px;
-        border-top-right-radius: 4px;
-    }
 
-    .card-body {
-        padding: 20px;
-    }
-
-    .organism-name {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 200px;
-    }
-
-    .primary-structure {
-    word-wrap: break-word;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 3; /* # of lines before truncating */
-    -webkit-box-orient: vertical;
+    .primary-structure,
+    .amino-acids,
+    .secondary-structure {
+        word-wrap: break-word;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
     }
 </style>
 {% endblock %}
