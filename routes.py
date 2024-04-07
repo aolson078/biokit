@@ -1,4 +1,4 @@
-
+import os
 import re
 
 from flask import (
@@ -28,6 +28,7 @@ from bio_algos.phylo_tree import generate_tree
 from bio_algos.sequence_profile import amino_acid_composition, hydrophobicity, ss_propensity
 from bio_algos.siRNA import *
 from bio_algos.utilities import *
+from bio_algos import stacked_bar_chart, heat_map
 from forms import login_form, register_form
 from models import fetch_records, User
 
@@ -107,14 +108,24 @@ def compile_report():
             else:
                 count[organisms[i]] = 1
 
-        phylo_tree_path = f"./bio_algos/graphs/phylo_tree/tree{report.id}.png"
+        phylo_tree_path = f"./static/images/graphs/phylo_tree/tree{report.id}.png"
         generate_tree(nucleotides, output_file=phylo_tree_path, ids=organisms)
         report.phylo_tree = phylo_tree_path
 
         # create dot line graph
-        dot_line_graph_path = f"./bio_algos/graphs/dot_plot/dot{report.id}.png"
+        dot_line_graph_path = f"./static/images/graphs/dot_plot/dot{report.id}.png"
         bio_algos.dot_plot.dot_plot(nucleotides, output_file=dot_line_graph_path)
         report.dot_line_graph = dot_line_graph_path
+
+        # create heat map
+        heat_map_path = f"./static/images/graphs/heat_map/heat{report.id}.png"
+        heat_map.heat_map(nucleotides, heat_map_path)
+        report.heat_map = heat_map_path
+
+        # create stacked bar chart
+        bar_chart_path = f"./bio_algos/graphs/stacked_bar/bar{report.id}.png"
+        stacked_bar_chart.stacked_bar_chart(nucleotides, organisms, bar_chart_path,)
+        report.bar_chart = bar_chart_path
 
         db.session.commit()
 
@@ -130,7 +141,13 @@ def compile_report():
 def display_report(report_id):
     report = models.Report.query.get(report_id)
     if report:
-        return render_template('display_report.html', report=report)
+        graph_folders = os.listdir('./static/images/graphs')
+        # Create a dictionary to store the image filenames for each folder
+        graph_images = {}
+        for folder in graph_folders:
+            folder_path = os.path.join('./static/images/graphs', folder)
+            graph_images[folder] = os.listdir(folder_path)
+        return render_template('display_report.html', report=report, graph_folders=graph_folders, graph_images=graph_images)
 
 
 # Employee
@@ -193,7 +210,6 @@ def employee(selected_result=None):
         hydrophobicity_score = hydrophobicity(amino_dict)
 
         secondary_structure = ss_propensity(amino_dict)
-
 
         # create the Record object
         record = models.Record(

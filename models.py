@@ -61,10 +61,14 @@ class Report(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	# holds ids of all nuc strings used in calculations
 	nucleotide_ids = db.Column(db.JSON)
+	# holds name of each organism in report
 	organisms = db.Column(db.JSON)
 	nucleotides = db.Column(db.JSON)
-	phylo_tree = db.Column(db.String(30), nullable=True)
-	dot_line_graph = db.Column(db.String(30), nullable=True)
+	phylo_tree = db.Column(db.String(50), nullable=True)
+	dot_line_graph = db.Column(db.String(50), nullable=True)
+	heat_map = db.Column(db.String(50), nullable=True)
+	bar_chart = db.Column(db.String(50), nullable=True)
+	line_chart = db.Column(db.String(50), nullable=True)
 	records = db.relationship('Record', secondary='report_record', backref='associated_reports')
 
 

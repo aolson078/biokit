@@ -22,13 +22,13 @@ for feature in record.features:
 		color = colors.blue
 	else:
 		color = colors.lightblue
-	gd_feature_set.add_feature(feature, color=color, label=True, sigil="ARROW", label_size=14, label_angle=0)
+	gd_feature_set.add_feature(feature, color=color, label=True, sigil="ARROW", label_size=8, label_angle=30)
 
 	gd_diagram.draw(
-		format="linear", # linear or circular
+		format="circular", # linear or circular
 		orientation="landscape",
 		pagesize="A4",
-		fragments=8,
+		fragments=1,
 		start=0,
 		end=len(record),
 	)
