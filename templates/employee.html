@@ -22,8 +22,6 @@ employee
         <input type="radio" id="report{{ loop.index }}" name="report" value="report{{ loop.index }}">
         <label for="report{{ loop.index }}">Report {{ loop.index }}</label>
         <button type="button" onclick="displayReport('{{ report.id }}')">Display</button>
-        <button type="button" onclick="modifyReport('{{ report.id }}')">Modify</button>
-        <button type="button" onclick="deleteReport('{{ report.id }}')">Delete</button>
         <br>
         {% endfor %}
         <br>
@@ -32,7 +30,7 @@ employee
 
 <script>
     function compileReport() {
-        console.log("!!!!!!!!!!!!!!!!!!!!!!");
+
         window.location.href = '/compile_report';
     }
 

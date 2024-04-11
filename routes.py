@@ -57,13 +57,6 @@ def home1():
     return redirect(url_for("index"))
 
 
-# Clears session storage for debugging DELETE IN FINAL VERSION!!!!!!
-@app.route('/clear_session', methods=['GET'])
-def clear_session():
-    session.clear()
-    return redirect(url_for("employee"))
-
-
 @app.route("/search", methods=["POST"], strict_slashes=False)
 def search():
     # Get data from employee form
@@ -109,21 +102,21 @@ def compile_report():
                 count[organisms[i]] = 1
 
         phylo_tree_path = f"./static/images/graphs/phylo_tree/tree{report.id}.png"
-        generate_tree(nucleotides, output_file=phylo_tree_path, ids=organisms)
+        generate_tree(nucleotides, phylo_tree_path, organisms)
         report.phylo_tree = phylo_tree_path
 
-        # create dot line graph
-        dot_line_graph_path = f"./static/images/graphs/dot_plot/dot{report.id}.png"
-        bio_algos.dot_plot.dot_plot(nucleotides, output_file=dot_line_graph_path)
-        report.dot_line_graph = dot_line_graph_path
+        # create dot graph
+        dot_graph_path = f"./static/images/graphs/dot_plot/dot{report.id}.png"
+        bio_algos.dot_plot.dot_plot(nucleotides, [organisms[0], organisms[1]], dot_graph_path)
+        report.dot_line_graph = dot_graph_path
 
         # create heat map
         heat_map_path = f"./static/images/graphs/heat_map/heat{report.id}.png"
-        heat_map.heat_map(nucleotides, heat_map_path)
+        heat_map.heat_map(nucleotides, [organisms[0], organisms[1]], heat_map_path)
         report.heat_map = heat_map_path
 
         # create stacked bar chart
-        bar_chart_path = f"./bio_algos/graphs/stacked_bar/bar{report.id}.png"
+        bar_chart_path = f"./static/images/graphs/stacked_bar/bar{report.id}.png"
         stacked_bar_chart.stacked_bar_chart(nucleotides, organisms, bar_chart_path,)
         report.bar_chart = bar_chart_path
 
@@ -146,9 +139,14 @@ def display_report(report_id):
         graph_images = {}
         for folder in graph_folders:
             folder_path = os.path.join('./static/images/graphs', folder)
-            graph_images[folder] = os.listdir(folder_path)
-        return render_template('display_report.html', report=report, graph_folders=graph_folders, graph_images=graph_images)
+            graph_images[folder] = [image for image in os.listdir(folder_path) if str(report_id) in image]
 
+        filtered_dict = {folder: images for folder, images in graph_images.items() if images}
+
+        return render_template('display_report.html', report=report, graph_folders=filtered_dict.keys(),
+                               graph_images=filtered_dict)
+    else:
+        return "Report not found", 404
 
 # Employee
 @app.route('/employee.html/', methods=("GET", "POST"), strict_slashes=False)
