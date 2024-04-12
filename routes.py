@@ -105,10 +105,19 @@ def compile_report():
         generate_tree(nucleotides, phylo_tree_path, organisms)
         report.phylo_tree = phylo_tree_path
 
-        # create dot graph
-        dot_graph_path = f"./static/images/graphs/dot_plot/dot{report.id}.png"
-        bio_algos.dot_plot.dot_plot(nucleotides, [organisms[0], organisms[1]], dot_graph_path)
-        report.dot_line_graph = dot_graph_path
+
+
+        # find out how many need to be made
+        dot_paths = []
+        for i in range(len(organisms)):
+            for j in range(i + 1, len(organisms)):
+                sequences = [nucleotides[i], nucleotides[j]]
+                dot_paths.append(f"./static/images/graphs/dot_plot/dot{report.id}-{i}.png")
+                # create dot graph
+                bio_algos.dot_plot.dot_plot(sequences, [organisms[i], organisms[j]], f"./static/images/graphs/dot_plot/dot{report.id}-{i}.png")
+
+        # input list of paths into db
+        report.dot_line_graph = dot_paths
 
         # create heat map
         heat_map_path = f"./static/images/graphs/heat_map/heat{report.id}.png"

@@ -1,6 +1,3 @@
-from models import User
-
-
 def deploy():
 	from app import create_app, db
 	from flask_migrate import upgrade, migrate, init, stamp
