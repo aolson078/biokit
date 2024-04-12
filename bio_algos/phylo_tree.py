@@ -77,9 +77,11 @@ def generate_tree(sequences, output_file, ids):
 	# create a matplotlib figure
 	fig = plt.figure(figsize=(10, 8))
 
-	# draw the tree on the figure
-	axes = fig.add_subplot(1, 1, 1)
-	Phylo.draw(tree, axes=axes)
+	
+
+	# Uncomment to draw tree
+	# axes = fig.add_subplot(1, 1, 1)
+	#Phylo.draw(tree, axes=axes)
 
 	# save the figure as a PNG image file
 	fig.savefig(output_file, format='png', dpi=300, bbox_inches='tight')
