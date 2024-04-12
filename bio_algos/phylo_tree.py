@@ -1,13 +1,15 @@
 import random
-
 from Bio.Phylo.TreeConstruction import DistanceCalculator
 from Bio.Phylo.TreeConstruction import DistanceTreeConstructor
 from Bio import Phylo
 from Bio.Align import MultipleSeqAlignment
 from Bio.SeqRecord import SeqRecord
 from Bio.Seq import Seq
+
+import matplotlib
+
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 
 def align_sequences(sequences, ids):
@@ -41,6 +43,7 @@ def generate_tree(sequences, output_file, ids):
         :param ids: List of specimen IDs corresponding to the sequences
     """
 	# align the sequences
+
 	aligned_sequences = align_sequences(sequences, ids)
 
 	# create distance calculator object (Identity model calculates proportion of mismatches in sequence)
@@ -77,13 +80,10 @@ def generate_tree(sequences, output_file, ids):
 	# create a matplotlib figure
 	fig = plt.figure(figsize=(10, 8))
 
-	
-
 	# Uncomment to draw tree
-	# axes = fig.add_subplot(1, 1, 1)
-	#Phylo.draw(tree, axes=axes)
+	axes = fig.add_subplot(1, 1, 1)
+	Phylo.draw(tree, axes=axes)
 
 	# save the figure as a PNG image file
 	fig.savefig(output_file, format='png', dpi=300, bbox_inches='tight')
 	plt.close(fig)
-
