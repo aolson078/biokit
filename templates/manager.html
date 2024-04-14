@@ -9,17 +9,17 @@ admin
 
 
    <form action="add_action" method="post" style="text-align:center">
-        <h3>Select an Employee</h3>
-        {% for report in reports %}
-        <label for="report{{ loop.index }}">Report {{ loop.index }}</label>
-        <button type="button" onclick="displayReport('{{ report.id }}')">Display</button>
-        <button type="button" onclick="modifyReport('{{ report.id }}')">Modify</button>
-        <button type="button" onclick="deleteReport('{{ report.id }}')">Delete</button>
-        <br>
+    <h3>Select an Employee</h3>
+    <select id="employee-dropdown">
+        <option value="">-- Select an Employee --</option>
+        {% for employee in reports %}
+            <option value="{{ employee.id }}">{{ employee.id }}</option>
         {% endfor %}
-        <br>
-        <button type="button" onclick="generateReport()">Print All</button>
-    </form>
+    </select>
+    <br>
+    <button type="button" onclick="displayManagerReport()">Submit</button>
+    <div id="report-container"></div>
+</form>
 
 
 <script>
@@ -38,5 +38,58 @@ admin
         console.log("Delete Report: " + reportId);
     }
 
+    function displayManagerReport() {
+    const employeeDropdown = document.getElementById('employee-dropdown');
+    const selectedEmployeeId = employeeDropdown.value;
+
+    if (selectedEmployeeId) {
+        // Make an AJAX request to fetch the reports for the selected employee
+        fetch(`/get_employee_reports/${selectedEmployeeId}`)
+            .then(response => response.json())
+            .then(data => {
+                const reportContainer = document.getElementById('report-container');
+                reportContainer.innerHTML = ''; // Clear previous content
+
+                if (data.reports.length > 0) {
+                    // Create an unordered list to display the reports
+                    const reportList = document.createElement('ul');
+
+                    // Loop through the reports and create list items
+                    data.reports.forEach(report => {
+                        const reportItem = document.createElement('li');
+                        reportItem.textContent = `${report.name} `;
+
+                        // Create buttons for display, print, and delete
+                        const displayButton = document.createElement('button');
+                        displayButton.textContent = 'Display';
+                        displayButton.onclick = () => displayReport(report.id);
+
+                        const printButton = document.createElement('button');
+                        printButton.textContent = 'Print';
+                        printButton.onclick = () => printReport(report.id);
+
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'Delete';
+                        deleteButton.onclick = () => deleteReport(report.id);
+
+                        reportItem.appendChild(displayButton);
+                        reportItem.appendChild(printButton);
+                        reportItem.appendChild(deleteButton);
+
+                        reportList.appendChild(reportItem);
+                    });
+
+                    reportContainer.appendChild(reportList);
+                } else {
+                    reportContainer.innerHTML = '<p>No reports found for the selected employee.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    } else {
+        alert('Please select an employee');
+    }
+}
 </script>
 {% endblock %}
