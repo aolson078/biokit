@@ -16,10 +16,12 @@ function showSubRadios(reportId) {
 }
 
 function compileReport() {
-        console.log("!!!!!!!!!!!!!!!!!!!!!!");
         window.location.href = '/compile_report';
     }
 
+function displayReport(reportId) {
+        window.location.href = '/display_report/' + reportId;
+    }
 
 // --------------------------------------------------------------------------------------------------------------------
 // These are for the drop down menus in the admin page and to change/create username and password

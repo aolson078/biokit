@@ -1,7 +1,11 @@
+from functools import wraps
+
 from Bio import Entrez
+from flask import redirect, url_for
+
 from custom_exceptions import InvalidQueryException
 from app import create_app, db
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 
 
 # UserMixin gives us premade methods for authentication and user management
@@ -12,13 +16,15 @@ class User(UserMixin, db.Model):
 	username = db.Column(db.String(100), unique=True, nullable=False)
 	email = db.Column(db.String(120), unique=True, nullable=False)
 	password = db.Column(db.String(300), nullable=False, unique=True)
+	role = db.Column(db.String(40), nullable=True)
 
 	# looks up user in db and adds document to list
-	def __init__(self, username, email, password):
+	def __init__(self, username, email, password, role='employee'):
 		self.report_list = None
 		self.username = username
 		self.email = email
 		self.password = password
+		self.role = role
 
 	def add_report(self, report):
 		if self.report_list is None:
@@ -54,9 +60,10 @@ class Record(db.Model):
 
 
 report_record = db.Table('report_record',
-    db.Column('report_id', db.Integer, db.ForeignKey('report.id'), primary_key=True),
-    db.Column('record_id', db.Integer, db.ForeignKey('record.id'), primary_key=True)
-)
+                         db.Column('report_id', db.Integer, db.ForeignKey('report.id'), primary_key=True),
+                         db.Column('record_id', db.Integer, db.ForeignKey('record.id'), primary_key=True)
+                         )
+
 
 # the report class represents the final product. It will contain the computed data from the bio processes
 class Report(db.Model):
@@ -72,9 +79,16 @@ class Report(db.Model):
 	dot_line_graph = db.Column(db.JSON)
 	heat_map = db.Column(db.JSON)
 	bar_chart = db.Column(db.String(50), nullable=True)
-	#line_chart = db.Column(db.String(50), nullable=True)
+	# line_chart = db.Column(db.String(50), nullable=True)
 	records = db.relationship('Record', secondary='report_record', backref='associated_reports')
 
+def is_manager(func):
+	@wraps(func)
+	def authenticate_manager_view(*args, **kwargs):
+		if not current_user.is_authenticated or current_user.role != 'manager':
+			return redirect(url_for('login'))
+		return func(*args, **kwargs)
+	return authenticate_manager_view
 
 
 # queries the selected database for term and returns the record with the nucleotide string
