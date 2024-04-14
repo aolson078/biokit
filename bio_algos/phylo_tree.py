@@ -51,19 +51,11 @@ def generate_tree(sequences, output_file, ids):
 
 	# calculate distance matrix (Represents pairwise distance between sequences)
 	distance_matrix = calculator.get_distance(aligned_sequences)
-	print("Calculated distance matrix:")
-	print(distance_matrix)
-	print()
-	print("*****************************************")
-	print()
 
 	# construct phylogenetic tree using UPGMA algorithm (unweighted pair group method w/ arithmetic mean)
 	# clade is the linear descendants on a phylo tree: https://en.wikipedia.org/wiki/Cladistics
 	constructor = DistanceTreeConstructor()
 	tree = constructor.upgma(distance_matrix)
-
-	print("Generated tree:")
-	Phylo.draw_ascii(tree)
 
 	# remove inner node labels
 	for clade in tree.find_clades():

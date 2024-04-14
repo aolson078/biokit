@@ -23,8 +23,6 @@ def select_target_sequence(seq, target_length=21):
 	offset = 0
 	# prevents infinite loop if no suitable target found
 	max_offset = len(seq) - target_length
-	print(seq[offset:target_length + offset])
-	print(GC_content(seq[offset:target_length + offset]))
 	# if gc_content of target ! in bounds, and there offset < max offset, increment offset and recalculate gc_content
 	while (gc_content := GC_content(seq[offset:target_length + offset])) < gc_bounds[0] \
 			or gc_content > gc_bounds[1]:

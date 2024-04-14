@@ -9,13 +9,16 @@ class User(UserMixin, db.Model):
 	__tablename__ = 'user'
 
 	id = db.Column(db.Integer, primary_key=True)
-	username = db.Column(db.String(80), unique=True, nullable=False)
+	username = db.Column(db.String(100), unique=True, nullable=False)
 	email = db.Column(db.String(120), unique=True, nullable=False)
 	password = db.Column(db.String(300), nullable=False, unique=True)
 
 	# looks up user in db and adds document to list
-	def __init__(self):
+	def __init__(self, username, email, password):
 		self.report_list = None
+		self.username = username
+		self.email = email
+		self.password = password
 
 	def add_report(self, report):
 		if self.report_list is None:
@@ -59,6 +62,7 @@ report_record = db.Table('report_record',
 class Report(db.Model):
 	__tablename__ = 'report'
 	id = db.Column(db.Integer, primary_key=True)
+	employee_id = db.Column(db.Integer, nullable=False)
 	# holds ids of all nuc strings used in calculations
 	nucleotide_ids = db.Column(db.JSON)
 	# holds name of each organism in report
@@ -68,7 +72,7 @@ class Report(db.Model):
 	dot_line_graph = db.Column(db.JSON)
 	heat_map = db.Column(db.JSON)
 	bar_chart = db.Column(db.String(50), nullable=True)
-	line_chart = db.Column(db.String(50), nullable=True)
+	#line_chart = db.Column(db.String(50), nullable=True)
 	records = db.relationship('Record', secondary='report_record', backref='associated_reports')
 
 

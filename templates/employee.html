@@ -19,7 +19,6 @@ employee
     <form action="add_action" method="post" style="text-align:center">
         <h3>Select a report from Employee 1</h3>
         {% for report in reports %}
-        <input type="radio" id="report{{ loop.index }}" name="report" value="report{{ loop.index }}">
         <label for="report{{ loop.index }}">Report {{ loop.index }}</label>
         <button type="button" onclick="displayReport('{{ report.id }}')">Display</button>
         <br>
