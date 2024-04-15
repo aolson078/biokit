@@ -86,10 +86,17 @@ def is_manager(func):
 	@wraps(func)
 	def authenticate_manager_view(*args, **kwargs):
 		if not current_user.is_authenticated or current_user.role != 'manager':
-			return redirect(url_for('login'))
+			return redirect(url_for('denied'))
 		return func(*args, **kwargs)
 	return authenticate_manager_view
 
+def is_admin(func):
+	@wraps(func)
+	def authenticate_admin_view(*args, **kwargs):
+		if not current_user.is_authenticated or current_user.role != 'admin':
+			return redirect(url_for('denied'))
+		return func(*args, **kwargs)
+	return authenticate_admin_view
 
 # queries the selected database for term and returns the record with the nucleotide string
 def fetch_records(query):

@@ -6,7 +6,7 @@ from flask import (
 	redirect,
 	flash,
 	url_for,
-	request, jsonify
+	request, jsonify, session
 )
 
 from sqlalchemy.exc import (
@@ -53,12 +53,6 @@ def profile():
 
 
 # Home
-
-# @app.route('/', methods=['GET'])
-# def index():
-#     # Your logic for handling the root URL
-#     return render_template('index.html')
-
 @app.route('/', methods=("GET", "POST"), strict_slashes=False)
 def index():
 	return render_template('index.html', title="Home", active_page='home')
@@ -73,8 +67,13 @@ def home():
 def home1():
 	return redirect(url_for("index"))
 
+@app.route("/denied", methods=["GET"], strict_slashes=False)
+def denied():
+	return render_template("denied.html")
+
 
 @app.route("/search", methods=["POST"], strict_slashes=False)
+@login_required
 def search():
 	# Get data from employee form
 	query = request.form.get("search")
@@ -83,6 +82,7 @@ def search():
 
 
 @app.route('/compile_report', methods=["Get", "POST"], strict_slashes=False)
+@login_required
 def compile_report():
 	try:
 		records = models.Record.query.all()
@@ -157,6 +157,7 @@ def compile_report():
 # Display Report
 @app.route('/display_report')
 @app.route('/display_report/<int:report_id>', methods=("GET", "POST"), strict_slashes=False)
+@login_required
 def display_report(report_id):
 	report = models.Report.query.get(report_id)
 	if report:
@@ -178,7 +179,7 @@ def display_report(report_id):
 # Employee
 @app.route('/employee.html/', methods=("GET", "POST"), strict_slashes=False)
 @app.route('/employee.html/<selected_result>', methods=("GET", "POST"), strict_slashes=False)
-@login_required  # Make sure the user is logged in
+@login_required
 def employee(selected_result=None):
 	employee_id = current_user.id  # Get the employee ID from the current user
 
@@ -268,11 +269,14 @@ def employee(selected_result=None):
 
 # Manager
 @app.route('/manager.html/', methods=("GET", "POST"), strict_slashes=False)
+@login_required
+@models.is_manager
 def manager():
 	reports = models.Report.query.all()
 	return render_template('manager.html', title="Manager", active_page='manager', reports=reports)
 
 @app.route('/get_employee_reports/<int:employee_id>', methods=['GET'])
+@login_required
 def get_employee_reports(employee_id):
 	employee_id = current_user.id
 	if employee_id:
@@ -289,6 +293,8 @@ def get_employee_reports(employee_id):
 
 # Admin
 @app.route('/admin.html/', methods=("GET", "POST"), strict_slashes=False)
+#@login_required
+#@models.is_admin
 def admin():
 	users = User.query.all()
 	return render_template('admin.html', title="Admin", users=users, active_page='admin')
@@ -304,17 +310,20 @@ def login():
 			user = User.query.filter_by(email=form.email.data).first()
 			if check_password_hash(user.password, form.password.data):
 				login_user(user)
+				session['logged_in'] = True
 				return redirect(url_for('index'))
 			else:
 				flash("Invalid username or password!", "danger")
 		except Exception as e:
 			flash(e, "danger")
 
+
 	return render_template("auth.html", form=form, active_page='login')
 
 
 # Register route
 @app.route("/register", methods=("GET", "POST"), strict_slashes=False)
+#@login_required
 def register():
 	form = register_form()
 	if form.validate_on_submit():
@@ -322,11 +331,13 @@ def register():
 			email = form.email.data
 			password = form.password.data
 			username = form.username.data
+			role = form.role.data
 
 			new_user = User(
 				username=username,
 				email=email,
 				password=bcrypt.generate_password_hash(password),
+				role=role
 			)
 
 			db.session.add(new_user)
@@ -345,12 +356,14 @@ def register():
 @login_required
 def logout():
 	logout_user()
+	session.pop('logged_in', None)
 	return redirect(url_for('login'))
 
 
 # Routes for the db ----------------------------------------------------------------------------------------------------
 
 @app.route("/delete_user/<int:user_id>", methods=["DELETE"])
+@login_required
 def deleteUser(user_id):
 	try:
 		user = User.query.get(user_id)
@@ -365,6 +378,7 @@ def deleteUser(user_id):
 
 
 @app.route("/change_username/<int:user_id>", methods=["PUT"])
+@login_required
 def changeUsername(user_id):
 	try:
 		data = request.get_json()  # Retrieve data from request body
@@ -382,6 +396,7 @@ def changeUsername(user_id):
 
 
 @app.route("/change_password/<int:user_id>", methods=["PUT"])
+@login_required
 def changePassword(user_id):
 	try:
 		data = request.get_json()  # Retrieve data from request body
