@@ -1,4 +1,3 @@
-from bio_algos.utilities import dna_to_rna
 from Bio.Seq import Seq
 
 
@@ -57,53 +56,3 @@ def ss_propensity(amino_dicts):
 			scores[structure] += value * count[0]  # Multiply by count of amino acid
 	prediction = 'α-Helix' if scores['α-Helix'] > scores['β-Sheet'] else 'β-Sheet'
 	return prediction
-
-
-# A sequence profile represents the distribution of specific properties (e.g., hydrophobicity, secondary structure propensity) along a protein sequence.
-def sequence_profile(seq):
-	"""
-        Creates a profile for the sequence containing the amount and relative proportions of amino acids,
-        its hydrophobicity, its predicted secondary structure.
-        :param seq: String representing the RNA sequence.s
-        :return: Dictionary containing amino acid composition, hydrophobicity, and predicted secondary structure
-    """
-
-	amino_dicts = amino_acid_composition(seq)
-
-	hydrophobicity_scores = hydrophobicity(amino_dicts)
-
-	secondary_structures = ss_propensity(amino_dicts)
-
-	profile = {
-		'amino_acid_composition': amino_dicts,
-		'hydrophobicity': hydrophobicity_scores,
-		'secondary_structure_prediction': secondary_structures
-	}
-
-	return profile
-
-
-if __name__ == "__main__":
-	rna_sequence = dna_to_rna(
-		"GAAGCTGGACAGAGCCGGTTCCTGGAAAGAGCTGGTTCCCTGGCAGGCTGGAGGGCAGGAGCTGGGGCCACGCTGGTCTGGGATAGTTGGGCAGGGAGACGGAGTCTCGAT"
-		"CTGTCACCCAGGCTGGAGTGCAGTGGCACAACCTTGGCTCACTGCAACCTCCGCCTCCCAGGTTCAAGTGATTCTCCTGCCTCAGCCTTCTGAGTAGCTGGAATTACAAGC"
-		"TGTCTACCTGGTCTCCAGAATGGACGGCCCTGTGGCAGAGCATGCCAAGCAGGAGCCCTTTCACGTGGTCACACCTCTGTTGGAGAGCTGGGCGCTGTCCCAGGTGGCGGG"
-		"CATGCCTGTCTTCCTCAAGTGTGAGAATGTGCAGCCCAGCGGCTCCTTCAAGATTCGGGGCATTGGGCATTTCTGCCAGGAGATGGCCAAGAAGGGATGCAGACACCTGGT"
-		"GTGCTCCTCAGGGGGTAATGCGGGCATCGCTGCTGCCTATGCTGCTAGGAAGCTGGGCATTCCTGCCACCATCGTGCTCCCCGAGAGCACCTCCCTGCAGGTGGTGCAGAG"
-		"GCTGCAGGGGGAGGGGGCCGAGGTTCAGCTGACTGGAAAGGTCTGGGACGAGGCCAATCTGAGGGCGCAAGAGTTGGCCAAGAGGGACGGCTGGGAGAATGTCCCCCCGTT"
-		"TGACCACCCCCTAATATGGAAAGGCCACGCCAGCCTGGTGCAGGAGCTGAAAGCAGTGCTGAGGACCCCACCAGGTGCCCTGGTGCTGGCAGTTGGGGGTGGGGGTCTCCT"
-		"GGCCGGGGTGGTGGCTGGCCTGCTGGAGGTGGGCTGGCAGCATGTACCCATCATTGCCATGGAGACCCATGGGGCACACTGCTTCAATGCGGCCATCACAGCCGGCAAGCT"
-		"GGTCACACTTCCAGACATCACCAGTGTGGCCAAGAGCCTGGGTGCCAAGACGGTGGCCGCTCGGGCCCTGGAGTGCATGCAGGTGTGCAAGATTCACTCTGAAGTGGTGGA"
-		"GGACACCGAGGCTGTGAGCGCTGTGCAGCAGCTCCTGGATGATGAGCGTATGCTGGTGGAGCCTGCCTGTGGGGCAGCCTTAGCAGCCATCTACTCAGGCCTCCTGCGGAG"
-		"GCTCCAGGCCGAGGGCTGCCTGCCCCCTTCCCTGACTTCAGTTGTGGTAATCGTGTGTGGAGGCAACAACATCAACAGCCGAGAGCTGCAGGCTTTGAAAACCCACCTGGG"
-		"CCAGGTCTGAGGGGTCCCATCCTGGCCCCAAAGACCCCTGAGAGGCCCATGGACAGTCCTGTGTCTGGATGAGGAGGACTCAGTGCTGGCAGATGGCAGTGGAAGCTGCCC"
-		"TGTGCAACTGTGCTGGCTGCCTCCTGAAGGAAGCCCTCCTGGACTGCTTCTTTTGGCTCTCCGACAACTCCGGCCAATAAACACTTTCTGAATTGA")
-
-	print(sequence_profile(rna_sequence))
-	amino_dict = amino_acid_composition(rna_sequence)
-
-	hydrophobicity_score = hydrophobicity(amino_dict)
-
-	secondary_structure = ss_propensity(amino_dict)
-
-	print(amino_dict, hydrophobicity_score, secondary_structure)

@@ -1,6 +1,5 @@
-from Bio.Blast import NCBIWWW, NCBIXML
 from Bio.SeqUtils import MeltingTemp, molecular_weight
-from bio_algos.utilities import GC_content, dna_to_rna
+from bio_algos.utilities import GC_content
 from sklearn.metrics import jaccard_score
 
 
@@ -168,32 +167,6 @@ def calculate_molecular_weight(seq):
 	return mw
 
 
-def search_genome(sequence):
-	"""
-	    This function searches the given sequence against the genome and returns a list of similar sequences.
-
-	    :param sequence: The input sequence to search for.
-	    :return list: A list of similar sequences found in the genome.
-    """
-	# Perform a BLAST search against the appropriate genome database
-	result_handle = NCBIWWW.qblast("blastn", "nt", sequence)  # Replace "nt" with the desired database
-
-	# Parse the BLAST results
-	blast_records = NCBIXML.parse(result_handle)
-
-	# Extract the similar sequences
-	similar_sequences = []
-	for blast_record in blast_records:
-		for alignment in blast_record.alignments:
-			for hsp in alignment.hsps:
-				# Retrieve the aligned sequence from the genome
-				aligned_sequence = hsp.sbjct
-				similar_sequences.append(aligned_sequence)
-
-	return similar_sequences
-
-
-# 3. Evaluate siRNA Efficacy
 def predict_efficiency(siRNA_sequence):
 	"""
 	    Predicts the efficiency of the given siRNA sequence based on GC content, molecular weight,
@@ -244,62 +217,3 @@ def predict_efficiency(siRNA_sequence):
 		if nucleotide == 'G' and i == 18:  # Check for G at position 19 (G19)
 			score -= 1
 	return score
-
-
-# -----------------------------------------------------------------------------------------------------------------------
-if __name__ == "__main__":
-	rna_sequence = dna_to_rna(
-		"GAAGCTGGACAGAGCCGGTTCCTGGAAAGAGCTGGTTCCCTGGCAGGCTGGAGGGCAGGAGCTGGGGCCACGCTGGTCTGGGATAGTTGGGCAGGGAGACGGAGTCTCGAT"
-		"CTGTCACCCAGGCTGGAGTGCAGTGGCACAACCTTGGCTCACTGCAACCTCCGCCTCCCAGGTTCAAGTGATTCTCCTGCCTCAGCCTTCTGAGTAGCTGGAATTACAAGC"
-		"TGTCTACCTGGTCTCCAGAATGGACGGCCCTGTGGCAGAGCATGCCAAGCAGGAGCCCTTTCACGTGGTCACACCTCTGTTGGAGAGCTGGGCGCTGTCCCAGGTGGCGGG"
-		"CATGCCTGTCTTCCTCAAGTGTGAGAATGTGCAGCCCAGCGGCTCCTTCAAGATTCGGGGCATTGGGCATTTCTGCCAGGAGATGGCCAAGAAGGGATGCAGACACCTGGT"
-		"GTGCTCCTCAGGGGGTAATGCGGGCATCGCTGCTGCCTATGCTGCTAGGAAGCTGGGCATTCCTGCCACCATCGTGCTCCCCGAGAGCACCTCCCTGCAGGTGGTGCAGAG"
-		"GCTGCAGGGGGAGGGGGCCGAGGTTCAGCTGACTGGAAAGGTCTGGGACGAGGCCAATCTGAGGGCGCAAGAGTTGGCCAAGAGGGACGGCTGGGAGAATGTCCCCCCGTT"
-		"TGACCACCCCCTAATATGGAAAGGCCACGCCAGCCTGGTGCAGGAGCTGAAAGCAGTGCTGAGGACCCCACCAGGTGCCCTGGTGCTGGCAGTTGGGGGTGGGGGTCTCCT"
-		"GGCCGGGGTGGTGGCTGGCCTGCTGGAGGTGGGCTGGCAGCATGTACCCATCATTGCCATGGAGACCCATGGGGCACACTGCTTCAATGCGGCCATCACAGCCGGCAAGCT"
-		"GGTCACACTTCCAGACATCACCAGTGTGGCCAAGAGCCTGGGTGCCAAGACGGTGGCCGCTCGGGCCCTGGAGTGCATGCAGGTGTGCAAGATTCACTCTGAAGTGGTGGA"
-		"GGACACCGAGGCTGTGAGCGCTGTGCAGCAGCTCCTGGATGATGAGCGTATGCTGGTGGAGCCTGCCTGTGGGGCAGCCTTAGCAGCCATCTACTCAGGCCTCCTGCGGAG"
-		"GCTCCAGGCCGAGGGCTGCCTGCCCCCTTCCCTGACTTCAGTTGTGGTAATCGTGTGTGGAGGCAACAACATCAACAGCCGAGAGCTGCAGGCTTTGAAAACCCACCTGGG"
-		"CCAGGTCTGAGGGGTCCCATCCTGGCCCCAAAGACCCCTGAGAGGCCCATGGACAGTCCTGTGTCTGGATGAGGAGGACTCAGTGCTGGCAGATGGCAGTGGAAGCTGCCC"
-		"TGTGCAACTGTGCTGGCTGCCTCCTGAAGGAAGCCCTCCTGGACTGCTTCTTTTGGCTCTCCGACAACTCCGGCCAATAAACACTTTCTGAATTGA")
-
-	# result = select_target_sequence(rna_sequence)
-	# selected_target = result[0]
-	# gc = result[1]
-	#
-	# print(f"Selected target sequence: {selected_target}")
-	# print(f"GC content of target: {gc:.4f}")
-	#
-	# cRNA = create_rna_strands(selected_target)
-	# sense = cRNA[0]
-	# antisense = cRNA[1]
-	#
-	# similarity = calculate_similarity(sense, antisense)
-	#
-	# print("Similarity between strands: ", similarity)
-	#
-	# print("Melting temperature: ", calculate_melting_temp(rna_sequence))
-	#
-	# print("Molecular weight: ", calculate_molecular_weight(rna_sequence))
-	#
-	# candidates1 = design_siRNA(rna_sequence)
-	#
-	# print("possible siRNA candidates: ", candidates1)
-	#
-	# efficiency_score = {}
-	#
-	# for candidate1 in candidates1:
-	# 	efficiency_score[candidate1] = predict_efficiency(candidate1)
-	#
-	# final_candidates = []
-	#
-	# max_score = max(efficiency_score.values())
-	#
-	# for candidate1, score1 in efficiency_score.items():
-	# 	if score1 == max_score:
-	# 		final_candidates.append(candidate1)
-
-
-	# print("Most efficient siRNA candidates: ", final_candidates)
-	print("These are the optimal targets for siRNA design, they have high target specificity, with the lowest "
-	      "off-target effects (unwanted effects on other genes, and longest half-life and stability")
