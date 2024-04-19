@@ -82,13 +82,16 @@ class Report(db.Model):
 	# line_chart = db.Column(db.String(50), nullable=True)
 	records = db.relationship('Record', secondary='report_record', backref='associated_reports')
 
+
 def is_manager(func):
 	@wraps(func)
 	def authenticate_manager_view(*args, **kwargs):
 		if not current_user.is_authenticated or current_user.role != 'manager':
 			return redirect(url_for('denied'))
 		return func(*args, **kwargs)
+
 	return authenticate_manager_view
+
 
 def is_admin(func):
 	@wraps(func)
@@ -96,7 +99,9 @@ def is_admin(func):
 		if not current_user.is_authenticated or current_user.role != 'admin':
 			return redirect(url_for('denied'))
 		return func(*args, **kwargs)
+
 	return authenticate_admin_view
+
 
 # queries the selected database for term and returns the record with the nucleotide string
 def fetch_records(query):
@@ -109,12 +114,30 @@ def fetch_records(query):
 	# fetch nucleotide record related to term
 	IDs = Entrez.read(Entrez.esearch(db=database, term=query, field="Organism", retmax=return_max))["IdList"]
 	records = []
+	print(records)
 	for ID in IDs:
 		handle = Entrez.efetch(db=database, id=ID, rettype="fasta", retmod="text")
-		record = handle.read()
+		fasta_record = handle.read()
+
+		# Parse the FASTA record to extract the title and description
+		lines = fasta_record.split("\n")
+		title = lines[0].strip(">")  # Extract the title from the first line
+		description = "\n".join(lines[1:])  # Join the remaining lines as the description
+
+		print(lines)
+		print(title)
+		print(description)
+
+		record = {
+			"id": ID,
+			"title": title,
+			"description": description
+		}
 		records.append(record)
+
 	if len(records) == 0:
 		raise InvalidQueryException(query, database)
+
 	return records
 
 

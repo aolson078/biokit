@@ -39,10 +39,6 @@ def create_app():
 	migrate.init_app(app, db)
 	bcrypt.init_app(app)
 	print("Ran create app successfully")
-	print("Ran create app successfully")
-	print("Ran create app successfully")
-	print("Ran create app successfully")
-	print("Ran create app successfully")
 
 	return app
 

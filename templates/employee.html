@@ -8,12 +8,14 @@ employee
 <div class="card-container"></div>
 
 <div class="flex-container">
-    <form action="/search" method="POST">
+    <form id="searchForm">
         <input type="text" name="search" placeholder="Search...">
-        <button type="submit">Search</button>
+        <button type="button" onclick="searchReports()">Search</button>
         <button type="button" onclick="compileReport()">Compile Report</button>
     </form>
 </div>
+
+<div id="searchResults" class="card-container"></div>
 
 <div>
     <form action="add_action" method="post" style="text-align:center">
@@ -29,7 +31,6 @@ employee
 
 <script>
     function compileReport() {
-
         window.location.href = '/compile_report';
     }
 
@@ -50,6 +51,77 @@ employee
     function generateReport() {
         // Implement the generate report functionality
         console.log("Generate New Report");
+    }
+
+    function searchReports() {
+        var searchQuery = document.getElementsByName("search")[0].value;
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    var searchResultsContainer = document.getElementById("searchResults");
+                    searchResultsContainer.innerHTML = "";
+
+                    var results = JSON.parse(xhr.responseText);
+                    displayResults(results);
+                } else {
+                    console.error("Search request failed with status:", xhr.status);
+                }
+            }
+        };
+        xhr.open("POST", "/search", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify({ search: searchQuery }));
+    }
+
+    function displayResults(results) {
+        var searchResultsContainer = document.getElementById("searchResults");
+        searchResultsContainer.innerHTML = "";
+
+        console.log(results)
+
+        results.forEach(function(result) {
+            var card = document.createElement("div");
+            card.className = "card";
+
+            var title = document.createElement("h3");
+            title.textContent = result.title;
+            card.appendChild(title);
+
+            var description = document.createElement("p");
+            description.textContent = result.description;
+            card.appendChild(description);
+
+            var selectButton = document.createElement("button");
+            selectButton.className = "select-button";
+            selectButton.textContent = "Select";
+            selectButton.addEventListener("click", function() {
+                var selectedResult = result.title + " " + result.description;
+                sendSelectedResult(selectedResult);
+            });
+            card.appendChild(selectButton);
+
+            searchResultsContainer.appendChild(card);
+            });
+
+            function sendSelectedResult(selectedResult) {
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        console.log("Selected result sent successfully");
+                    // Reload the page to reflect the updated data
+                    window.location.reload();
+                } else {
+                    console.error("Failed to send selected result with status:", xhr.status);
+                }
+            }
+        };
+        xhr.open("POST", "/employee.html/", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify({ selected_result: selectedResult }));
+}
+
     }
 </script>
 {% endblock %}
