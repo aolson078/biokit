@@ -79,7 +79,6 @@ class Report(db.Model):
 	dot_line_graph = db.Column(db.JSON)
 	heat_map = db.Column(db.JSON)
 	bar_chart = db.Column(db.String(50), nullable=True)
-	# line_chart = db.Column(db.String(50), nullable=True)
 	records = db.relationship('Record', secondary='report_record', backref='associated_reports')
 
 
@@ -89,7 +88,6 @@ def is_manager(func):
 		if not current_user.is_authenticated or current_user.role != 'manager':
 			return redirect(url_for('denied'))
 		return func(*args, **kwargs)
-
 	return authenticate_manager_view
 
 
@@ -99,7 +97,6 @@ def is_admin(func):
 		if not current_user.is_authenticated or current_user.role != 'admin':
 			return redirect(url_for('denied'))
 		return func(*args, **kwargs)
-
 	return authenticate_admin_view
 
 
@@ -114,7 +111,6 @@ def fetch_records(query):
 	# fetch nucleotide record related to term
 	IDs = Entrez.read(Entrez.esearch(db=database, term=query, field="Organism", retmax=return_max))["IdList"]
 	records = []
-	print(records)
 	for ID in IDs:
 		handle = Entrez.efetch(db=database, id=ID, rettype="fasta", retmod="text")
 		fasta_record = handle.read()
@@ -123,10 +119,6 @@ def fetch_records(query):
 		lines = fasta_record.split("\n")
 		title = lines[0].strip(">")  # Extract the title from the first line
 		description = "\n".join(lines[1:])  # Join the remaining lines as the description
-
-		print(lines)
-		print(title)
-		print(description)
 
 		record = {
 			"id": ID,

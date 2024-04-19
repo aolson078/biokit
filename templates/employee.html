@@ -88,9 +88,16 @@ employee
             title.textContent = result.title;
             card.appendChild(title);
 
-            var description = document.createElement("p");
-            description.textContent = result.description;
-            card.appendChild(description);
+            var sequence = result.description;
+
+            var characterLimit = 500;
+            if (sequence.length > characterLimit) {
+                sequence = sequence.substring(0, characterLimit) + "...";
+            }
+
+            var sequenceElement = document.createElement("p");
+            sequenceElement.textContent = sequence;
+            card.appendChild(sequenceElement);
 
             var selectButton = document.createElement("button");
             selectButton.className = "select-button";
@@ -102,26 +109,25 @@ employee
             card.appendChild(selectButton);
 
             searchResultsContainer.appendChild(card);
-            });
-
-            function sendSelectedResult(selectedResult) {
-                var xhr = new XMLHttpRequest();
-                xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE) {
-                    if (xhr.status === 200) {
-                        console.log("Selected result sent successfully");
-                    // Reload the page to reflect the updated data
-                    window.location.reload();
-                } else {
-                    console.error("Failed to send selected result with status:", xhr.status);
-                }
-            }
-        };
-        xhr.open("POST", "/employee.html/", true);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send(JSON.stringify({ selected_result: selectedResult }));
-}
-
+        });
     }
+
+function sendSelectedResult(selectedResult) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                console.log("Selected result sent successfully");
+                // Reload the page to reflect the updated data
+                window.location.reload();
+            } else {
+                console.error("Failed to send selected result with status:", xhr.status);
+            }
+        }
+    };
+    xhr.open("POST", "/employee.html/", true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send(JSON.stringify({ selected_result: selectedResult }));
+}
 </script>
 {% endblock %}
