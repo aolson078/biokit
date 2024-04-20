@@ -168,7 +168,6 @@ def compile_report():
 
 		db.session.commit()
 
-
 		return redirect(url_for('employee'))  # Redirect to the employee route
 
 
