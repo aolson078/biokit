@@ -13,7 +13,6 @@ employee
     {% for record in all_records %}
     <p>{{ record.organism }} : {{ record.gene_info }}</p>
     {% endfor %}
-    <button type="button" onclick="clearRecords()">Clear Records</button>
     <button type="button" onclick="compileReport()">Compile Report</button>
 </div>
 {% endif %}

@@ -6,9 +6,6 @@
         window.location.href = '/display_report/' + reportId;
     }
 
-    function clearRecords() {
-        window.location.href = '/clear_records';
-    }
 
     function searchReports() {
         var searchQuery = document.getElementsByName("search")[0].value;

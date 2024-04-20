@@ -201,6 +201,7 @@ def display_report(report_id):
 # Employee
 @app.route('/employee.html/', methods=("GET", "POST"), strict_slashes=False)
 @app.route('/employee.html/<selected_result>', methods=("GET", "POST"), strict_slashes=False)
+@login_required
 def employee():
 	employee_id = current_user.id  # Get the employee ID from the current user
 
@@ -278,7 +279,9 @@ def employee():
 				melting_temp=melting_temp,
 				siRNA=siRNA_choice,
 				hydrophobicity=hydrophobicity_score,
-				secondary_structure_prediction=secondary_structure
+				secondary_structure_prediction=secondary_structure,
+
+				employee_id=employee_id
 			)
 
 			# Add the objects to the session and commit to the database

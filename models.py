@@ -55,6 +55,7 @@ class Record(db.Model):
 	hydrophobicity = db.Column(db.Float)
 	secondary_structure_prediction = db.Column(db.String(100))
 
+	employee_id = db.Column(db.Integer, nullable=False)
 	report_id = db.Column(db.Integer, db.ForeignKey('report.id'))
 	reports = db.relationship('Report', secondary='report_record', backref='associated_records')
 
@@ -69,7 +70,7 @@ report_record = db.Table('report_record',
 class Report(db.Model):
 	__tablename__ = 'report'
 	id = db.Column(db.Integer, primary_key=True)
-	employee_id = db.Column(db.Integer, nullable=False)
+	employee_id = db.Column(db.Integer, db.ForeignKey('record.employee_id'))
 	# holds ids of all nuc strings used in calculations
 	nucleotide_ids = db.Column(db.JSON)
 	# holds name of each organism in report
@@ -88,6 +89,7 @@ def is_manager(func):
 		if not current_user.is_authenticated or current_user.role != 'manager':
 			return redirect(url_for('denied'))
 		return func(*args, **kwargs)
+
 	return authenticate_manager_view
 
 
@@ -97,6 +99,7 @@ def is_admin(func):
 		if not current_user.is_authenticated or current_user.role != 'admin':
 			return redirect(url_for('denied'))
 		return func(*args, **kwargs)
+
 	return authenticate_admin_view
 
 
