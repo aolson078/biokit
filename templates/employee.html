@@ -7,11 +7,23 @@ employee
 {% block content %}
 <div class="card-container"></div>
 
+{% if all_records %}
+<div class="records-container">
+    <h3>Gene records ready to be compiled:</h3>
+    {% for record in all_records %}
+    <p>{{ record.organism }} : {{ record.gene_info }}</p>
+    {% endfor %}
+    <button type="button" onclick="clearRecords()">Clear Records</button>
+    <button type="button" onclick="compileReport()">Compile Report</button>
+</div>
+{% endif %}
+
+
+
 <div class="flex-container">
     <form id="searchForm">
         <input type="text" name="search" placeholder="Search...">
         <button type="button" onclick="searchReports()">Search</button>
-        <button type="button" onclick="compileReport()">Compile Report</button>
     </form>
 </div>
 
@@ -38,19 +50,8 @@ employee
         window.location.href = '/display_report/' + reportId;
     }
 
-    function modifyReport(reportId) {
-        // Implement the modify report functionality
-        console.log("Modify Report: " + reportId);
-    }
-
-    function deleteReport(reportId) {
-        // Implement the delete report functionality
-        console.log("Delete Report: " + reportId);
-    }
-
-    function generateReport() {
-        // Implement the generate report functionality
-        console.log("Generate New Report");
+    function clearRecords() {
+        window.location.href = '/clear_records';
     }
 
     function searchReports() {
