@@ -30,50 +30,35 @@ from bio_algos.utilities import *
 from bio_algos import stacked_bar_chart, heat_map
 from custom_exceptions import NoRecordsError
 from forms import login_form, register_form
-from models import fetch_records, User
+from models import User
+from bio_algos.utilities import fetch_records
 
+# create instance of flask app
 app = create_app()
 
 
-# Keeps track of current user object
-# User loader function
+# keeps track of current user object
+# user loader function
 @login_manager.user_loader
 def load_user(user_id):
 	return User.query.get(int(user_id))
 
-
-@app.route('/profile')
-@login_required
-def profile():
-	if current_user.is_authenticated:
-		user_id = current_user.id
-		# Use the user_id as needed
-		return f'User ID: {user_id}'
-	else:
-		return 'User not authenticated'
-
-
-# Home
+# home/index route
 @app.route('/', methods=("GET", "POST"), strict_slashes=False)
 def index():
 	return render_template('index.html', title="Home", active_page='home')
 
-
-@app.route("/index.html")
+# home/index route
+@app.route("/index")
 def home():
 	return redirect(url_for("index"))
 
-
-@app.route("/index")
-def home1():
-	return redirect(url_for("index"))
-
-
+# route for when user lacks permission to access a route/resource
 @app.route("/denied", methods=["GET"], strict_slashes=False)
 def denied():
 	return render_template("denied.html")
 
-
+# route to handle the user query and form data
 @app.route("/search", methods=["POST"], strict_slashes=False)
 @login_required
 def search():
@@ -86,18 +71,7 @@ def search():
 	return jsonify(results)
 
 
-@app.route("/clear_records", methods=["GET", "POST"], strict_slashes=False)
-@login_required
-def clear_records():
-	try:
-		db.session.query(models.Record).delete()
-		db.session.commit()
-	except Exception as e:
-		db.session.rollback()
-		print("Error deleting record table")
-	return redirect(url_for("employee"))
-
-
+# route to handle processing the records into a report and generating/saving graphs
 @app.route('/compile_report', methods=["GET", "POST"], strict_slashes=False)
 @login_required
 def compile_report():
@@ -176,7 +150,7 @@ def compile_report():
 		return redirect(url_for("employee"))
 
 
-# Display Report
+# route to handle building the visible report for the end user.
 @app.route('/display_report')
 @app.route('/display_report/<int:report_id>', methods=("GET", "POST"), strict_slashes=False)
 @login_required
@@ -198,12 +172,13 @@ def display_report(report_id):
 		return "Report not found", 404
 
 
-# Employee
+# route to handle the employee user interactions, compiling the report, displaying report
 @app.route('/employee.html/', methods=("GET", "POST"), strict_slashes=False)
 @app.route('/employee.html/<selected_result>', methods=("GET", "POST"), strict_slashes=False)
 @login_required
 def employee():
-	employee_id = current_user.id  # Get the employee ID from the current user
+	# Get the employee ID from the current user
+	employee_id = current_user.id
 
 	if request.method == "POST":
 		selected_result = request.json.get("selected_result")
@@ -289,13 +264,17 @@ def employee():
 			db.session.commit()
 			return redirect(url_for('employee'))
 
+	# retrieve all reports made by the current logged in user.
 	reports = models.Report.query.filter_by(employee_id=employee_id).all()
+
+	# retrieve all records from current user by descending order of id
 	all_records = models.Record.query.order_by(models.Record.id.desc()).all()
+
 	return render_template('employee.html', title="Employee", active_page='employee', reports=reports,
 	                       all_records=all_records)
 
 
-# Manager
+# route to handle manager user interactions, changing report settings, save/print/deleting reports etc
 @app.route('/manager.html/', methods=("GET", "POST"), strict_slashes=False)
 @login_required
 @models.is_manager
@@ -303,7 +282,7 @@ def manager():
 	reports = models.Report.query.all()
 	return render_template('manager.html', title="Manager", active_page='manager', reports=reports)
 
-
+# route to handle retrieving the logged in employees reports from the database
 @app.route('/get_employee_reports/<int:employee_id>', methods=['GET'])
 @login_required
 def get_employee_reports(employee_id):
@@ -321,7 +300,7 @@ def get_employee_reports(employee_id):
 		return jsonify({'error': 'Employee not found'}), 404
 
 
-# Admin
+# route to handle admin user interactions, creating new users, changing
 @app.route('/admin.html/', methods=("GET", "POST"), strict_slashes=False)
 # @login_required
 # @models.is_admin
@@ -330,7 +309,7 @@ def admin():
 	return render_template('admin.html', title="Admin", users=users, active_page='admin')
 
 
-# Login route
+# route to handled user login and authentication
 @app.route("/login.html/", methods=("GET", "POST"), strict_slashes=False)
 def login():
 	form = login_form()
@@ -350,7 +329,7 @@ def login():
 	return render_template("auth.html", form=form, active_page='login')
 
 
-# Register route
+# route to handle registering a new user (admin)
 @app.route("/register", methods=("GET", "POST"), strict_slashes=False)
 # @login_required
 def register():
@@ -381,6 +360,7 @@ def register():
 	return render_template("auth.html", form=form)
 
 
+# route to handle logging current user out
 @app.route("/logout")
 @login_required
 def logout():
@@ -390,7 +370,7 @@ def logout():
 
 
 # Routes for the db ----------------------------------------------------------------------------------------------------
-
+# route to handle deleting user from database (admin)
 @app.route("/delete_user/<int:user_id>", methods=["DELETE"])
 @login_required
 def deleteUser(user_id):
@@ -405,7 +385,7 @@ def deleteUser(user_id):
 	except Exception as e:
 		return f"Error deleting user: {str(e)}", 500
 
-
+# route to handle changing username in database (admin)
 @app.route("/change_username/<int:user_id>", methods=["PUT"])
 @login_required
 def changeUsername(user_id):
@@ -423,7 +403,7 @@ def changeUsername(user_id):
 	except Exception as e:
 		return f"Error changing username: {str(e)}", 500
 
-
+# route to handle changing password in database (admin)
 @app.route("/change_password/<int:user_id>", methods=["PUT"])
 @login_required
 def changePassword(user_id):

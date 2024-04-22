@@ -1,6 +1,8 @@
-from Bio import Align
+from Bio import Align, Entrez
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
+
+from custom_exceptions import InvalidQueryException
 
 # DNA codon table for nucleotide transcription
 DNA_codons = {
@@ -152,3 +154,41 @@ def align_sequences(sequences, ids, seq_type="nucleotide"):
 	msa = Align.MultipleSeqAlignment(seq_records)
 
 	return msa
+
+# queries the selected database for term and returns the record with the nucleotide string
+def fetch_records(query):
+	Entrez.email = "aolson078@gmail.com"
+	Entrez.apikey = "4a1d5a80996f3691a67335ded0b79299c708"
+
+	# nucleotide, gene, or protein for db
+	database = "nucleotide"
+
+	# number of desired responses per query
+	return_max = 5
+
+	# fetch nucleotide record related to term
+	IDs = Entrez.read(Entrez.esearch(db=database, term=query, field="Organism", retmax=return_max))["IdList"]
+	records = []
+
+	for ID in IDs:
+		handle = Entrez.efetch(db=database, id=ID, rettype="fasta", retmod="text")
+		fasta_record = handle.read()
+
+		# Parse the FASTA record to extract the title and description
+		lines = fasta_record.split("\n")
+		# Extract the title from the first line
+		title = lines[0].strip(">")
+		# Join the remaining lines as the description
+		description = "\n".join(lines[1:])
+
+		record = {
+			"id": ID,
+			"title": title,
+			"description": description
+		}
+		records.append(record)
+
+	if len(records) == 0:
+		raise InvalidQueryException(query, database)
+
+	return records

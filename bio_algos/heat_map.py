@@ -35,5 +35,5 @@ def heat_map(nuc_list, organisms, output_file):
     ax.set_title("Nucleotide Sequence Heat Map")
     plt.tight_layout()
 
-    plt.savefig(output_file, format='png', dpi=300, bbox_inches='tight')
+    plt.savefig(output_file, format='png', dpi=500, bbox_inches='tight')
     plt.close(fig)

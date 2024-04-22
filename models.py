@@ -1,9 +1,5 @@
 from functools import wraps
-
-from Bio import Entrez
 from flask import redirect, url_for
-
-from custom_exceptions import InvalidQueryException
 from app import create_app, db
 from flask_login import UserMixin, current_user
 
@@ -56,9 +52,8 @@ class Record(db.Model):
 	secondary_structure_prediction = db.Column(db.String(100))
 
 	employee_id = db.Column(db.Integer, nullable=False)
-	report_id = db.Column(db.Integer, db.ForeignKey('report.id'))
+	report_id = db.Column(db.Integer, db.ForeignKey('report.id', ondelete='CASCADE'))
 	reports = db.relationship('Report', secondary='report_record', backref='associated_records')
-
 
 report_record = db.Table('report_record',
                          db.Column('report_id', db.Integer, db.ForeignKey('report.id'), primary_key=True),
@@ -82,7 +77,7 @@ class Report(db.Model):
 	bar_chart = db.Column(db.String(50), nullable=True)
 	records = db.relationship('Record', secondary='report_record', backref='associated_reports')
 
-
+# decorator for authenticating manager login in routes.py
 def is_manager(func):
 	@wraps(func)
 	def authenticate_manager_view(*args, **kwargs):
@@ -92,7 +87,7 @@ def is_manager(func):
 
 	return authenticate_manager_view
 
-
+# decorator for authenticating admin login in routes.py
 def is_admin(func):
 	@wraps(func)
 	def authenticate_admin_view(*args, **kwargs):
@@ -102,38 +97,6 @@ def is_admin(func):
 
 	return authenticate_admin_view
 
-
-# queries the selected database for term and returns the record with the nucleotide string
-def fetch_records(query):
-	Entrez.email = "aolson078@gmail.com"
-	Entrez.apikey = "4a1d5a80996f3691a67335ded0b79299c708"
-	# nucleotide, gene, or protein for db
-	database = "nucleotide"
-	# number of desired responses per query
-	return_max = 5
-	# fetch nucleotide record related to term
-	IDs = Entrez.read(Entrez.esearch(db=database, term=query, field="Organism", retmax=return_max))["IdList"]
-	records = []
-	for ID in IDs:
-		handle = Entrez.efetch(db=database, id=ID, rettype="fasta", retmod="text")
-		fasta_record = handle.read()
-
-		# Parse the FASTA record to extract the title and description
-		lines = fasta_record.split("\n")
-		title = lines[0].strip(">")  # Extract the title from the first line
-		description = "\n".join(lines[1:])  # Join the remaining lines as the description
-
-		record = {
-			"id": ID,
-			"title": title,
-			"description": description
-		}
-		records.append(record)
-
-	if len(records) == 0:
-		raise InvalidQueryException(query, database)
-
-	return records
 
 
 if __name__ == '__main__':
