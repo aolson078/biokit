@@ -30,7 +30,7 @@ from bio_algos.utilities import *
 from bio_algos import stacked_bar_chart, heat_map
 from custom_exceptions import NoRecordsError
 from forms import login_form, register_form
-from models import User
+from models import *
 from bio_algos.utilities import fetch_records
 
 # create instance of flask app
@@ -58,6 +58,10 @@ def home():
 def denied():
 	return render_template("denied.html")
 
+
+
+
+
 # route to handle the user query and form data
 @app.route("/search", methods=["POST"], strict_slashes=False)
 @login_required
@@ -69,6 +73,7 @@ def search():
 
 	results = fetch_records(query)
 	return jsonify(results)
+
 
 
 # route to handle processing the records into a report and generating/saving graphs
@@ -273,18 +278,9 @@ def employee():
 	return render_template('employee.html', title="Employee", active_page='employee', reports=reports,
 	                       all_records=all_records)
 
-
-# route to handle manager user interactions, changing report settings, save/print/deleting reports etc
-@app.route('/manager.html/', methods=("GET", "POST"), strict_slashes=False)
-@login_required
-@models.is_manager
-def manager():
-	reports = models.Report.query.all()
-	return render_template('manager.html', title="Manager", active_page='manager', reports=reports)
-
 # route to handle retrieving the logged in employees reports from the database
 @app.route('/get_employee_reports/<int:employee_id>', methods=['GET'])
-@login_required
+#@login_required
 def get_employee_reports(employee_id):
 	employee_id = current_user.id
 	if employee_id:
@@ -299,6 +295,20 @@ def get_employee_reports(employee_id):
 	else:
 		return jsonify({'error': 'Employee not found'}), 404
 
+
+### MANAGER ###
+
+# route to handle manager user interactions, changing report settings, save/print/deleting reports etc
+@app.route('/manager.html/', methods=("GET", "POST"), strict_slashes=False)
+# @login_required
+# @models.is_manager
+def manager():
+	users = User.query.all()
+	reports = Report.query.all()
+	return render_template('manager.html', title="Manager", active_page='manager', reports=reports, users=users)
+
+
+### ADMIN ###
 
 # route to handle admin user interactions, creating new users, changing
 @app.route('/admin.html/', methods=("GET", "POST"), strict_slashes=False)

@@ -44,6 +44,7 @@ def dot_plot(alignment, organisms, output_file):
 
 	# save plot
 	plt.savefig(output_file)
+	plt.show()
 
 	return output_file
 
