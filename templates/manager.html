@@ -17,8 +17,30 @@ Manager
         </select>
         <button onclick="getUserReports()">Select User</button>
     </div>
-    <div>
+    <div class="manager-mod-report">
         <h3>Report settings</h3>
+        <form action="/mod-report" action="/update-report" method="post">
+            <label>
+                <input type="checkbox" name="compNucleotide"> Nucleotides
+            </label>
+            <br>
+            <label>
+                <input type="checkbox" name="compSomething"> something
+            </label>
+            <br>
+            <label>
+                <input type="checkbox" name="printReports"> something
+            </label>
+            <br>
+            <label>
+                <input type="checkbox" name="changeSettings"> something else
+            </label>
+            <br>
+            <br>
+            <div style="text-align:center">
+                <button type="submit">Save Permissions</button>
+            </div>
+        </form>
     </div>
 
     <div id="report-container"></div>
