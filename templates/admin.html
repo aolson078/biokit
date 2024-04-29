@@ -29,7 +29,17 @@ admin
                 <button type="button" id="create-user-button">Create user</button>
             </a>
 
-            <button type="button" id="delete-user-button" onclick="deleteUser()">Delete user</button>
+<!--            <button type="button" id="delete-user-button" onclick="deleteUser(userId)">Delete user</button>-->
+            {% for user in users %}
+            <div class="user">
+                <p>{{ user.username }}</p>
+                <form id="delete-user-form-{{ user.id }}" action="/delete_user/{{ user.id }}" method="POST">
+                    <button class="delete-user-btn" type="submit" data-user-id="{{ user.id }}">Delete User</button>
+                </form>
+            </div>
+
+            {% endfor %}
+
             <br><br>
             <button type="button" id="change-username-button" onclick="changeUsername()">Change username</button>
             <button type="button" id="change-password-button" onclick="changePassword()">Change password</button>
@@ -42,7 +52,9 @@ admin
         </form>
 
         <h3>Permissions</h3>
-        <form action="/permission" action="/update-permissions" method="post">
+
+
+        <form action="/update_permissions" method="post">
             <label>
                 <input type="checkbox" name="viewReports"> View Reports
             </label>
@@ -60,6 +72,7 @@ admin
             </label>
             <br>
             <br>
+            <input type="hidden" name="userId" value="{{ user_id }}">
             <div style="text-align:center">
                 <button type="submit">Save Permissions</button>
             </div>

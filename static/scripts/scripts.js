@@ -113,3 +113,35 @@ function sendSelectedUser(userId, username) {
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send(JSON.stringify({ userId: userId, username: username }));
 }
+
+/*function deleteUser(userId) {
+    // Make an AJAX request to delete the user with the specified userId
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                console.log("User deleted successfully");
+            } else {
+                console.error("Failed to delete user with status:", xhr.status);
+            }
+        }
+    };
+    xhr.open("DELETE", `/delete_user/${userId}`, true);
+    xhr.send();
+}*/
+
+// added
+document.querySelectorAll('.delete-user-btn').forEach(button => {
+    button.addEventListener('click', async (event) => {
+        event.preventDefault(); // Prevent the default form submission behavior
+        const userId = button.dataset.userId;
+        const response = await fetch(`/delete_user/${userId}`, { method: 'DELETE' });
+        if (response.ok) {
+            // Handle success, e.g., remove the deleted user from the UI
+            button.closest('.user').remove();
+        } else {
+            // Handle error
+            console.error('Failed to delete user');
+        }
+    });
+});

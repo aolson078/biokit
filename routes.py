@@ -387,6 +387,31 @@ def delete_report(report_id):
     else:
         return jsonify({'error': 'Report not found'}), 404
 
+@app.route('/update_permissions', methods=['POST'])
+def update_permissions():
+	if request.method == 'POST':
+		# Extract data from the form submission
+		user_id = request.form.get('userId')
+		view_reports = 'viewReports' in request.form
+		delete_reports = 'deleteReports' in request.form
+		print_reports = 'printReports' in request.form
+		change_reports = 'changeReports' in request.form
+
+		# Find the user by ID
+		user = User.query.get(user_id)
+		if user:
+			# Update the user's permissions
+			user.view_reports = view_reports
+			user.delete_reports = delete_reports
+			user.print_reports = print_reports
+			user.change_reports = change_reports
+			db.session.commit()
+			flash('Permissions updated successfully', 'success')
+			return redirect(url_for('admin'))
+		else:
+			flash('User not found', 'error')
+			return redirect(url_for('admin'))
+
 
 ### ADMIN ###
 
@@ -461,19 +486,36 @@ def logout():
 
 # Routes for the db ----------------------------------------------------------------------------------------------------
 # route to handle deleting user from database (admin)
+# @app.route("/delete_user/<int:user_id>", methods=["DELETE"])
+# @login_required
+# def deleteUser(user_id):
+# 	try:
+# 		user = User.query.get(user_id)
+# 		if user:
+# 			db.session.delete(user)
+# 			db.session.commit()
+# 			return f"User ID {user_id} deleted"
+# 		else:
+# 			return f"User ID {user_id} not found", 404
+# 	except Exception as e:
+# 		return f"Error deleting user: {str(e)}", 500
+
+#added
 @app.route("/delete_user/<int:user_id>", methods=["DELETE"])
 @login_required
-def deleteUser(user_id):
-	try:
-		user = User.query.get(user_id)
-		if user:
-			db.session.delete(user)
-			db.session.commit()
-			return f"User ID {user_id} deleted"
-		else:
-			return f"User ID {user_id} not found", 404
-	except Exception as e:
-		return f"Error deleting user: {str(e)}", 500
+def delete_user(user_id):
+    try:
+        user = User.query.get(user_id)
+        if user:
+            db.session.delete(user)
+            db.session.commit()
+            return jsonify({'message': f'User ID {user_id} deleted successfully'}), 200
+        else:
+            return jsonify({'error': f'User ID {user_id} not found'}), 404
+    except Exception as e:
+        return jsonify({'error': f'Error deleting user: {str(e)}'}), 500
+
+
 
 # route to handle changing username in database (admin)
 @app.route("/change_username/<int:user_id>", methods=["PUT"])

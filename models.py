@@ -13,6 +13,10 @@ class User(UserMixin, db.Model):
 	email = db.Column(db.String(120), unique=True, nullable=False)
 	password = db.Column(db.String(300), nullable=False, unique=True)
 	role = db.Column(db.String(40), nullable=True)
+	view_reports = db.Column(db.Boolean, default=False)
+	delete_reports = db.Column(db.Boolean, default=False)
+	print_reports = db.Column(db.Boolean, default=False)
+	change_reports = db.Column(db.Boolean, default=False)
 
 	# looks up user in db and adds document to list
 	def __init__(self, username, email, password, role='employee'):
