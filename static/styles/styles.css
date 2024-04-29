@@ -1,3 +1,4 @@
+/*index styling*/
 .flex-container {
     display: flex;
     justify-content: center;
@@ -206,5 +207,7 @@ footer {
 
 /*Manager styling*/
 #manager-container{
+    display: flex;
     justify-content: center;
+    align-items: center;
 }
