@@ -284,21 +284,59 @@ def employee():
 	                       all_records=all_records)
 
 # route to handle retrieving the logged in employees reports from the database
-@app.route('/get_employee_reports/<int:employee_id>', methods=['GET'])
-#@login_required
-def get_employee_reports(employee_id):
-	employee_id = current_user.id
-	if employee_id:
-		reports = [
-			{
-				'id': report.id,
-				'name': report.name,
-			}
-			for report in employee_id.reports
-		]
-		return jsonify({'reports': reports})
-	else:
-		return jsonify({'error': 'Employee not found'}), 404
+@app.route('/get_user_reports/<int:user_id>', methods=['GET'])
+# @login_required
+def get_user_reports(user_id):
+    reports = Report.query.filter_by(employee_id=user_id).all()
+    if reports:
+        # Extract relevant data from each report
+        report_data = [
+            {
+                'id': report.id,
+                'nucleotide_ids': report.nucleotide_ids,
+                'organisms': report.organisms,
+                # Add other fields as needed
+            }
+            for report in reports
+        ]
+        return jsonify({'reports': report_data})
+    else:
+        return jsonify({'error': 'No reports found for this user'}), 404
+
+# Route for downloading a PDF from the report table
+@app.route('/download_report/<int:report_id>', methods=['GET'])
+def download_report(report_id):
+    # Retrieve the report data based on the report_id
+    report = Report.query.get(report_id)
+
+    if report:
+        # Generate the PDF report
+        buffer = BytesIO()
+        pdf = canvas.Canvas(buffer, pagesize=letter)
+        pdf.drawString(100, 750, f'Report ID: {report.id}')
+        pdf.drawString(100, 730, f'Employee ID: {report.employee_id}')
+        pdf.drawString(100, 710, f'Nucleotide IDs: {", ".join(report.nucleotide_ids)}')
+        pdf.drawString(100, 690, f'Organisms: {", ".join(report.organisms)}')
+        pdf.drawString(100, 670, f'Nucleotides: {", ".join(report.nucleotides)}')
+        pdf.drawString(100, 650, f'Phylogenetic Tree: {report.phylo_tree}')
+        pdf.drawString(100, 630, f'Dot Line Graph: {report.dot_line_graph}')
+        pdf.drawString(100, 610, f'Heat Map: {report.heat_map}')
+        pdf.drawString(100, 590, f'Bar Chart: {report.bar_chart}')
+
+        # Save the PDF to the buffer
+        pdf.save()
+        buffer.seek(0)
+
+        # Create a response with the PDF content
+        response = make_response(buffer.getvalue())
+        response.headers['Content-Type'] = 'application/pdf'
+
+        # Set the Content-Disposition header to specify the filename as an attachment
+        response.headers['Content-Disposition'] = f'attachment; filename=report_{report.id}.pdf'
+
+        return response
+    else:
+        abort(404)
 
 
 ### MANAGER ###
