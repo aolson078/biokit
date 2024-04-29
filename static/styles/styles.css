@@ -203,3 +203,8 @@ footer {
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
 }
+
+/*Manager styling*/
+#manager-container{
+    justify-content: center;
+}
