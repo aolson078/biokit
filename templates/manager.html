@@ -5,19 +5,20 @@ Manager
 {% endblock %}
 
 {% block content %}
-<div class="employee-search">
-    <h3>Select User</h3>
-    <select id="employee-dropdown">
-        <option value="">-- Select an Employee --</option>
-        {% for user in users %}
-        <option value="{{ user.id }}">{{ user.username }}</option>
-        {% endfor %}
-    </select>
-    <button onclick="getUserReports()">Select User</button>
+<div id="manager-container">
+    <div class="employee-search">
+        <h3>Select User</h3>
+        <select id="employee-dropdown">
+            <option value="">-- Select an Employee --</option>
+            {% for user in users %}
+            <option value="{{ user.id }}">{{ user.username }}</option>
+            {% endfor %}
+        </select>
+        <button onclick="getUserReports()">Select User</button>
+    </div>
+
+    <div id="report-container"></div>
 </div>
-
-<div id="report-container"></div>
-
 <script>
     function getUserReports() {
         const userId = document.getElementById('employee-dropdown').value;
