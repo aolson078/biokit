@@ -511,6 +511,13 @@ def changePassword(user_id):
 	except Exception as e:
 		return f"Error changing password: {str(e)}", 500
 
+@app.route('/process_selected_user', methods=['POST'])
+def process_selected_user():
+    data = request.get_json()
+    user_id = data.get('userId')
+    username = data.get('username')
+    return jsonify({'message': f'Selected user {username} with ID {user_id} processed successfully'})
+
 
 if __name__ == "__main__":
 	app.run(debug=True)

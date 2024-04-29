@@ -83,3 +83,32 @@ function sendSelectedResult(selectedResult) {
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send(JSON.stringify({ selected_result: selectedResult }));
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("select-user-form").addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent the default form submission behavior
+        // Get the selected user from the dropdown menu
+        var userId = document.getElementById("user-dropdown").value;
+        var username = document.getElementById("user-dropdown").options[document.getElementById("user-dropdown").selectedIndex].text;
+        // Send the selected user information to the server
+        sendSelectedUser(userId, username);
+    });
+});
+
+
+function sendSelectedUser(userId, username) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                console.log("Selected user sent successfully");
+                window.location.reload();
+            } else {
+                console.error("Failed to send selected user with status:", xhr.status);
+            }
+        }
+    };
+    xhr.open("POST", "/process_selected_user", true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send(JSON.stringify({ userId: userId, username: username }));
+}
