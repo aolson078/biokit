@@ -4,7 +4,7 @@ from wtforms import (
 )
 
 from flask_wtf import FlaskForm
-from wtforms.fields.core import RadioField
+from wtforms.fields import RadioField
 from wtforms.fields.simple import BooleanField, HiddenField
 from wtforms.validators import InputRequired, Length, EqualTo, Email
 from wtforms import ValidationError
