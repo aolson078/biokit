@@ -1,95 +1,86 @@
-
 {% extends "base.html" %}
 
 {% block title %}
-admin
+Manager
 {% endblock %}
 
 {% block content %}
-
-
-   <form action="add_action" method="post" style="text-align:center">
-    <h3>Select an Employee</h3>
+<div class="employee-search">
+    <h3>Select User</h3>
     <select id="employee-dropdown">
         <option value="">-- Select an Employee --</option>
-        {% for employee in reports %}
-            <option value="{{ employee.id }}">{{ employee.id }}</option>
+        {% for user in users %}
+        <option value="{{ user.id }}">{{ user.username }}</option>
         {% endfor %}
     </select>
-    <br>
-    <button type="button" onclick="displayManagerReport()">Submit</button>
-    <div id="report-container"></div>
-</form>
+    <button onclick="getUserReports()">Select User</button>
+</div>
 
+<div id="report-container"></div>
 
 <script>
+    function getUserReports() {
+        const userId = document.getElementById('employee-dropdown').value;
+        if (!userId) {
+            alert('Please select a user');
+            return;
+        }
 
-    function displayReport(reportId) {
-        window.location.href = '/display_report/' + reportId;
-    }
-
-    function modifyReport(reportId) {
-        // Implement the modify report functionality
-        console.log("Modify Report: " + reportId);
-    }
-
-    function deleteReport(reportId) {
-        // Implement the delete report functionality
-        console.log("Delete Report: " + reportId);
-    }
-
-    function displayManagerReport() {
-    const employeeDropdown = document.getElementById('employee-dropdown');
-    const selectedEmployeeId = employeeDropdown.value;
-
-    if (selectedEmployeeId) {
-        // Make an AJAX request to fetch the reports for the selected employee
-        fetch(`/get_employee_reports/${selectedEmployeeId}`)
+        fetch(`/get_user_reports/${userId}`)
             .then(response => response.json())
             .then(data => {
                 const reportContainer = document.getElementById('report-container');
                 reportContainer.innerHTML = ''; // Clear previous content
 
                 if (data.reports.length > 0) {
-                    // Create an unordered list to display the reports
-                    const reportList = document.createElement('ul');
-
-                    // Loop through the reports and create list items
                     data.reports.forEach(report => {
-                        const reportItem = document.createElement('li');
-                        reportItem.textContent = `${report.name} `;
-
-                        // Create buttons for display, print, and delete
-                        const displayButton = document.createElement('button');
-                        displayButton.textContent = 'Display';
-                        displayButton.onclick = () => displayReport(report.id);
-
-                        const printButton = document.createElement('button');
-                        printButton.textContent = 'Print';
-                        printButton.onclick = () => printReport(report.id);
-
-                        const deleteButton = document.createElement('button');
-                        deleteButton.textContent = 'Delete';
-                        deleteButton.onclick = () => deleteReport(report.id);
-
-                        reportItem.appendChild(displayButton);
-                        reportItem.appendChild(printButton);
-                        reportItem.appendChild(deleteButton);
-
-                        reportList.appendChild(reportItem);
+                        const reportDiv = document.createElement('div');
+                        reportDiv.innerHTML = `
+                            <p>Report ID: ${report.id}</p>
+                            <p>Nucleotide IDs: ${report.nucleotide_ids}</p>
+                            <p>Organisms: ${report.organisms}</p>
+                            <!-- Add other fields when needed -->
+                            <button onclick="displayReport(${report.id})">Display</button>
+                            <button onclick="deleteReport(${report.id})">Delete</button>
+                            <button onclick="downloadReport(${report.id})">Download</button>
+                            <hr>
+                        `;
+                        reportContainer.appendChild(reportDiv);
                     });
-
-                    reportContainer.appendChild(reportList);
                 } else {
-                    reportContainer.innerHTML = '<p>No reports found for the selected employee.</p>';
+                    reportContainer.innerHTML = '<p>No reports found for this user.</p>';
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
             });
-    } else {
-        alert('Please select an employee');
     }
-}
+
+    function displayReport(reportId) {
+        window.location.href = '/display_report/' + reportId;
+        console.log("Display Report: " + reportId);
+    }
+
+    function deleteReport(reportId) {
+            if (confirm('Are you sure you want to delete this report?')) {
+                fetch(`/delete_report/${reportId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    // Optionally, refresh the report list after deletion
+                    getUserReports();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+    }
+
+    function downloadReport(reportId) {
+        window.location.href = '/download_report/' + reportId;
+    }
+
 </script>
 {% endblock %}
