@@ -102,7 +102,8 @@ function sendSelectedUser(userId, username) {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
                 console.log("Selected user sent successfully");
-                window.location.reload();
+                document.querySelector(".user-id").textContent = userId;
+                //window.location.reload();
             } else {
                 console.error("Failed to send selected user with status:", xhr.status);
             }
