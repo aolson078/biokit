@@ -425,7 +425,7 @@ def admin():
 
 
 # route to handled user login and authentication
-@app.route("/login.html/", methods=("GET", "POST"), strict_slashes=False)
+@app.route("/login.html/", methods=("GET", "POST", "DELETE"), strict_slashes=False)
 def login():
 	form = login_form()
 
@@ -501,19 +501,28 @@ def logout():
 # 		return f"Error deleting user: {str(e)}", 500
 
 #added
-@app.route("/delete_user/<int:user_id>", methods=["DELETE"])
+@app.route("/delete_user/<int:user_id>", methods=["GET", "DELETE"])
 @login_required
 def delete_user(user_id):
-    try:
-        user = User.query.get(user_id)
-        if user:
-            db.session.delete(user)
-            db.session.commit()
-            return jsonify({'message': f'User ID {user_id} deleted successfully'}), 200
-        else:
-            return jsonify({'error': f'User ID {user_id} not found'}), 404
-    except Exception as e:
-        return jsonify({'error': f'Error deleting user: {str(e)}'}), 500
+    if request.method == "DELETE":
+        try:
+            user = User.query.get(user_id)
+            if user:
+                db.session.delete(user)
+                db.session.commit()
+                return jsonify({'message': f'User ID {user_id} deleted successfully'}), 200
+            else:
+                return jsonify({'error': f'User ID {user_id} not found'}), 404
+        except Exception as e:
+            return jsonify({'error': f'Error deleting user: {str(e)}'}), 500
+    elif request.method == "GET":
+        # Handle GET request to display user information or perform other actions
+        # For example, you can redirect to a page showing user details
+        # or return a message indicating that deletion should be done via DELETE request
+        return jsonify({'message': 'Send a DELETE request to delete the user'}), 200
+    else:
+        # Handle other request methods if necessary
+        return jsonify({'error': 'Method not allowed'}), 405
 
 
 

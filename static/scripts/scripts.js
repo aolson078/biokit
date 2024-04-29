@@ -131,17 +131,33 @@ function sendSelectedUser(userId, username) {
 }*/
 
 // added
-document.querySelectorAll('.delete-user-btn').forEach(button => {
-    button.addEventListener('click', async (event) => {
-        event.preventDefault(); // Prevent the default form submission behavior
-        const userId = button.dataset.userId;
-        const response = await fetch(`/delete_user/${userId}`, { method: 'DELETE' });
-        if (response.ok) {
-            // Handle success, e.g., remove the deleted user from the UI
-            button.closest('.user').remove();
-        } else {
-            // Handle error
-            console.error('Failed to delete user');
-        }
+// admin.html (inside a script tag or in a separate JavaScript file)
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = button.dataset.userid;
+            fetch(`/delete_user/${userId}`, {
+                method: 'DELETE',
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Optionally, remove the deleted user from the UI
+                    button.closest('tr').remove();
+                    alert('User deleted successfully');
+                } else {
+                    response.json().then(data => {
+                        alert(`Error: ${data.error}`);
+                    }).catch(error => {
+                        console.error('Error parsing JSON:', error);
+                        alert('An error occurred while deleting user');
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while deleting user');
+            });
+        });
     });
 });

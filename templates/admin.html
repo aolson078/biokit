@@ -6,76 +6,86 @@ admin
 
 {% block content %}
 <section class="admin-page">
-        <div class="employee-search">
-            <h3>Select User</h3>
-            <form id="select-user-form">
-                <label for="user-dropdown">Choose a user:</label>
-                <select id="user-dropdown" name="user">
-                    {% for user in users %}
-                    <option value="{{ user.id }}">{{ user.username }}</option>
-                    {% endfor %}
-                </select>
-                <button>Select User</button>
-            </form>
-        </div>
+    <div class="employee-search">
+        <h3>Select User</h3>
+        <form id="select-user-form">
+            <label for="user-dropdown">Choose a user:</label>
+            <select id="user-dropdown" name="user">
+                {% for user in users %}
+                <option value="{{ user.id }}">{{ user.username }}</option>
+                {% endfor %}
+            </select>
+            <button>Select User</button>
+        </form>
+    </div>
 
-        <p>Selected User ID: <span class="user-id">None selected</span></p>
+    <p>Selected User ID: <span class="user-id">None selected</span></p>
 
-        <form action="add_action" method="post" style="text-align:center">
-            <h3>Account controls</h3>
+    <h3>Account controls</h3>
+    <a href="/register">
+        <button type="button" id="create-user-button">Create user</button>
+    </a>
 
-
-            <a href="/register">
-                <button type="button" id="create-user-button">Create user</button>
-            </a>
-
-<!--            <button type="button" id="delete-user-button" onclick="deleteUser(userId)">Delete user</button>-->
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
             {% for user in users %}
-            <div class="user">
-                <p>{{ user.username }}</p>
-                <form id="delete-user-form-{{ user.id }}" action="/delete_user/{{ user.id }}" method="POST">
-                    <button class="delete-user-btn" type="submit" data-user-id="{{ user.id }}">Delete User</button>
-                </form>
-            </div>
-
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.role }}</td>
+                <td>
+                    <form action="/delete_user/{{ user.id }}" method="post">
+                        <button class="btn btn-danger delete-btn" type="submit" data-userid="{{ user.id }}">Delete</button>
+                    </form>
+                </td>
+            </tr>
             {% endfor %}
+        </tbody>
+    </table>
 
-            <br><br>
-            <button type="button" id="change-username-button" onclick="changeUsername()">Change username</button>
-            <button type="button" id="change-password-button" onclick="changePassword()">Change password</button>
-            <br><br>
-            <label for="usernameInput">New username: </label>
-            <input type="text" name="usernameInput" id="usernameInput">
-            <br><br>
-            <label for="passwordInput">New password: </label>
-            <input type="text" name="passwordInput" id="passwordInput">
-        </form>
+    <br><br>
+    <button type="button" id="change-username-button" onclick="changeUsername()">Change username</button>
+    <button type="button" id="change-password-button" onclick="changePassword()">Change password</button>
+    <br><br>
+    <label for="usernameInput">New username: </label>
+    <input type="text" name="usernameInput" id="usernameInput">
+    <br><br>
+    <label for="passwordInput">New password: </label>
+    <input type="text" name="passwordInput" id="passwordInput">
 
-        <h3>Permissions</h3>
-
-
-        <form action="/update_permissions" method="post">
-            <label>
-                <input type="checkbox" name="viewReports"> View Reports
-            </label>
-            <br>
-            <label>
-                <input type="checkbox" name="deleteReports"> Delete Reports
-            </label>
-            <br>
-            <label>
-                <input type="checkbox" name="printReports"> Print Reports
-            </label>
-            <br>
-            <label>
-                <input type="checkbox" name="changeSettings"> Change Compilation Settings
-            </label>
-            <br>
-            <br>
-            <input type="hidden" name="userId" value="{{ user_id }}">
-            <div style="text-align:center">
-                <button type="submit">Save Permissions</button>
-            </div>
-        </form>
-    </section>
+    <h3>Permissions</h3>
+    <form action="/update_permissions" method="post">
+        <label>
+            <input type="checkbox" name="viewReports"> View Reports
+        </label>
+        <br>
+        <label>
+            <input type="checkbox" name="deleteReports"> Delete Reports
+        </label>
+        <br>
+        <label>
+            <input type="checkbox" name="printReports"> Print Reports
+        </label>
+        <br>
+        <label>
+            <input type="checkbox" name="changeSettings"> Change Compilation Settings
+        </label>
+        <br>
+        <br>
+        <input type="hidden" name="userId" value="{{ user_id }}">
+        <div style="text-align:center">
+            <button type="submit">Save Permissions</button>
+        </div>
+    </form>
+</section>
 {% endblock %}
