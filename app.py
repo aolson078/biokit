@@ -42,9 +42,16 @@ def create_app():
 	migrate.init_app(app, db)
 	bcrypt.init_app(app)
 
+	#removed
+	#return app
+
+	#Will
+	#added
+	with app.app_context():
+		db.create_all()
 	return app
 
-
-if __name__ == '__main__':
-	app = create_app()
-	app.run()
+#removed
+#if __name__ == '__main__':
+	#app = create_app()
+	#app.run()
