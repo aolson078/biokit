@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="767015a0-470b-4b56-a116-733b9cbe87a1" name="Changes" comment="modifed the view reports function in manager">
-      <change beforePath="$PROJECT_DIR$/templates/manager.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/manager.html" afterDir="false" />
-    </list>
+    <list default="true" id="767015a0-470b-4b56-a116-733b9cbe87a1" name="Changes" comment="modified manager.html, delete still needs work" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -149,7 +147,15 @@
       <option name="project" value="LOCAL" />
       <updated>1714377369333</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="modified manager.html, delete still needs work">
+      <option name="closed" value="true" />
+      <created>1714377478772</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1714377478772</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -167,6 +173,7 @@
     <MESSAGE value="styling home page" />
     <MESSAGE value="added download report route" />
     <MESSAGE value="modifed the view reports function in manager" />
-    <option name="LAST_COMMIT_MESSAGE" value="modifed the view reports function in manager" />
+    <MESSAGE value="modified manager.html, delete still needs work" />
+    <option name="LAST_COMMIT_MESSAGE" value="modified manager.html, delete still needs work" />
   </component>
 </project>

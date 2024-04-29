@@ -303,6 +303,30 @@ def get_user_reports(user_id):
     else:
         return jsonify({'error': 'No reports found for this user'}), 404
 
+
+''' This could work too for deleting reports (sola)
+@app.route("/delete_report/<int:report_id>", methods=["DELETE"])
+def delete_report(report_id):
+    # Retrieve the report
+    report = Report.query.filter_by(id=report_id).first()
+
+    if report:
+        try:
+            # Remove all associated records
+            report_record.report_id.clear()
+            # report.record.clear()
+            # Delete the report from the database
+            db.session.delete(report)
+            db.session.commit()
+
+            return jsonify({'message': 'Report deleted successfully'}), 200
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'error': f'Error deleting report: {str(e)}'}), 500
+    else:
+        return jsonify({'error': 'Report not found'}), 404
+'''
+
 # Route for downloading a PDF from the report table
 @app.route('/download_report/<int:report_id>', methods=['GET'])
 def download_report(report_id):
