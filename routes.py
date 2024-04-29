@@ -517,8 +517,6 @@ def delete_user(user_id):
             return jsonify({'error': f'Error deleting user: {str(e)}'}), 500
     elif request.method == "GET":
         # Handle GET request to display user information or perform other actions
-        # For example, you can redirect to a page showing user details
-        # or return a message indicating that deletion should be done via DELETE request
         return jsonify({'message': 'Send a DELETE request to delete the user'}), 200
     else:
         # Handle other request methods if necessary
