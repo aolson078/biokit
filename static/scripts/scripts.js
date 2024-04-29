@@ -114,24 +114,7 @@ function sendSelectedUser(userId, username) {
     xhr.send(JSON.stringify({ userId: userId, username: username }));
 }
 
-/*function deleteUser(userId) {
-    // Make an AJAX request to delete the user with the specified userId
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-            if (xhr.status === 200) {
-                console.log("User deleted successfully");
-            } else {
-                console.error("Failed to delete user with status:", xhr.status);
-            }
-        }
-    };
-    xhr.open("DELETE", `/delete_user/${userId}`, true);
-    xhr.send();
-}*/
-
 // added
-// admin.html (inside a script tag or in a separate JavaScript file)
 document.addEventListener('DOMContentLoaded', function() {
     const deleteButtons = document.querySelectorAll('.delete-btn');
     deleteButtons.forEach(button => {
