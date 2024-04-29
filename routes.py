@@ -308,6 +308,19 @@ def manager():
 	return render_template('manager.html', title="Manager", active_page='manager', reports=reports, users=users)
 
 
+#Will (delete reports)
+@app.route('/delete_report/<int:report_id>', methods=['DELETE'])
+@login_required
+def delete_report(report_id):
+    report = models.Report.query.get(report_id)
+    if report:
+        db.session.delete(report)
+        db.session.commit()
+        return jsonify({'message': 'Report deleted successfully'}), 200
+    else:
+        return jsonify({'error': 'Report not found'}), 404
+
+
 ### ADMIN ###
 
 # route to handle admin user interactions, creating new users, changing
