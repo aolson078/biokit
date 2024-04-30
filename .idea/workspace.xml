@@ -4,12 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="767015a0-470b-4b56-a116-733b9cbe87a1" name="Changes" comment="smooth out manager styling">
+    <list default="true" id="767015a0-470b-4b56-a116-733b9cbe87a1" name="Changes" comment="modifying report updated, graphs however aren't showing up properly">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/styles/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/styles/styles.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/display_report.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/display_report.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/manager.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/manager.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -225,7 +222,15 @@
       <option name="project" value="LOCAL" />
       <updated>1714446910720</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="modifying report updated, graphs however aren't showing up properly">
+      <option name="closed" value="true" />
+      <created>1714452369829</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1714452369829</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -250,6 +255,7 @@
     <MESSAGE value="added more to style css" />
     <MESSAGE value="modified delete report" />
     <MESSAGE value="smooth out manager styling" />
-    <option name="LAST_COMMIT_MESSAGE" value="smooth out manager styling" />
+    <MESSAGE value="modifying report updated, graphs however aren't showing up properly" />
+    <option name="LAST_COMMIT_MESSAGE" value="modifying report updated, graphs however aren't showing up properly" />
   </component>
 </project>

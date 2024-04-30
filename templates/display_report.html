@@ -153,7 +153,7 @@ Report
         {% if not hide_phylogenetic and folder == 'phylo_tree' %}
         <div class="row">
           <div class="col-md-6">
-            <img src="{{ url_for('static', filename='images/graphs/phylo_tree/tree1.png') }}" alt="Phylogenetic Tree" class="img-fluid mb-3 graph-image">
+            <img src="{{ url_for('static', filename='graphs/phylo_tree/tree1.png') }}" alt="Phylogenetic Tree" class="img-fluid mb-3 graph-image">
           </div>
         </div>
         {% else %}
@@ -162,7 +162,7 @@ Report
         {% if image_type in image %}
         <div class="row">
           <div class="col-md-6">
-            <img src="{{ url_for('static', filename='images/graphs/' + folder + '/' + image) }}" alt="Graph" class="img-fluid mb-3 graph-image">
+            <img src="{{ url_for('static', filename='graphs/' + folder + '/' + image) }}" alt="Graph" class="img-fluid mb-3 graph-image">
           </div>
           {% if loop.index % 2 == 0 and not loop.last %}
         </div>
