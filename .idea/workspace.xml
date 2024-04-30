@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="767015a0-470b-4b56-a116-733b9cbe87a1" name="Changes" comment="modifying report updated, graphs however aren't showing up properly">
+    <list default="true" id="767015a0-470b-4b56-a116-733b9cbe87a1" name="Changes" comment="resolved display of graphs, added gradient styling to all html">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/display_report.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/display_report.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/manager.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/manager.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -230,7 +230,15 @@
       <option name="project" value="LOCAL" />
       <updated>1714452369829</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="resolved display of graphs, added gradient styling to all html">
+      <option name="closed" value="true" />
+      <created>1714452597250</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1714452597250</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -256,6 +264,7 @@
     <MESSAGE value="modified delete report" />
     <MESSAGE value="smooth out manager styling" />
     <MESSAGE value="modifying report updated, graphs however aren't showing up properly" />
-    <option name="LAST_COMMIT_MESSAGE" value="modifying report updated, graphs however aren't showing up properly" />
+    <MESSAGE value="resolved display of graphs, added gradient styling to all html" />
+    <option name="LAST_COMMIT_MESSAGE" value="resolved display of graphs, added gradient styling to all html" />
   </component>
 </project>
