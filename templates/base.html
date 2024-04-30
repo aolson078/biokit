@@ -15,7 +15,7 @@
     <div class="navbar-container">
         <div class="navbar">
 
-
+            <a href="/index" {% if active_page== 'home' %}class="active"{% endif %}>Home</a>
             <a href="/employee.html" {% if active_page== 'employee' %}class="active"{% endif %}>Employee</a>
             <a href="/manager.html" {% if active_page== 'manager' %}class="active"{% endif %}>Manager</a>
             <a href="/admin.html" {% if active_page== 'admin' %}class="active"{% endif %}>Admin</a>
