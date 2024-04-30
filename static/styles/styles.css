@@ -210,6 +210,7 @@ footer {
 /*Manager styling*/
 #manager-container{
     display: flex;
+    flex-flow: column;
     justify-content: center;
     align-items: center;
     background: linear-gradient(to bottom, white, grey);
