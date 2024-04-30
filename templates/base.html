@@ -19,17 +19,14 @@
             <a href="/employee.html" {% if active_page== 'employee' %}class="active"{% endif %}>Employee</a>
             <a href="/manager.html" {% if active_page== 'manager' %}class="active"{% endif %}>Manager</a>
             <a href="/admin.html" {% if active_page== 'admin' %}class="active"{% endif %}>Admin</a>
+            {% if current_user.is_authenticated %}
+                <a href=/logout.html>Logout</a>
+            {% else %}
+                <a href=/login.html>Login</a>
+            {% endif %}
 
-            <p>
-                {% if request.path != '/register/' %}
-                {% if not session.get('logged_in') %}
-                <a href="{{ url_for('login') }}" class="btn btn-secondary">Login</a>
-                {% endif %}
-                {% else %}
-                {% endif %}
-            </p>
 
-            <button type="button" onclick="logout()">Logout</button>
+
 
         </div>
     </div>
@@ -51,10 +48,9 @@
 </main>
 
 <footer>
-    <div>{% if current_user.is_authenticated %}
-        <p>Current user: {{ current_user.username }}</p>
-        {% else %}
-        <p><a href="{{ url_for('login') }}">Login</a></p>
+    <div>
+        {% if current_user.is_authenticated %}
+            <p>Current user: {{ current_user.username }}</p>
         {% endif %}
     </div>
     WAS Software &copy;2024

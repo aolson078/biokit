@@ -30,7 +30,7 @@ employee
 
 <div>
     <form action="add_action" method="post" style="text-align:center">
-        <h3>Select a report from Employee 1</h3>
+        <h3>Select a report from Employee</h3>
         {% for report in reports %}
         <label for="report{{ loop.index }}">Report {{ loop.index }}</label>
         <button type="button" onclick="displayReport('{{ report.id }}')">Display</button>
