@@ -14,7 +14,6 @@
 <header>
     <div class="navbar-container">
         <div class="navbar">
-            <a href="/index" {% if active_page== 'home' %}class="active"{% endif %}>Home</a>
 
 
             <a href="/employee.html" {% if active_page== 'employee' %}class="active"{% endif %}>Employee</a>
@@ -52,6 +51,12 @@
 </main>
 
 <footer>
+    <div>{% if current_user.is_authenticated %}
+        <p>Current user: {{ current_user.username }}</p>
+        {% else %}
+        <p><a href="{{ url_for('login') }}">Login</a></p>
+        {% endif %}
+    </div>
     WAS Software &copy;2024
 </footer>
 
