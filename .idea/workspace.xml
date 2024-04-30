@@ -4,10 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="767015a0-470b-4b56-a116-733b9cbe87a1" name="Changes" comment="modified delete report">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="767015a0-470b-4b56-a116-733b9cbe87a1" name="Changes" comment="smooth out manager styling">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/styles/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/styles/styles.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/display_report.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/display_report.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/manager.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/manager.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -215,7 +217,15 @@
       <option name="project" value="LOCAL" />
       <updated>1714446658677</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="smooth out manager styling">
+      <option name="closed" value="true" />
+      <created>1714446910720</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1714446910720</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -239,6 +249,7 @@
     <MESSAGE value="updating style css" />
     <MESSAGE value="added more to style css" />
     <MESSAGE value="modified delete report" />
-    <option name="LAST_COMMIT_MESSAGE" value="modified delete report" />
+    <MESSAGE value="smooth out manager styling" />
+    <option name="LAST_COMMIT_MESSAGE" value="smooth out manager styling" />
   </component>
 </project>

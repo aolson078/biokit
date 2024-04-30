@@ -123,7 +123,7 @@ def compile_report():
 			else:
 				count[organisms[i]] = 1
 
-		phylo_tree_path = f"./static/images/graphs/phylo_tree/tree{report.id}.png"
+		phylo_tree_path = f"./static/graphs/phylo_tree/tree{report.id}.png"
 		generate_tree(nucleotides, phylo_tree_path, organisms)
 		report.phylo_tree = phylo_tree_path
 
@@ -132,21 +132,21 @@ def compile_report():
 		for i in range(len(organisms)):
 			for j in range(i + 1, len(organisms)):
 				sequences = [nucleotides[i], nucleotides[j]]
-				dot_paths.append(f"./static/images/graphs/dot_plot/dot{report.id}-{i}.png")
+				dot_paths.append(f"./static/graphs/dot_plot/dot{report.id}-{i}.png")
 				# create dot graph
 				bio_algos.dot_plot.dot_plot(sequences, [organisms[i], organisms[j]],
-				                            f"./static/images/graphs/dot_plot/dot{report.id}-{i}.png")
+				                            f"./static/graphs/dot_plot/dot{report.id}-{i}.png")
 				# create heat map
 				heat_paths.append(f"./static/images/graphs/heat_map/heat{report.id}-{i}.png")
 				heat_map.heat_map(sequences, [organisms[i], organisms[j]],
-				                  f"./static/images/graphs/heat_map/heat{report.id}-{i}.png")
+				                  f"./static/graphs/heat_map/heat{report.id}-{i}.png")
 
 		# input lists of paths into db
 		report.dot_line_graph = dot_paths
 		report.heat_map = heat_paths
 
 		# create stacked bar chart
-		bar_chart_path = f"./static/images/graphs/stacked_bar/bar{report.id}.png"
+		bar_chart_path = f"./static/graphs/stacked_bar/bar{report.id}.png"
 		stacked_bar_chart.stacked_bar_chart(nucleotides, organisms, bar_chart_path, )
 		report.bar_chart = bar_chart_path
 
@@ -167,11 +167,11 @@ def compile_report():
 def display_report(report_id):
 	report = models.Report.query.get(report_id)
 	if report:
-		graph_folders = os.listdir('./static/images/graphs')
+		graph_folders = os.listdir('./static/graphs')
 		# Create a dictionary to store the image filenames for each folder
 		graph_images = {}
 		for folder in graph_folders:
-			folder_path = os.path.join('./static/images/graphs', folder)
+			folder_path = os.path.join('./static/graphs', folder)
 			graph_images[folder] = [image for image in os.listdir(folder_path) if str(report_id) in image]
 
 		filtered_dict = {folder: images for folder, images in graph_images.items() if images}
@@ -362,6 +362,27 @@ def download_report(report_id):
     else:
         abort(404)
 
+
+@app.route('/display_report_with_settings/<int:report_id>', methods=["GET", "POST"])
+#@login_required
+def display_report_with_settings(report_id):
+	report = models.Report.query.get(report_id)
+	if report:
+		# Get the settings from the request arguments
+		hide_nucleotide_id = request.args.get('hide_nucleotide_id', False)
+		hide_organism = request.args.get('hide_organism', False)
+		hide_nucleotide = request.args.get('hide_nucleotide', False)
+		hide_phylogenetic = request.args.get('hide_phylogenetic', False)
+
+		# Pass the modified data to the template
+		return render_template('display_report.html',
+							   report=report,
+							   hide_nucleotide_id=hide_nucleotide_id,
+							   hide_organism=hide_organism,
+							   hide_nucleotide=hide_nucleotide,
+							   hide_phylogenetic=hide_phylogenetic)
+	else:
+		return "Report not found", 404
 
 ### MANAGER ###
 

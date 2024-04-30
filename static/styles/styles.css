@@ -1,4 +1,8 @@
 /*base html styling*/
+html{
+    background: linear-gradient(to bottom, white, grey);
+}
+
 .flex-container {
     display: flex;
     justify-content: center;
@@ -213,5 +217,4 @@ footer {
     flex-flow: column;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(to bottom, white, grey);
 }

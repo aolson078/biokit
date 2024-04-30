@@ -9,11 +9,15 @@ Report
   <h1 class="display-4 mb-4">Report {{ report.id }}</h1>
   <div class="mb-4">
     <p class="lead mb-0"><strong>Title:</strong></p>
+    {% if not hide_organism %}
     <p class="mb-0">{{ report.organisms }}</p>
+    {% endif %}
   </div>
   <div>
     <p class="mb-0"><strong>Content:</strong></p>
+    {% if not hide_nucleotide_id %}
     <p>{{ report.nucleotide_ids }}</p>
+    {% endif %}
   </div>
 
   <hr>
@@ -34,7 +38,9 @@ Report
               </strong>
             </p>
             <br>
+            {% if not hide_nucleotide %}
             <div style="text-align: center; font-size: 12px" class="primary-structure">{{ record.nucleotides }}</div>
+            {% endif %}
           </div>
           <hr>
 
@@ -144,7 +150,7 @@ Report
     <div class="card mb-4">
       <div style="text-align: center;" class="card-body">
         <h3 class="card-title">{{ folder | replace("_", " ") | title }}</h3>
-        {% if folder == 'phylo_tree' %}
+        {% if not hide_phylogenetic and folder == 'phylo_tree' %}
         <div class="row">
           <div class="col-md-6">
             <img src="{{ url_for('static', filename='images/graphs/phylo_tree/tree1.png') }}" alt="Phylogenetic Tree" class="img-fluid mb-3 graph-image">
@@ -176,7 +182,8 @@ Report
   {% endif %}
   {% endfor %}
 </div>
-      {% endblock %}
+</div>
+{% endblock %}
 
 {% block styles %}
 <style>

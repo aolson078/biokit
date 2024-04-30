@@ -19,26 +19,26 @@ Manager
     </div>
     <div class="manager-mod-report">
         <h3>Report settings</h3>
-        <form action="/mod-report" action="/update-report" method="post">
+        <form id="report-settings-form" method="get">
             <label>
-                <input type="checkbox" name="compNucleotide"> Nucleotides
+                <input type="checkbox" name="hide_nucleotide_id"> NucleotideID
             </label>
             <br>
             <label>
-                <input type="checkbox" name="compSomething"> something
+                <input type="checkbox" name="hide_organism"> Organism
             </label>
             <br>
             <label>
-                <input type="checkbox" name="printReports"> something
+                <input type="checkbox" name="hide_nucleotide"> Nucleotide
             </label>
             <br>
             <label>
-                <input type="checkbox" name="changeSettings"> something else
+                <input type="checkbox" name="hide_phylogenetic"> Phylogenetic Tree
             </label>
             <br>
             <br>
             <div style="text-align:center">
-                <button type="submit">Save Permissions</button>
+                <button type="submit">Save Settings</button>
             </div>
         </form>
     </div>
@@ -83,30 +83,19 @@ Manager
     }
 
     function displayReport(reportId) {
-        window.location.href = '/display_report/' + reportId;
-        console.log("Display Report: " + reportId);
-    }
-
-    function deleteReport(reportId) {
-            if (confirm('Are you sure you want to delete this report?')) {
-                fetch(`/delete_report/${reportId}`, {
-                    method: 'DELETE'
-                })
-                .then(response => response.json())
-                .then(data => {
-                    alert(data.message);
-                    // Optionally, refresh the report list after deletion
-                    getUserReports();
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-            }
+        window.location.href = `/display_report_with_settings/${reportId}`;
     }
 
     function downloadReport(reportId) {
         window.location.href = '/download_report/' + reportId;
     }
 
+    document.getElementById('report-settings-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const queryParams = new URLSearchParams(formData).toString();
+        const reportId = document.getElementById('employee-dropdown').value;
+        window.location.href = `/display_report_with_settings/${reportId}?${queryParams}`;
+    });
 </script>
 {% endblock %}
