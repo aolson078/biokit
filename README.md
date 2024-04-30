@@ -33,3 +33,14 @@ Currently, it will be a web app created through Python’s Flask framework, alon
 The app will be able to process multiple nucleotide strings and output a report with various information, including GC content, isochore data, the compilated phylogenetic tree, a dot matrix chart between two nucleotide strings, and others.
 > 
 ![Use_case](https://github.com/aolson078/biokit/assets/69769089/97b19bdb-c369-4d3a-a883-24ca40f4b959)
+
+
+
+Default login:
+email: 1@gmail.com
+password: 11111
+
+To run:
+Run file "routes.py"
+Click ip address in python console (127.0.0.1:5000)
+Login in with own or default user.
