@@ -160,3 +160,22 @@ function logout() {
     xhr.open("GET", "/logout", true);
     xhr.send();
 }
+
+function showUsernameAndPasswordFields() {
+            const usernameInput = document.getElementById("usernameInput");
+            const passwordInput = document.getElementById("passwordInput");
+            var usernameLabel = document.querySelector("label[for='usernameInput']");
+            var passwordLabel = document.querySelector("label[for='passwordInput']");
+            const selectedUser = document.querySelector(".user-id").textContent;
+
+            if (selectedUser !== "None selected") {
+                usernameInput.style.display = "block";
+                passwordInput.style.display = "block";
+
+            } else {
+                usernameInput.style.display = "none";
+                passwordInput.style.display = "none";
+                usernameLabel.style.display = "none";
+                passwordLabel.style.display = "none";
+            }
+        }

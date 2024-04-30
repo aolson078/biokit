@@ -6,22 +6,7 @@ admin
 
 {% block content %}
 <section class="admin-page">
-    <div class="employee-search">
-        <h3>Select User</h3>
-        <form id="select-user-form">
-            <label for="user-dropdown">Choose a user:</label>
-            <select id="user-dropdown" name="user">
-                {% for user in users %}
-                <option value="{{ user.id }}">{{ user.username }}</option>
-                {% endfor %}
-            </select>
-            <button>Select User</button>
-        </form>
-    </div>
-
-    <p>Selected User ID: <span class="user-id">None selected</span></p>
-
-    <h3>Account controls</h3>
+ <h3>Account controls</h3>
     <a href="/register">
         <button type="button" id="create-user-button">Create user</button>
     </a>
@@ -52,16 +37,30 @@ admin
             {% endfor %}
         </tbody>
     </table>
+    <br><br>
+        <div class="employee-search">
+        <h3>Select User</h3>
+        <form id="select-user-form">
+            <label for="user-dropdown">Choose a user:</label>
+            <select id="user-dropdown" name="user">
+                {% for user in users %}
+                <option value="{{ user.id }}">{{ user.username }}</option>
+                {% endfor %}
+            </select>
+            <button>Select User</button>
+        </form>
+    </div>
 
-    <br><br>
-    <button type="button" id="change-username-button" onclick="changeUsername()">Change username</button>
-    <button type="button" id="change-password-button" onclick="changePassword()">Change password</button>
-    <br><br>
-    <label for="usernameInput">New username: </label>
-    <input type="text" name="usernameInput" id="usernameInput">
-    <br><br>
-    <label for="passwordInput">New password: </label>
-    <input type="text" name="passwordInput" id="passwordInput">
+
+
+    <p>Selected User ID: <span class="user-id">None selected</span></p>
+
+
+    <button type="button" id="change-username-button" onclick="showUsernameAndPasswordFields()">Change username</button>
+    <button type="button" id="change-password-button" onclick="showUsernameAndPasswordFields()">Change password</button>
+
+    <input type="text" name="usernameInput" id="usernameInput" style="display: none;" placeholder="New username">
+    <input type="password" name="passwordInput" id="passwordInput" style="display: none;" placeholder="New password">
 
     <h3>Permissions</h3>
     <form action="/update_permissions" method="post">
@@ -87,5 +86,12 @@ admin
             <button type="submit">Save Permissions</button>
         </div>
     </form>
-</section>
+
+
+
+
+
+
+
+   </section>
 {% endblock %}
