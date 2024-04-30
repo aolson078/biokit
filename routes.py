@@ -417,8 +417,8 @@ def update_permissions():
 
 # route to handle admin user interactions, creating new users, changing
 @app.route('/admin.html/', methods=("GET", "POST"), strict_slashes=False)
-@login_required
-@models.is_admin
+#@login_required
+#@models.is_admin
 def admin():
 	users = User.query.all()
 	return render_template('admin.html', title="Admin", users=users, active_page='admin')

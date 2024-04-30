@@ -144,3 +144,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+function logout() {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                console.log("Logged out successfully");
+                window.location.href = '/index'; // Redirect to login page after logout
+            } else {
+                console.error("Failed to logout with status:", xhr.status);
+            }
+        }
+    };
+    xhr.open("GET", "/logout", true);
+    xhr.send();
+}

@@ -20,6 +20,9 @@
             <a href="/employee.html" {% if active_page== 'employee' %}class="active"{% endif %}>Employee</a>
             <a href="/manager.html" {% if active_page== 'manager' %}class="active"{% endif %}>Manager</a>
             <a href="/admin.html" {% if active_page== 'admin' %}class="active"{% endif %}>Admin</a>
+
+            <button type="button" onclick="logout()">Logout</button>
+
             <p>
                 {% if request.path != '/register/' %}
                 {% if not session.get('logged_in') %}
