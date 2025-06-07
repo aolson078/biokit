@@ -12,6 +12,7 @@ from models import User
 
 
 class register_form(FlaskForm):
+	this_is_new = [0, 1, 2]
 	username = StringField(
 		validators=[
 			InputRequired(),
