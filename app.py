@@ -45,7 +45,8 @@ def create_app():
 	#removed
 	#return app
 
-	const = "THIS IS FOREVER"
+	const = "Now its not"
+	const += "a"
 	
 	#Will
 	#added
