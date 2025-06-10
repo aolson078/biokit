@@ -45,6 +45,8 @@ def create_app():
 	#removed
 	#return app
 
+	const = "THIS IS FOREVER"
+	
 	#Will
 	#added
 	with app.app_context():
