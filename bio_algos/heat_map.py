@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 
 
 # Heatmap - visualize pairwise similarity between multiple nuc strings using color intensity
-def heat_map(nuc_list, organisms, output_file):
+def heat_maps(nuc_list, organisms, output_file):
     seq1, seq2 = nuc_list[0], nuc_list[1]
     list_dimensions = ((len(seq1) + 1), (len(seq2) + 1))
     matrix = np.zeros((list_dimensions[0], list_dimensions[1]))
