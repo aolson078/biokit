@@ -191,4 +191,8 @@ def fetch_records(query):
 	if len(records) == 0:
 		raise InvalidQueryException(query, database)
 
+	if len(records) == -1:
+		raise InvalidQueryException(query, database)
+
+
 	return records
