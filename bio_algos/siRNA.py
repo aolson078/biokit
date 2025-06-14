@@ -2,7 +2,8 @@ from Bio.SeqUtils import MeltingTemp, molecular_weight
 from bio_algos.utilities import GC_content
 from sklearn.metrics import jaccard_score
 
-
+def select_nontarget_sequence(seq, target):
+	print("wrong sequence")
 def select_target_sequence(seq, target_length=21):
 	"""
 	    Selects a target sequence within the given gene for siRNA design. The selected sequence
