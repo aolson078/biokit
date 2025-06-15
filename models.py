@@ -1,110 +1,35 @@
-from functools import wraps
-from flask import redirect, url_for
-from app import create_app, db
-from flask_login import UserMixin, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
+from app import db
 
-
-# UserMixin gives us premade methods for authentication and user management
 class User(UserMixin, db.Model):
-	__tablename__ = 'user'
+    __tablename__ = "user"
 
-	id = db.Column(db.Integer, primary_key=True)
-	username = db.Column(db.String(100), unique=True, nullable=False)
-	email = db.Column(db.String(120), unique=True, nullable=False)
-	password = db.Column(db.String(300), nullable=False, unique=True)
-	role = db.Column(db.String(40), nullable=True)
-	view_reports = db.Column(db.Boolean, default=False)
-	delete_reports = db.Column(db.Boolean, default=False)
-	print_reports = db.Column(db.Boolean, default=False)
-	change_reports = db.Column(db.Boolean, default=False)
+    id       = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), unique=True, nullable=False)
+    email    = db.Column(db.String(120), unique=True, nullable=False)
 
-	# looks up user in db and adds document to list
-	def __init__(self, username, email, password, role='employee'):
-		self.report_list = None
-		self.username = username
-		self.email = email
-		self.password = password
-		self.role = role
+    password_hash = db.Column(db.String(256), nullable=False)
 
-	def add_report(self, report):
-		if self.report_list is None:
-			self.report_list = []
-		self.report_list.append(report)
-		db.session.commit()
+    role            = db.Column(db.String(40), default="employee")
+    view_reports    = db.Column(db.Boolean, default=False)
+    delete_reports  = db.Column(db.Boolean, default=False)
+    print_reports   = db.Column(db.Boolean, default=False)
+    change_reports  = db.Column(db.Boolean, default=False)
 
-	def __repr__(self):
-		return '<User: %r>' % self.username
+    # ── convenience setters/getters ──────────────────────────────
+    def set_password(self, raw_password: str) -> None:
+        self.password_hash = generate_password_hash(raw_password)
 
+    def check_password(self, raw_password: str) -> bool:
+        return check_password_hash(self.password_hash, raw_password)
 
-class Record(db.Model):
-	__tablename__ = 'record'
+    # optional: accept raw_password in __init__ for one-liners
+    def __init__(self, username: str, email: str, raw_password: str, role: str = "employee"):
+        self.username = username
+        self.email    = email
+        self.set_password(raw_password)   # hashes internally
+        self.role     = role
 
-	id = db.Column(db.Integer, primary_key=True)
-	nucleotide_id = db.Column(db.String(20), unique=True)
-	organism = db.Column(db.String(80))
-	gene_info = db.Column(db.String(100))
-	nucleotides = db.Column(db.Text)
-
-	# single record calculations
-	gc_content = db.Column(db.Float)
-	amino_acids = db.Column(db.Text)
-	siRNA = db.Column(db.Text)
-	sense_similarity = db.Column(db.Float)
-	melting_temp = db.Column(db.Float)
-	molecular_weight = db.Column(db.Float)
-	hydrophobicity = db.Column(db.Float)
-	secondary_structure_prediction = db.Column(db.String(100))
-
-	employee_id = db.Column(db.Integer, nullable=False)
-	report_id = db.Column(db.Integer, db.ForeignKey('report.id', ondelete='CASCADE'))
-	reports = db.relationship('Report', secondary='report_record', backref='associated_records')
-
-report_record = db.Table('report_record',
-                         db.Column('report_id', db.Integer, db.ForeignKey('report.id'), primary_key=True),
-                         db.Column('record_id', db.Integer, db.ForeignKey('record.id'), primary_key=True)
-                         )
-
-
-# the report class represents the final product. It will contain the computed data from the bio processes
-class Report(db.Model):
-	__tablename__ = 'report'
-	id = db.Column(db.Integer, primary_key=True)
-	employee_id = db.Column(db.Integer, db.ForeignKey('record.employee_id'))
-	# holds ids of all nuc strings used in calculations
-	nucleotide_ids = db.Column(db.JSON)
-	# holds name of each organism in report
-	organisms = db.Column(db.JSON)
-	nucleotides = db.Column(db.JSON)
-	phylo_tree = db.Column(db.String(50), nullable=True)
-	dot_line_graph = db.Column(db.JSON)
-	heat_map = db.Column(db.JSON)
-	bar_chart = db.Column(db.String(50), nullable=True)
-	records = db.relationship('Record', secondary='report_record', backref='associated_reports')
-
-# decorator for authenticating manager login in routes.py
-def is_manager(func):
-	@wraps(func)
-	def authenticate_manager_view(*args, **kwargs):
-		if not current_user.is_authenticated or current_user.role != 'manager':
-			return redirect(url_for('denied'))
-		return func(*args, **kwargs)
-
-	return authenticate_manager_view
-
-# decorator for authenticating admin login in routes.py
-def is_admin(func):
-	@wraps(func)
-	def authenticate_admin_view(*args, **kwargs):
-		if not current_user.is_authenticated or current_user.role != 'admin':
-			return redirect(url_for('denied'))
-		return func(*args, **kwargs)
-
-	return authenticate_admin_view
-
-
-
-if __name__ == '__main__':
-	app = create_app()
-	with app.app_context():
-		db.create_all()
-	app.run()
+    def __repr__(self):
+        return f"<User {self.username}>"
