@@ -1,38 +1,46 @@
 from Bio.SeqUtils import MeltingTemp, molecular_weight
 from bio_algos.utilities import GC_content
 from sklearn.metrics import jaccard_score
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
+
 
 def select_nontarget_sequence(seq, target):
 	print("wrong sequence")
+
 def select_target_sequence(seq, target_length=21):
-	"""
-	    Selects a target sequence within the given gene for siRNA design. The selected sequence
-	    should have a GC content within a specified range to balance off-target risk, stability,
-	    and specificity.
+    """
+    Selects a target sequence within the given gene for siRNA design. The selected sequence
+    should have a GC content within a specified range to balance off-target risk, stability,
+    and specificity.
 
-	    :param seq: String representing the gene sequence.
-	    :param target_length: Length of the target sequence to be selected. Default is 21.
-	    :return: Tuple containing the selected target sequence and its GC content.
-	    :raises ValueError: If no valid target sequence is found within the specified GC content range.
-	"""
-	lower_bound = .3  # lowering lower bound reduces off-target risk, but reduces stability and specificity
-	upper_bound = .7  # raising upper bound increases stability, but reduces stability and increases off-target risk
+    :param seq: String representing the gene sequence.
+    :param target_length: Length of the target sequence to be selected. Default is 21.
+    :return: Tuple containing the selected target sequence and its GC content.
+    :raises ValueError: If no valid target sequence is found within the specified GC content range.
+    """
+    lower_bound = .3
+    upper_bound = .7
+    gc_bounds = (lower_bound, upper_bound)
+    
+    offset = 0
+    max_offset = len(seq) - target_length
 
-	gc_bounds = (lower_bound, upper_bound)
-	# number of positions to move target sequence so that it falls in the desired gc_content bounds
-	offset = 0
-	# prevents infinite loop if no suitable target found
-	max_offset = len(seq) - target_length
-	# if gc_content of target ! in bounds, and there offset < max offset, increment offset and recalculate gc_content
-	while (gc_content := GC_content(seq[offset:target_length + offset])) < gc_bounds[0] \
-			or gc_content > gc_bounds[1]:
-		offset += 1
-		if offset > max_offset:
-			raise ValueError("No valid target sequence found within the specified GC content range")
+    while offset <= max_offset:
+        target_candidate = seq[offset:target_length + offset]
+        gc_content = GC_content(target_candidate)
 
-	target_sequence = seq[offset:target_length + offset]
+        logging.info(f'Checking target sequence at offset {offset}: {target_candidate}, GC_content={gc_content:.2f}')
 
-	return target_sequence, GC_content(target_sequence)
+        if gc_bounds[0] <= gc_content <= gc_bounds[1]:
+            logging.info(f'Target sequence selected: {target_candidate}')
+            return target_candidate, gc_content
+
+        offset += 1
+
+    logging.error('No valid target sequence found within the specified GC content range')
+    raise ValueError("No valid target sequence found within the specified GC content range")
 
 
 def design_siRNA(target_sequence):
