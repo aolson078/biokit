@@ -5,14 +5,14 @@ index
 {% endblock %}
 
 {% block content %}
-<h1 style="text-align:center">An easy to use toolkit for Bioinformatics research</h1>
-<h3 style="text-align:center">A W.A.S. software product created by Alex Olson, Sola Yun, Will Hutcheon</h3>
-<h4>Easy phylogenetic graph and report generation</h4>
-<h4>Generate data models that provide insights and predictions into how structures will behave</h4>
-<div class="flex-container-body">
-<figure>
-    <!-- https://miro.medium.com/v2/resize:fit:900/1*Y3LCRCdu9XViUBBEiGGUiQ.png -->
-    <img src="../static/images/treeexample.png" alt="treeexample">
-    <figcaption style="text-align:center">Phylogenetic tree showing the three domains of life</figcaption>
-</figure>
+<div class="container py-4 text-center">
+    <h1 class="mb-3">An easy to use toolkit for Bioinformatics research</h1>
+    <h4 class="mb-4">A W.A.S. software product created by Alex Olson, Sola Yun, Will Hutcheon</h4>
+    <p class="lead">Easy phylogenetic graph and report generation</p>
+    <p class="lead">Generate data models that provide insights and predictions into how structures will behave</p>
+    <figure class="mt-4">
+        <img class="img-fluid" src="{{ url_for('static', filename='images/treeexample.png') }}" alt="treeexample">
+        <figcaption class="mt-2">Phylogenetic tree showing the three domains of life</figcaption>
+    </figure>
+</div>
 {% endblock %}
