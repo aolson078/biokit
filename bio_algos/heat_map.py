@@ -1,39 +1,85 @@
 import numpy as np
-from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
+from typing import List, Optional
 
-
-# Heatmap - visualize pairwise similarity between multiple nuc strings using color intensity
-def heat_maps(nuc_list, organisms, output_file):
-    seq1, seq2 = nuc_list[0], nuc_list[1]
-    list_dimensions = ((len(seq1) + 1), (len(seq2) + 1))
-    matrix = np.zeros((list_dimensions[0], list_dimensions[1]))
-
-    for i in range(len(seq1)):
-        for j in range(len(seq2)):
+def lcs_length(seq1: str, seq2: str) -> int:
+    """Compute the length of the longest common subsequence (LCS) between two sequences."""
+    m, n = len(seq1), len(seq2)
+    dp = np.zeros((m + 1, n + 1), dtype=int)
+    for i in range(m):
+        for j in range(n):
             if seq1[i] == seq2[j]:
-                matrix[i + 1][j + 1] = matrix[i][j] + 1
+                dp[i + 1, j + 1] = dp[i, j] + 1
             else:
-                matrix[i + 1][j + 1] = max(matrix[i][j + 1], matrix[i + 1][j]) - 1
+                dp[i + 1, j + 1] = max(dp[i, j + 1], dp[i + 1, j])
+    return dp[m, n]
 
-    maximum = np.max(matrix)
-    for i in range(matrix.shape[0]):
-        for j in range(matrix.shape[1]):
-            matrix[i][j] /= maximum
+def compute_similarity_matrix(nuc_list: List[str]) -> np.ndarray:
+    """Compute a normalized pairwise similarity matrix for nucleotide sequences."""
+    n = len(nuc_list)
+    matrix = np.zeros((n, n), dtype=float)
+    for i in range(n):
+        for j in range(n):
+            if i == j:
+                matrix[i, j] = 1.0  # Max similarity with self
+            else:
+                lcs = lcs_length(nuc_list[i], nuc_list[j])
+                norm = min(len(nuc_list[i]), len(nuc_list[j]))
+                matrix[i, j] = lcs / norm if norm else 0.0
+    return matrix
 
-    fig, ax = plt.subplots(figsize=(10, 8))
+def plot_heatmap(
+    matrix: np.ndarray,
+    labels: List[str],
+    output_file: Optional[str] = None,
+    show: bool = False,
+    title: str = "Nucleotide Sequence Similarity Heatmap"
+):
+    """Plot and optionally save/display a similarity heatmap."""
+    fig, ax = plt.subplots(figsize=(8, 6))
     im = ax.imshow(matrix, cmap='viridis')
 
-    ax.set_xticks([])
-    ax.set_yticks([])
-    ax.set_xlabel(organisms[1], fontsize=12)
-    ax.set_ylabel(organisms[0], fontsize=12)
+    # Set ticks and labels
+    ax.set_xticks(np.arange(len(labels)))
+    ax.set_yticks(np.arange(len(labels)))
+    ax.set_xticklabels(labels, fontsize=10, rotation=45, ha='right')
+    ax.set_yticklabels(labels, fontsize=10)
 
-    colbar = ax.figure.colorbar(im, ax=ax)
-    colbar.ax.set_ylabel("Similarity", rotation=-90, va='bottom')
+    # Annotate cells (optional, can comment if crowded)
+    for i in range(len(labels)):
+        for j in range(len(labels)):
+            ax.text(j, i, f"{matrix[i, j]:.2f}", ha='center', va='center',
+                    color='w' if matrix[i, j] < 0.5 else 'black', fontsize=8)
 
-    plt.setp(ax.get_xticklabels(), rotation=45, ha='right', rotation_mode='anchor')
-    ax.set_title("Nucleotide Sequence Heat Map")
+    cbar = fig.colorbar(im, ax=ax)
+    cbar.ax.set_ylabel("Normalized Similarity", rotation=-90, va="bottom")
+    ax.set_title(title)
     plt.tight_layout()
 
-    plt.savefig(output_file, format='png', dpi=500, bbox_inches='tight')
+    if output_file:
+        plt.savefig(output_file, format='png', dpi=500, bbox_inches='tight')
+    if show:
+        plt.show()
     plt.close(fig)
+
+def heat_maps(
+    nuc_list: List[str],
+    organisms: List[str],
+    output_file: Optional[str] = None,
+    show: bool = False
+):
+    """
+    Generates and saves/displays a heatmap of pairwise similarity between nucleotide sequences.
+    """
+    if len(nuc_list) != len(organisms):
+        raise ValueError("Number of sequences and organism labels must match.")
+    if len(nuc_list) < 2:
+        raise ValueError("Provide at least two sequences.")
+
+    matrix = compute_similarity_matrix(nuc_list)
+    plot_heatmap(matrix, organisms, output_file, show)
+
+# Example usage:
+nuc_list = ["ATGCATGC", "ATGCGGGC", "TTTTCATC"]
+organisms = ["Organism A", "Organism B", "Organism C"]
+heat_maps(nuc_list, organisms, "similarity_heatmap.png", show=True)
