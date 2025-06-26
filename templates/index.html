@@ -1,18 +1,24 @@
 {% extends "base.html" %}
 
 {% block title %}
-index
+Home
 {% endblock %}
 
 {% block content %}
-<h1 style="text-align:center">An easy to use toolkit for Bioinformatics research</h1>
-<h3 style="text-align:center">A W.A.S. software product created by Alex Olson, Sola Yun, Will Hutcheon</h3>
-<h4>Easy phylogenetic graph and report generation</h4>
-<h4>Generate data models that provide insights and predictions into how structures will behave</h4>
-<div class="flex-container-body">
-<figure>
-    <!-- https://miro.medium.com/v2/resize:fit:900/1*Y3LCRCdu9XViUBBEiGGUiQ.png -->
-    <img src="../static/images/treeexample.png" alt="treeexample">
-    <figcaption style="text-align:center">Phylogenetic tree showing the three domains of life</figcaption>
-</figure>
+<div class="hero">
+    <h1>BioKit</h1>
+    <p class="tagline">An easy to use toolkit for Bioinformatics research</p>
+    <p class="credits">A W.A.S. software product created by Alex Olson, Sola Yun, Will Hutcheon</p>
+    <a class="cta-button" href="/login.html">Get Started</a>
+</div>
+
+<div class="features">
+    <div class="feature">
+        <img src="{{ url_for('static', filename='images/treeexample.png') }}" alt="Phylogenetic tree">
+        <p>Easy phylogenetic graph and report generation</p>
+    </div>
+    <div class="feature">
+        <p>Generate data models that provide insights and predictions into how structures will behave</p>
+    </div>
+</div>
 {% endblock %}
