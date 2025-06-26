@@ -1,0 +1,14 @@
+Flask
+Flask-SQLAlchemy
+Flask-Bcrypt
+Flask-Migrate
+Flask-Login
+Flask-WTF
+celery
+redis
+biopython
+numpy
+matplotlib
+reportlab
+gunicorn
+pytest

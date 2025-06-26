@@ -6,6 +6,8 @@ A comprehensive library for DNA/RNA sequence analysis, manipulation, and retriev
 from typing import List, Dict, Tuple, Optional, Union
 from dataclasses import dataclass
 from Bio import Align, Entrez, SeqIO
+import io
+import json
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio.Align import MultipleSeqAlignment
@@ -449,7 +451,7 @@ class SequenceAlignment:
 class NCBITools:
     """Class for interacting with NCBI databases."""
     
-    def __init__(self, email: str, api_key: Optional[str] = None):
+    def __init__(self, email: str, api_key: Optional[str] = None, cache_dir: str = "ncbi_cache"):
         """
         Initialize NCBI tools with credentials.
         
@@ -459,6 +461,8 @@ class NCBITools:
         """
         self.email = email
         self.api_key = api_key or os.environ.get('NCBI_API_KEY')
+        self.cache_dir = cache_dir
+        os.makedirs(self.cache_dir, exist_ok=True)
         
         Entrez.email = self.email
         if self.api_key:
@@ -482,20 +486,34 @@ class NCBITools:
             List of record IDs
         """
         try:
+            safe_query = re.sub(r"[^0-9a-zA-Z_-]", "_", query)
+            field_part = f"_{field}" if field else ""
+            cache_file = os.path.join(
+                self.cache_dir,
+                f"search_{database}_{safe_query}_{retmax}{field_part}.json",
+            )
+            if os.path.exists(cache_file):
+                with open(cache_file, "r") as f:
+                    return json.load(f)
+
             search_params = {
                 "db": database,
                 "term": query,
-                "retmax": retmax
+                "retmax": retmax,
             }
             if field:
                 search_params["field"] = field
-            
+
             handle = Entrez.esearch(**search_params)
             results = Entrez.read(handle)
             handle.close()
-            
-            return results.get("IdList", [])
-            
+
+            ids = results.get("IdList", [])
+            with open(cache_file, "w") as f:
+                json.dump(ids, f)
+
+            return ids
+
         except Exception as e:
             logger.error(f"Search failed: {e}")
             raise InvalidQueryException(query, database)
@@ -523,24 +541,32 @@ class NCBITools:
         records = []
         
         try:
+            cache_folder = os.path.join(self.cache_dir, database)
+            os.makedirs(cache_folder, exist_ok=True)
             for record_id in ids:
-                handle = Entrez.efetch(
-                    db=database,
-                    id=record_id,
-                    rettype=rettype,
-                    retmode="text"
-                )
-                
+                safe_id = record_id.replace("/", "_")
+                cache_file = os.path.join(cache_folder, f"{safe_id}.{rettype}.txt")
+                if os.path.exists(cache_file):
+                    with open(cache_file, "r") as f:
+                        text = f.read()
+                else:
+                    handle = Entrez.efetch(
+                        db=database,
+                        id=record_id,
+                        rettype=rettype,
+                        retmode="text"
+                    )
+                    text = handle.read()
+                    handle.close()
+                    with open(cache_file, "w") as f:
+                        f.write(text)
+
                 if parse and rettype in ["fasta", "gb"]:
-                    # Parse into SeqRecord
-                    seq_records = list(SeqIO.parse(handle, rettype))
+                    seq_records = list(SeqIO.parse(io.StringIO(text), rettype))
                     records.extend(seq_records)
                 else:
-                    # Return raw text
-                    records.append(handle.read())
-                
-                handle.close()
-            
+                    records.append(text)
+
             return records
             
         except Exception as e:

@@ -2,3 +2,4 @@
 #migrations
 #db.sqlite3
 #requirements.txt
+ncbi_cache/
