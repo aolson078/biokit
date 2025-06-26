@@ -44,3 +44,19 @@ To run:
 Run file "routes.py"
 Click ip address in python console (127.0.0.1:5000)
 Login in with own or default user.
+
+## Background Tasks
+Heavy computations like report compilation run as asynchronous Celery jobs. Start a worker with `celery -A tasks.celery worker --loglevel=info` and use `/compile_report_async` to queue jobs. Check progress via `/task_status/<task_id>`.
+
+## API Usage
+Programmatic access is available through JSON endpoints:
+- `POST /api/create_record` to add a record
+- `POST /compile_report_async` to generate a report asynchronously
+- `GET /api/report/<id>` to retrieve report data
+
+## Docker
+Build the application with Docker and run using docker-compose:
+```bash
+docker-compose up --build
+```
+This starts the web service, Celery worker, and Redis broker.
