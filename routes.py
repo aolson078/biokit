@@ -37,6 +37,7 @@ from custom_exceptions import NoRecordsError
 from forms import login_form, register_form
 from models import *
 from bio_algos.utilities import fetch_records
+from tasks import compile_report_task
 
 # create instance of flask app
 app = create_app()
@@ -154,6 +155,86 @@ def compile_report():
     except NoRecordsError as e:
         print("No records to compile report")
         return redirect(url_for("employee"))
+
+
+@app.route('/compile_report_async', methods=["POST"], strict_slashes=False)
+@login_required
+def compile_report_async():
+    task = compile_report_task.delay(current_user.id)
+    return jsonify({'task_id': task.id}), 202
+
+
+@app.route('/task_status/<task_id>', methods=['GET'])
+@login_required
+def task_status(task_id):
+    task = compile_report_task.AsyncResult(task_id)
+    if task.state == 'PENDING':
+        return jsonify({'state': task.state})
+    elif task.state != 'FAILURE':
+        return jsonify({'state': task.state, 'result': task.result})
+    else:
+        return jsonify({'state': task.state, 'result': str(task.info)}), 500
+
+
+@app.route('/api/report/<int:report_id>', methods=['GET'])
+@login_required
+def api_get_report(report_id):
+    report = models.Report.query.get(report_id)
+    if not report:
+        return jsonify({'error': 'Report not found'}), 404
+    return jsonify({
+        'id': report.id,
+        'nucleotide_ids': report.nucleotide_ids,
+        'organisms': report.organisms,
+        'nucleotides': report.nucleotides,
+        'phylogenetic_tree': report.phylo_tree,
+        'dot_line_graph': report.dot_line_graph,
+        'heat_map': report.heat_map,
+        'bar_chart': report.bar_chart,
+    })
+
+
+@app.route('/api/create_record', methods=['POST'])
+@login_required
+def api_create_record():
+    data = request.get_json()
+    nucleotide_id = data.get('nucleotide_id')
+    organism = data.get('organism')
+    gene_info = data.get('gene_info')
+    nucleotides = data.get('nucleotides', '')
+
+    rna_seq = dna_to_rna(nucleotides)
+    siRNA_target, gc_content = select_target_sequence(rna_seq)
+    sense_strand, antisense_strand = create_rna_strands(siRNA_target)
+    sense_similarity = calculate_similarity(sense_strand, antisense_strand)
+    mole_weight = calculate_molecular_weight(rna_seq)
+    melting_temp = calculate_melting_temp(rna_seq)
+    siRNA_candidates = design_siRNA(rna_seq)
+    efficiency_scores = {c: predict_efficiency(c) for c in siRNA_candidates}
+    siRNA_choice = max(efficiency_scores, key=efficiency_scores.get)
+    amino_acids = transcribe_dna(nucleotides)
+    amino_dict = amino_acid_composition(rna_seq)
+    hydrophobicity_score = hydrophobicity(amino_dict)
+    secondary_structure = ss_propensity(amino_dict)
+
+    record = models.Record(
+        nucleotide_id=nucleotide_id,
+        organism=organism,
+        gene_info=gene_info,
+        nucleotides="".join(str(part) for part in nucleotides),
+        gc_content=gc_content,
+        amino_acids=amino_acids,
+        sense_similarity=sense_similarity,
+        molecular_weight=mole_weight,
+        melting_temp=melting_temp,
+        siRNA=siRNA_choice,
+        hydrophobicity=hydrophobicity_score,
+        secondary_structure_prediction=secondary_structure,
+        employee_id=current_user.id
+    )
+    db.session.add(record)
+    db.session.commit()
+    return jsonify({'record_id': record.id}), 201
 
 
 # route to handle building the visible report for the end user.
