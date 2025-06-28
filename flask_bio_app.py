@@ -55,6 +55,14 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Initialize extensions early so decorators can use them
+db = SQLAlchemy()
+login_manager = LoginManager()
+csrf = CSRFProtect()
+cache = Cache()
+limiter = Limiter(key_func=get_remote_address)
+celery = Celery(__name__)
+
 
 # Configuration classes
 class Config:
@@ -98,19 +106,19 @@ class SearchSchema(Schema):
 
 class ReportSettingsSchema(Schema):
     """Validation schema for report settings."""
-    hide_nucleotide_id = fields.Bool(missing=False)
-    hide_organism = fields.Bool(missing=False)
-    hide_nucleotide = fields.Bool(missing=False)
-    hide_phylogenetic = fields.Bool(missing=False)
+    hide_nucleotide_id = fields.Bool(load_default=False)
+    hide_organism = fields.Bool(load_default=False)
+    hide_nucleotide = fields.Bool(load_default=False)
+    hide_phylogenetic = fields.Bool(load_default=False)
 
 
 class UserPermissionsSchema(Schema):
     """Validation schema for user permissions."""
     user_id = fields.Int(required=True)
-    view_reports = fields.Bool(missing=False)
-    delete_reports = fields.Bool(missing=False)
-    print_reports = fields.Bool(missing=False)
-    change_reports = fields.Bool(missing=False)
+    view_reports = fields.Bool(load_default=False)
+    delete_reports = fields.Bool(load_default=False)
+    print_reports = fields.Bool(load_default=False)
+    change_reports = fields.Bool(load_default=False)
 
 
 # Custom decorators
@@ -364,13 +372,12 @@ class PDFReportGenerator:
 
 # Celery tasks
 def make_celery(app):
-    """Create Celery instance."""
-    celery = Celery(
-        app.import_name,
-        backend=app.config['CELERY_RESULT_BACKEND'],
-        broker=app.config['CELERY_BROKER_URL']
+    """Configure the global Celery instance."""
+    celery.conf.update(
+        broker_url=app.config['CELERY_BROKER_URL'],
+        result_backend=app.config['CELERY_RESULT_BACKEND'],
+        **app.config
     )
-    celery.conf.update(app.config)
     
     class ContextTask(celery.Task):
         def __call__(self, *args, **kwargs):
@@ -388,10 +395,11 @@ auth_bp = Blueprint('auth', __name__)
 @limiter.limit("5 per minute")
 def login():
     """Handle user login."""
+    from forms import login_form
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
-    
-    form = LoginForm()
+
+    form = login_form()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         
@@ -751,6 +759,10 @@ def create_app(config_class=Config):
     # Initialize extensions
     db.init_app(app)
     login_manager.init_app(app)
+    from models import User
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
     csrf.init_app(app)
     cache.init_app(app)
     limiter.init_app(app)
@@ -766,7 +778,9 @@ def create_app(config_class=Config):
     login_manager.login_message = 'Please log in to access this page.'
     
     # Create Celery
-    app.celery = make_celery(app)
+    global celery
+    celery = make_celery(app)
+    app.celery = celery
     
     # Error handlers
     @app.errorhandler(404)
@@ -795,13 +809,7 @@ def create_app(config_class=Config):
 
 
 # Initialize extensions (imported by models.py)
-db = SQLAlchemy()
-login_manager = LoginManager()
-csrf = CSRFProtect()
-cache = Cache()
-limiter = Limiter(key_func=get_remote_address)
-celery = None  # Created in app factory
-
+# (instances created above)
 
 if __name__ == "__main__":
     app = create_app()

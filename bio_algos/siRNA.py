@@ -1,5 +1,5 @@
 from Bio.SeqUtils import MeltingTemp, molecular_weight
-from bio_algos.utilities import GC_content
+from bio_algos.utilities import gc_content as calc_gc_content
 from sklearn.metrics import jaccard_score
 import logging
 
@@ -29,13 +29,13 @@ def select_target_sequence(seq, target_length=21):
 
     while offset <= max_offset:
         target_candidate = seq[offset:target_length + offset]
-        gc_content = GC_content(target_candidate)
+        gc_val = calc_gc_content(target_candidate)
 
-        logging.info(f'Checking target sequence at offset {offset}: {target_candidate}, GC_content={gc_content:.2f}')
+        logging.info(f'Checking target sequence at offset {offset}: {target_candidate}, GC_content={gc_val:.2f}')
 
-        if gc_bounds[0] <= gc_content <= gc_bounds[1]:
+        if gc_bounds[0] <= gc_val <= gc_bounds[1]:
             logging.info(f'Target sequence selected: {target_candidate}')
-            return target_candidate, gc_content
+            return target_candidate, gc_val
 
         offset += 1
 
@@ -177,52 +177,43 @@ def calculate_molecular_weight(seq):
 
 
 def predict_efficiency(siRNA_sequence):
-	"""
-	    Predicts the efficiency of the given siRNA sequence based on GC content, molecular weight,
-	    melting temperature, and specific nucleotides at certain positions.
+    """Predict the efficiency of the given siRNA sequence."""
 
-	    :param siRNA_sequence: String representing the siRNA sequence.
-	    :return: Integer representing the predicted efficiency score of the given siRNA sequence.
-    """
-	gc_content = GC_content(siRNA_sequence)
-	mole_weight = calculate_molecular_weight(siRNA_sequence)
-	tm = calculate_melting_temp(siRNA_sequence)
+    gc_val = calc_gc_content(siRNA_sequence)
+    mole_weight = calculate_molecular_weight(siRNA_sequence)
+    tm = calculate_melting_temp(siRNA_sequence)
 
-	# Initialize score
-	score = 0
+    score = 0
 
-	# GC content
-	if 30 <= gc_content < 40:
-		score += 1
-	elif 40 <= gc_content < 50:
-		score += 2
-	elif 50 <= gc_content < 60:
-		score += 3
-	elif gc_content >= 60:
-		score += 4
+    if 30 <= gc_val < 40:
+        score += 1
+    elif 40 <= gc_val < 50:
+        score += 2
+    elif 50 <= gc_val < 60:
+        score += 3
+    elif gc_val >= 60:
+        score += 4
 
-	# molecular weight
-	if 20000 <= mole_weight < 26000:
-		score += 1
-	elif 13000 <= mole_weight < 20000:
-		score += 2
-	elif mole_weight < 13000:
-		score += 3
+    if 20000 <= mole_weight < 26000:
+        score += 1
+    elif 13000 <= mole_weight < 20000:
+        score += 2
+    elif mole_weight < 13000:
+        score += 3
 
-	# melting temperature
-	if 50 <= tm < 60:
-		score += 1
-	elif 60 <= tm < 120:
-		score += 2
-	elif tm >= 120:
-		score += 3
+    if 50 <= tm < 60:
+        score += 1
+    elif 60 <= tm < 120:
+        score += 2
+    elif tm >= 120:
+        score += 3
 
-	# sequence motifs correlated with potency levels (Replace this with motif finding function)
-	for i, nucleotide in enumerate(siRNA_sequence):
-		if nucleotide == 'A' and i == 5:  # Check for A at position 6 (A6)
-			score += 1
-		if nucleotide == 'U' and i == 0:  # Check for U at position 1 (U1)
-			score -= 1
-		if nucleotide == 'G' and i == 18:  # Check for G at position 19 (G19)
-			score -= 1
-	return score
+    for i, nucleotide in enumerate(siRNA_sequence):
+        if nucleotide == 'A' and i == 5:
+            score += 1
+        if nucleotide == 'U' and i == 0:
+            score -= 1
+        if nucleotide == 'G' and i == 18:
+            score -= 1
+
+    return score

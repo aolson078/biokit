@@ -594,8 +594,16 @@ class NCBITools:
         
         if not ids:
             raise InvalidQueryException(query, database)
-        
+
         return self.fetch_records(ids, database, parse=True)
+
+
+# Convenience module-level helpers used by other modules
+_seq_tools = SequenceTools()
+
+def gc_content(sequence: str) -> float:
+    """Return GC content percentage for a sequence."""
+    return _seq_tools.gc_content(sequence)
 
 
 # Example usage
