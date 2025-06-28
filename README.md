@@ -11,20 +11,22 @@ BioKit is a Flask web application offering researchers a simple interface for pr
 - Docker configuration for easy deployment
 
 ## Quick start
-1. Install the dependencies
+1. Create a virtual environment and install the dependencies
    ```bash
+   python3 -m venv venv
+   source venv/bin/activate
    pip install -r requirements.txt
    ```
 2. Run the application
    ```bash
-   python routes.py
+   python manage.py
    ```
 3. Visit `http://127.0.0.1:5000` and log in using the default credentials:
    - **email**: `1@gmail.com`
    - **password**: `11111`
 
 ### Background tasks
-Start a worker to handle long running jobs:
+Make sure a Redis server is running (``redis-server``) and start a Celery worker to handle long running jobs:
 ```bash
 celery -A tasks.celery worker --loglevel=info
 ```
@@ -34,6 +36,12 @@ Use `/compile_report_async` to queue a report and check `/task_status/<task_id>`
 - `POST /api/create_record` – add a sequence record
 - `POST /compile_report_async` – generate a report asynchronously
 - `GET /api/report/<id>` – download a report
+
+### Running tests
+Execute the unit tests with `pytest`:
+```bash
+pytest
+```
 
 ### Docker
 Run the complete stack with Docker:
