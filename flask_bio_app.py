@@ -113,6 +113,17 @@ class UserPermissionsSchema(Schema):
     change_reports = fields.Bool(missing=False)
 
 
+class CreateRecordSchema(Schema):
+    """Validation schema for creating a Record via the API."""
+
+    nucleotide_id = fields.Str(
+        required=True, validate=validate.Length(min=1, max=20)
+    )
+    organism = fields.Str(required=True, validate=validate.Length(min=1, max=80))
+    gene_info = fields.Str(required=True, validate=validate.Length(min=1, max=100))
+    nucleotides = fields.Str(required=True, validate=validate.Length(min=1))
+
+
 # Custom decorators
 def role_required(role):
     """Decorator to check if user has required role."""

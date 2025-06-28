@@ -38,6 +38,7 @@ from forms import login_form, register_form
 from models import *
 from bio_algos.utilities import fetch_records
 from tasks import compile_report_task
+from flask_bio_app import validate_json, CreateRecordSchema
 
 # create instance of flask app
 app = create_app()
@@ -196,12 +197,13 @@ def api_get_report(report_id):
 
 @app.route('/api/create_record', methods=['POST'])
 @login_required
+@validate_json(CreateRecordSchema)
 def api_create_record():
-    data = request.get_json()
-    nucleotide_id = data.get('nucleotide_id')
-    organism = data.get('organism')
-    gene_info = data.get('gene_info')
-    nucleotides = data.get('nucleotides', '')
+    data = request.validated_data
+    nucleotide_id = data['nucleotide_id']
+    organism = data['organism']
+    gene_info = data['gene_info']
+    nucleotides = data['nucleotides']
 
     rna_seq = dna_to_rna(nucleotides)
     siRNA_target, gc_content = select_target_sequence(rna_seq)
