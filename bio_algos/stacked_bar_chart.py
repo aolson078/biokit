@@ -51,7 +51,8 @@ def grouped_bar_chart(nuc_list, organisms, output=None, show=False):
         plt.show()
     plt.close(fig)
 
-# Example usage:
-nuc_list = ['GATTTGCA', 'GATTACA', 'GCGCGCAT']
-organisms = ['Human', 'Mouse', 'Yeast']
-grouped_bar_chart(nuc_list, organisms, output='nuc_freq.png', show=True)
+if __name__ == "__main__":
+    # Example usage:
+    nuc_list = ['GATTTGCA', 'GATTACA', 'GCGCGCAT']
+    organisms = ['Human', 'Mouse', 'Yeast']
+    grouped_bar_chart(nuc_list, organisms, output='nuc_freq.png', show=True)

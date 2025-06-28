@@ -134,7 +134,9 @@ def compile_report():
                 bio_algos.dot_plot.dot_plot(sequences, [organisms[i], organisms[j]],
                                             f"./static/graphs/dot_plot/dot{report.id}-{i}.png")
                 # create heat map
-                heat_paths.append(f"./static/images/graphs/heat_map/heat{report.id}-{i}.png")
+                heat_paths.append(
+                    f"./static/graphs/heat_map/heat{report.id}-{i}.png"
+                )
                 heat_map.heat_map(sequences, [organisms[i], organisms[j]],
                                   f"./static/graphs/heat_map/heat{report.id}-{i}.png")
 

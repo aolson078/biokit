@@ -79,7 +79,8 @@ def heat_maps(
     matrix = compute_similarity_matrix(nuc_list)
     plot_heatmap(matrix, organisms, output_file, show)
 
-# Example usage:
-nuc_list = ["ATGCATGC", "ATGCGGGC", "TTTTCATC"]
-organisms = ["Organism A", "Organism B", "Organism C"]
-heat_maps(nuc_list, organisms, "similarity_heatmap.png", show=True)
+if __name__ == "__main__":
+    # Example usage:
+    nuc_list = ["ATGCATGC", "ATGCGGGC", "TTTTCATC"]
+    organisms = ["Organism A", "Organism B", "Organism C"]
+    heat_maps(nuc_list, organisms, "similarity_heatmap.png", show=True)
