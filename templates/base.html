@@ -22,13 +22,11 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link {% if active_page == 'home' %}active{% endif %}" href="{{ url_for('main.index') }}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link {% if active_page == 'employee' %}active{% endif %}" href="/employee.html">Employee</a></li>
-                    <li class="nav-item"><a class="nav-link {% if active_page == 'manager' %}active{% endif %}" href="/manager.html">Manager</a></li>
-                    <li class="nav-item"><a class="nav-link {% if active_page == 'admin' %}active{% endif %}" href="/admin.html">Admin</a></li>
+                    <li class="nav-item"><a class="nav-link {% if active_page == 'admin' %}active{% endif %}" href="{{ url_for('admin.dashboard') }}">Admin</a></li>
                     {% if current_user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a></li>
                     {% else %}
-                    <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Login</a></li>
                     {% endif %}
                 </ul>
             </div>

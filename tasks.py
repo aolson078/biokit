@@ -1,11 +1,12 @@
-from app import create_app
-from celery_utils import make_celery
+"""Celery tasks for the BioKit application."""
+
+from flask_bio_app import create_app
 from models import Record, Report, db
 from bio_algos.phylo_tree import generate_tree
 from bio_algos import dot_plot, heat_map, stacked_bar_chart
 
 app = create_app()
-celery = make_celery(app)
+celery = app.celery
 
 @celery.task()
 def compile_report_task(employee_id):

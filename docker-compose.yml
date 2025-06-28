@@ -2,7 +2,7 @@ version: '3'
 services:
   web:
     build: .
-    command: gunicorn routes:app -b 0.0.0.0:5000
+    command: gunicorn flask_bio_app:create_app\(\) -b 0.0.0.0:5000
     volumes:
       - .:/app
     ports:
