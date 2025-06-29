@@ -143,7 +143,8 @@ Report
     {% endfor %}
 
 <div class="row">
-  {% set image_types = ['bar', 'heat', 'dot'] %}
+  {% set image_types = ['bar', 'heat', 'dot', 'line'] %}
+  {% set graph_folders = graph_images.keys() %}
   {% set reordered_folders = graph_folders|sort(reverse=True) %}
   {% for folder in reordered_folders %}
   <div class="col-md-6">

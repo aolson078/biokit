@@ -47,6 +47,7 @@ from bio_algos import (
     dot_plot, phylo_tree, sequence_profile,
     siRNA, utilities, stacked_bar_chart, heat_map
 )
+from bio_algos.gc_content_line import gc_line_graph
 
 # Configure logging
 logging.basicConfig(
@@ -243,7 +244,8 @@ class ReportGenerator:
             'phylo_tree': None,
             'dot_plots': [],
             'heat_maps': [],
-            'bar_chart': None
+            'bar_chart': None,
+            'gc_lines': []
         }
         
         try:
@@ -252,7 +254,8 @@ class ReportGenerator:
                 'static/graphs/phylo_tree',
                 'static/graphs/dot_plot',
                 'static/graphs/heat_map',
-                'static/graphs/stacked_bar'
+                'static/graphs/stacked_bar',
+                'static/graphs/gc_line'
             ]
             for dir_path in graph_dirs:
                 Path(dir_path).mkdir(parents=True, exist_ok=True)
@@ -282,7 +285,13 @@ class ReportGenerator:
             bar_path = f"static/graphs/stacked_bar/bar{report_id}.png"
             stacked_bar_chart.stacked_bar_chart(nucleotides, organisms, bar_path)
             graph_paths['bar_chart'] = bar_path
-            
+
+            # Generate GC content line graphs for each sequence
+            for idx, seq in enumerate(nucleotides):
+                line_path = f"static/graphs/gc_line/line{report_id}-{idx}.png"
+                gc_line_graph(seq, output=line_path)
+                graph_paths['gc_lines'].append(line_path)
+
             return graph_paths
             
         except Exception as e:
@@ -533,8 +542,8 @@ def display_report(report_id):
     # Get graph files
     graph_images = {}
     graph_base_path = Path('static/graphs')
-    
-    for folder in ['phylo_tree', 'dot_plot', 'heat_map', 'stacked_bar']:
+
+    for folder in ['phylo_tree', 'dot_plot', 'heat_map', 'stacked_bar', 'gc_line']:
         folder_path = graph_base_path / folder
         if folder_path.exists():
             images = [
@@ -543,11 +552,14 @@ def display_report(report_id):
             ]
             if images:
                 graph_images[folder] = images
-    
+
+    graph_folders = list(graph_images.keys())
+
     return render_template(
         'report/display.html',
         report=report,
-        graph_images=graph_images
+        graph_images=graph_images,
+        graph_folders=graph_folders
     )
 
 
@@ -731,6 +743,7 @@ def compile_report_task(self, user_id):
         report.dot_line_graph = graph_paths['dot_plots']
         report.heat_map = graph_paths['heat_maps']
         report.bar_chart = graph_paths['bar_chart']
+        report.gc_line_graphs = graph_paths['gc_lines']
         
         # Associate records
         report.associated_records.extend(records)
