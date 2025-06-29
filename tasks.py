@@ -4,6 +4,7 @@ from flask_bio_app import create_app
 from models import Record, Report, db
 from bio_algos.phylo_tree import generate_tree
 from bio_algos import dot_plot, heat_map, stacked_bar_chart
+from bio_algos.gc_content_line import gc_line_graph
 
 app = create_app()
 celery = app.celery
@@ -64,6 +65,13 @@ def compile_report_task(employee_id):
     bar_chart_path = f"./static/graphs/stacked_bar/bar{report.id}.png"
     stacked_bar_chart.stacked_bar_chart(nucleotides, organisms, bar_chart_path)
     report.bar_chart = bar_chart_path
+
+    gc_paths = []
+    for idx, seq in enumerate(nucleotides):
+        line_path = f"./static/graphs/gc_line/line{report.id}-{idx}.png"
+        gc_line_graph(seq, output=line_path)
+        gc_paths.append(line_path)
+    report.gc_line_graphs = gc_paths
 
     db.session.commit()
     return report.id
