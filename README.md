@@ -10,6 +10,7 @@ BioKit is a Flask web application offering researchers a simple interface for pr
 - JSON API endpoints for automation
 - Docker configuration for easy deployment
 - GC content line graphs for individual sequences
+- GC content heatmaps comparing multiple sequences
 
 ## Quick start
 1. Create a virtual environment and install the dependencies
