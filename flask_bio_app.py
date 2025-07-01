@@ -48,6 +48,7 @@ from bio_algos import (
     siRNA, utilities, stacked_bar_chart, heat_map
 )
 from bio_algos.gc_content_line import gc_line_graph
+from bio_algos.gc_skew import gc_skew_plot
 
 # Configure logging
 logging.basicConfig(
@@ -245,7 +246,8 @@ class ReportGenerator:
             'dot_plots': [],
             'heat_maps': [],
             'bar_chart': None,
-            'gc_lines': []
+            'gc_lines': [],
+            'gc_skews': []
         }
         
         try:
@@ -255,7 +257,8 @@ class ReportGenerator:
                 'static/graphs/dot_plot',
                 'static/graphs/heat_map',
                 'static/graphs/stacked_bar',
-                'static/graphs/gc_line'
+                'static/graphs/gc_line',
+                'static/graphs/gc_skew'
             ]
             for dir_path in graph_dirs:
                 Path(dir_path).mkdir(parents=True, exist_ok=True)
@@ -286,11 +289,15 @@ class ReportGenerator:
             stacked_bar_chart.stacked_bar_chart(nucleotides, organisms, bar_path)
             graph_paths['bar_chart'] = bar_path
 
-            # Generate GC content line graphs for each sequence
+            # Generate GC content line graphs and GC skew plots for each sequence
             for idx, seq in enumerate(nucleotides):
                 line_path = f"static/graphs/gc_line/line{report_id}-{idx}.png"
                 gc_line_graph(seq, output=line_path)
                 graph_paths['gc_lines'].append(line_path)
+
+                skew_path = f"static/graphs/gc_skew/skew{report_id}-{idx}.png"
+                gc_skew_plot(seq, output=skew_path)
+                graph_paths['gc_skews'].append(skew_path)
 
             return graph_paths
             
@@ -368,7 +375,7 @@ class PDFReportGenerator:
         • Dot plots for sequence similarity visualization
         • Heat maps for detailed sequence comparison
         • Nucleotide composition bar chart
-        
+        • GC content trends and GC skew plots
         Generated graphs are available in the web interface.
         """
         story.append(Paragraph(analysis_text, styles['Normal']))
@@ -543,7 +550,7 @@ def display_report(report_id):
     graph_images = {}
     graph_base_path = Path('static/graphs')
 
-    for folder in ['phylo_tree', 'dot_plot', 'heat_map', 'stacked_bar', 'gc_line']:
+    for folder in ['phylo_tree', 'dot_plot', 'heat_map', 'stacked_bar', 'gc_line', 'gc_skew']:
         folder_path = graph_base_path / folder
         if folder_path.exists():
             images = [
@@ -744,6 +751,7 @@ def compile_report_task(self, user_id):
         report.heat_map = graph_paths['heat_maps']
         report.bar_chart = graph_paths['bar_chart']
         report.gc_line_graphs = graph_paths['gc_lines']
+        report.gc_skew_graphs = graph_paths['gc_skews']
         
         # Associate records
         report.associated_records.extend(records)
