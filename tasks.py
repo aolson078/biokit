@@ -5,6 +5,7 @@ from models import Record, Report, db
 from bio_algos.phylo_tree import generate_tree
 from bio_algos import dot_plot, heat_map, stacked_bar_chart
 from bio_algos.gc_content_line import gc_line_graph
+from bio_algos.gc_skew import gc_skew_plot
 
 app = create_app()
 celery = app.celery
@@ -67,11 +68,17 @@ def compile_report_task(employee_id):
     report.bar_chart = bar_chart_path
 
     gc_paths = []
+    skew_paths = []
     for idx, seq in enumerate(nucleotides):
         line_path = f"./static/graphs/gc_line/line{report.id}-{idx}.png"
         gc_line_graph(seq, output=line_path)
         gc_paths.append(line_path)
+
+        skew_path = f"./static/graphs/gc_skew/skew{report.id}-{idx}.png"
+        gc_skew_plot(seq, output=skew_path)
+        skew_paths.append(skew_path)
     report.gc_line_graphs = gc_paths
+    report.gc_skew_graphs = skew_paths
 
     db.session.commit()
     return report.id

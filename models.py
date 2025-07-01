@@ -97,6 +97,7 @@ class Report(db.Model):
     heat_map = db.Column(db.JSON)
     bar_chart = db.Column(db.String(50))
     gc_line_graphs = db.Column(db.JSON)
+    gc_skew_graphs = db.Column(db.JSON)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     employee = db.relationship("User", backref="reports")
