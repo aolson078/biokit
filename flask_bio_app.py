@@ -49,6 +49,7 @@ from bio_algos import (
 )
 from bio_algos.gc_content_line import gc_line_graph
 from bio_algos.gc_skew import gc_skew_plot
+from bio_algos.nucleotide_pie import nucleotide_pie_chart
 
 # Configure logging
 logging.basicConfig(
@@ -247,7 +248,8 @@ class ReportGenerator:
             'heat_maps': [],
             'bar_chart': None,
             'gc_lines': [],
-            'gc_skews': []
+            'gc_skews': [],
+            'nuc_pies': []
         }
         
         try:
@@ -258,7 +260,8 @@ class ReportGenerator:
                 'static/graphs/heat_map',
                 'static/graphs/stacked_bar',
                 'static/graphs/gc_line',
-                'static/graphs/gc_skew'
+                'static/graphs/gc_skew',
+                'static/graphs/nuc_pie'
             ]
             for dir_path in graph_dirs:
                 Path(dir_path).mkdir(parents=True, exist_ok=True)
@@ -289,7 +292,7 @@ class ReportGenerator:
             stacked_bar_chart.stacked_bar_chart(nucleotides, organisms, bar_path)
             graph_paths['bar_chart'] = bar_path
 
-            # Generate GC content line graphs and GC skew plots for each sequence
+            # Generate GC content line graphs, GC skew plots, and nucleotide pie charts
             for idx, seq in enumerate(nucleotides):
                 line_path = f"static/graphs/gc_line/line{report_id}-{idx}.png"
                 gc_line_graph(seq, output=line_path)
@@ -298,6 +301,10 @@ class ReportGenerator:
                 skew_path = f"static/graphs/gc_skew/skew{report_id}-{idx}.png"
                 gc_skew_plot(seq, output=skew_path)
                 graph_paths['gc_skews'].append(skew_path)
+
+                pie_path = f"static/graphs/nuc_pie/pie{report_id}-{idx}.png"
+                nucleotide_pie_chart(seq, output=pie_path)
+                graph_paths['nuc_pies'].append(pie_path)
 
             return graph_paths
             
@@ -550,7 +557,7 @@ def display_report(report_id):
     graph_images = {}
     graph_base_path = Path('static/graphs')
 
-    for folder in ['phylo_tree', 'dot_plot', 'heat_map', 'stacked_bar', 'gc_line', 'gc_skew']:
+    for folder in ['phylo_tree', 'dot_plot', 'heat_map', 'stacked_bar', 'gc_line', 'gc_skew', 'nuc_pie']:
         folder_path = graph_base_path / folder
         if folder_path.exists():
             images = [
@@ -752,6 +759,7 @@ def compile_report_task(self, user_id):
         report.bar_chart = graph_paths['bar_chart']
         report.gc_line_graphs = graph_paths['gc_lines']
         report.gc_skew_graphs = graph_paths['gc_skews']
+        report.nuc_pie_charts = graph_paths['nuc_pies']
         
         # Associate records
         report.associated_records.extend(records)
