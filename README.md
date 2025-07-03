@@ -13,6 +13,7 @@ BioKit is a Flask web application offering researchers a simple interface for pr
 - GC content heatmaps comparing multiple sequences
 - GC skew plots highlighting replication biases
 - Nucleotide composition pie charts for each sequence
+- Sequence entropy line graphs showing local complexity
 
 ## Quick start
 1. Create a virtual environment and install the dependencies
