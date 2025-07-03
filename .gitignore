@@ -3,3 +3,5 @@
 #db.sqlite3
 #requirements.txt
 ncbi_cache/
+__pycache__/
+*.png
