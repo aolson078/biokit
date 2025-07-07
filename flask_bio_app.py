@@ -50,6 +50,8 @@ from bio_algos import (
 from bio_algos.gc_content_line import gc_line_graph
 from bio_algos.gc_skew import gc_skew_plot
 from bio_algos.nucleotide_pie import nucleotide_pie_chart
+from bio_algos.entropy_line import entropy_line_graph
+from bio_algos.kmer_histogram import kmer_histogram
 
 # Configure logging
 logging.basicConfig(
@@ -249,7 +251,9 @@ class ReportGenerator:
             'bar_chart': None,
             'gc_lines': [],
             'gc_skews': [],
-            'nuc_pies': []
+            'nuc_pies': [],
+            'entropy_lines': [],
+            'kmer_hists': []
         }
         
         try:
@@ -261,7 +265,9 @@ class ReportGenerator:
                 'static/graphs/stacked_bar',
                 'static/graphs/gc_line',
                 'static/graphs/gc_skew',
-                'static/graphs/nuc_pie'
+                'static/graphs/nuc_pie',
+                'static/graphs/entropy_line',
+                'static/graphs/kmer_hist'
             ]
             for dir_path in graph_dirs:
                 Path(dir_path).mkdir(parents=True, exist_ok=True)
@@ -305,6 +311,14 @@ class ReportGenerator:
                 pie_path = f"static/graphs/nuc_pie/pie{report_id}-{idx}.png"
                 nucleotide_pie_chart(seq, output=pie_path)
                 graph_paths['nuc_pies'].append(pie_path)
+
+                entropy_path = f"static/graphs/entropy_line/entropy{report_id}-{idx}.png"
+                entropy_line_graph(seq, output=entropy_path)
+                graph_paths['entropy_lines'].append(entropy_path)
+
+                kmer_path = f"static/graphs/kmer_hist/kmer{report_id}-{idx}.png"
+                kmer_histogram(seq, k=3, output=kmer_path)
+                graph_paths['kmer_hists'].append(kmer_path)
 
             return graph_paths
             
@@ -557,7 +571,10 @@ def display_report(report_id):
     graph_images = {}
     graph_base_path = Path('static/graphs')
 
-    for folder in ['phylo_tree', 'dot_plot', 'heat_map', 'stacked_bar', 'gc_line', 'gc_skew', 'nuc_pie']:
+    for folder in [
+        'phylo_tree', 'dot_plot', 'heat_map', 'stacked_bar',
+        'gc_line', 'gc_skew', 'nuc_pie', 'entropy_line', 'kmer_hist'
+    ]:
         folder_path = graph_base_path / folder
         if folder_path.exists():
             images = [
@@ -760,6 +777,8 @@ def compile_report_task(self, user_id):
         report.gc_line_graphs = graph_paths['gc_lines']
         report.gc_skew_graphs = graph_paths['gc_skews']
         report.nuc_pie_charts = graph_paths['nuc_pies']
+        report.entropy_line_graphs = graph_paths['entropy_lines']
+        report.kmer_histograms = graph_paths['kmer_hists']
         
         # Associate records
         report.associated_records.extend(records)

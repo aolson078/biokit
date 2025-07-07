@@ -7,6 +7,8 @@ from bio_algos import dot_plot, heat_map, stacked_bar_chart
 from bio_algos.gc_content_line import gc_line_graph
 from bio_algos.gc_skew import gc_skew_plot
 from bio_algos.nucleotide_pie import nucleotide_pie_chart
+from bio_algos.entropy_line import entropy_line_graph
+from bio_algos.kmer_histogram import kmer_histogram
 
 app = create_app()
 celery = app.celery
@@ -71,6 +73,8 @@ def compile_report_task(employee_id):
     gc_paths = []
     skew_paths = []
     pie_paths = []
+    entropy_paths = []
+    kmer_paths = []
     for idx, seq in enumerate(nucleotides):
         line_path = f"./static/graphs/gc_line/line{report.id}-{idx}.png"
         gc_line_graph(seq, output=line_path)
@@ -83,9 +87,19 @@ def compile_report_task(employee_id):
         pie_path = f"./static/graphs/nuc_pie/pie{report.id}-{idx}.png"
         nucleotide_pie_chart(seq, output=pie_path)
         pie_paths.append(pie_path)
+
+        entropy_path = f"./static/graphs/entropy_line/entropy{report.id}-{idx}.png"
+        entropy_line_graph(seq, output=entropy_path)
+        entropy_paths.append(entropy_path)
+
+        kmer_path = f"./static/graphs/kmer_hist/kmer{report.id}-{idx}.png"
+        kmer_histogram(seq, k=3, output=kmer_path)
+        kmer_paths.append(kmer_path)
     report.gc_line_graphs = gc_paths
     report.gc_skew_graphs = skew_paths
     report.nuc_pie_charts = pie_paths
+    report.entropy_line_graphs = entropy_paths
+    report.kmer_histograms = kmer_paths
 
     db.session.commit()
     return report.id
