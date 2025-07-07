@@ -15,6 +15,7 @@ BioKit is a Flask web application offering researchers a simple interface for pr
 - Nucleotide composition pie charts for each sequence
 - Sequence entropy line graphs showing local complexity
 - K-mer frequency histograms for exploring motif patterns
+- Automatic inclusion of entropy and k-mer visualizations in compiled reports
 
 ## Quick start
 1. Create a virtual environment and install the dependencies
