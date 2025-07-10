@@ -101,6 +101,7 @@ class Report(db.Model):
     nuc_pie_charts = db.Column(db.JSON)
     entropy_line_graphs = db.Column(db.JSON)
     kmer_histograms = db.Column(db.JSON)
+    cumulative_gc_skew_graphs = db.Column(db.JSON)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     employee = db.relationship("User", backref="reports")
