@@ -109,6 +109,12 @@ class SearchSchema(Schema):
     search = fields.Str(required=True, validate=validate.Length(min=1, max=200))
 
 
+class ORFFinderSchema(Schema):
+    """Validation schema for ORF finder requests."""
+    sequence = fields.Str(required=True, validate=validate.Length(min=3, max=50000))
+    min_length = fields.Int(load_default=90, validate=validate.Range(min=30, max=5000))
+
+
 class ReportSettingsSchema(Schema):
     """Validation schema for report settings."""
     hide_nucleotide_id = fields.Bool(load_default=False)
@@ -440,7 +446,7 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         
-        if user and check_password_hash(user.password, form.password.data):
+        if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
             next_page = request.args.get('next')
             
@@ -481,10 +487,12 @@ def index():
 def search():
     """Handle NCBI search requests."""
     try:
-        query = request.validated_data['search']
+        query = ' '.join(request.validated_data['search'].split())
+        if not query:
+            return jsonify({'error': 'Search query cannot be empty'}), 400
         
         # Use caching for repeated searches
-        cache_key = f"search:{query}"
+        cache_key = f"search:{query.lower()}"
         cached_results = cache.get(cache_key)
         
         if cached_results:
@@ -492,6 +500,9 @@ def search():
         
         # Perform search
         results = utilities.fetch_records(query)
+        if not isinstance(results, list):
+            logger.warning("Unexpected search result payload type: %s", type(results).__name__)
+            results = []
         
         # Cache results for 1 hour
         cache.set(cache_key, results, timeout=3600)
@@ -501,6 +512,54 @@ def search():
     except Exception as e:
         logger.error(f"Search error: {e}")
         return jsonify({'error': 'Search failed'}), 500
+
+
+@main_bp.route('/orf-finder', methods=['GET'])
+@login_required
+def orf_finder_page():
+    """Render ORF finder utility page."""
+    return render_template('orf_finder.html', title="ORF Finder")
+
+
+@main_bp.route('/api/orf-finder', methods=['POST'])
+@login_required
+@validate_json(ORFFinderSchema)
+@limiter.limit("20 per minute")
+def find_orfs():
+    """Find ORFs in a DNA sequence and return structured results."""
+    try:
+        sequence = request.validated_data['sequence']
+        min_length = request.validated_data['min_length']
+        sequence_tools = utilities.SequenceTools()
+        cleaned_sequence = ''.join(
+            line.strip()
+            for line in sequence.splitlines()
+            if line.strip() and not line.strip().startswith('>')
+        ).upper().replace(' ', '')
+
+        if not sequence_tools.validate_sequence(cleaned_sequence, utilities.SequenceType.DNA):
+            return jsonify({'error': 'Invalid DNA sequence. Use only A, T, C, G, and N.'}), 400
+
+        found_orfs = sequence_tools.find_orfs_detailed(cleaned_sequence, min_length=min_length)
+        formatted_orfs = [{
+            'start': orf['start'] + 1,
+            'end': orf['end'],
+            'length_nt': orf['length_nt'],
+            'length_aa': orf['length_aa'],
+            'protein': orf['protein'],
+            'strand': orf['strand'],
+            'frame': orf['frame']
+        } for orf in found_orfs]
+        formatted_orfs.sort(key=lambda item: (-item['length_nt'], item['start'], item['strand']))
+        return jsonify({
+            'count': len(formatted_orfs),
+            'sequence_length': len(cleaned_sequence),
+            'min_length': min_length,
+            'orfs': formatted_orfs[:100]
+        })
+    except Exception as e:
+        logger.error(f"ORF finder error: {e}")
+        return jsonify({'error': 'ORF analysis failed'}), 500
 
 
 @main_bp.route('/process_sequence', methods=['POST'])
@@ -577,17 +636,21 @@ def display_report(report_id):
     ]:
         folder_path = graph_base_path / folder
         if folder_path.exists():
-            images = [
-                str(img.relative_to('static'))
-                for img in folder_path.glob(f'*{report_id}*')
-            ]
+            images = sorted(
+                [img.name for img in folder_path.glob(f'*{report_id}*')],
+                key=lambda name: name.lower()
+            )
             if images:
                 graph_images[folder] = images
 
-    graph_folders = list(graph_images.keys())
+    display_order = [
+        'phylo_tree', 'stacked_bar', 'dot_plot', 'heat_map',
+        'gc_line', 'gc_skew', 'nuc_pie', 'entropy_line', 'kmer_hist'
+    ]
+    graph_folders = [folder for folder in display_order if folder in graph_images]
 
     return render_template(
-        'report/display.html',
+        'display_report.html',
         report=report,
         graph_images=graph_images,
         graph_folders=graph_folders

@@ -1,43 +1,47 @@
 {% extends "base.html" %}
 
-{% block title %}
-employee
-{% endblock %}
+{% block title %}Employee{% endblock %}
 
 {% block content %}
+<div class="container py-4">
 <div class="card-container"></div>
 
 {% if all_records %}
 <div class="records-container">
-    <h3>Gene records ready to be compiled:</h3>
+    <h3 class="section-title">Gene records ready to be compiled</h3>
     {% for record in all_records %}
-    <p>{{ record.organism }} : {{ record.gene_info }}</p>
+    <p><strong>{{ record.organism }}</strong> : {{ record.gene_info }}</p>
     {% endfor %}
-    <button type="button" onclick="compileReport()">Compile Report</button>
+    <button class="btn btn-primary mt-2" type="button" onclick="compileReport()">Compile Report</button>
 </div>
 {% endif %}
 
-
-
-<div class="flex-container">
-    <form id="searchForm">
-        <input type="text" name="search" placeholder="Search...">
-        <button type="button" onclick="searchReports()">Search</button>
+<div class="search-panel orf-panel p-3">
+    <form id="searchForm" onsubmit="event.preventDefault(); searchReports();">
+        <label class="visually-hidden" for="employee-search-input">Search biological database</label>
+        <input id="employee-search-input" class="form-control" type="text" name="search" minlength="3" placeholder="Search biological database..." required>
+        <button class="btn btn-outline-primary" type="submit">Search</button>
+            <button class="btn btn-outline-secondary" type="button" id="clearSearchBtn">Clear</button>
     </form>
+    <p id="search-status" class="text-muted mb-0 mt-2" aria-live="polite"></p>
 </div>
 
-<div id="searchResults" class="card-container"></div>
+<div id="searchResultsApp"></div>
+<noscript><div id="searchResults" class="card-container"></div></noscript>
 
-<div>
-    <form action="add_action" method="post" style="text-align:center">
-        <h3>Select a report from Employee</h3>
-        {% for report in reports %}
-        <label for="report{{ loop.index }}">Report {{ loop.index }}</label>
-        <button type="button" onclick="displayReport('{{ report.id }}')">Display</button>
-        <br>
-        {% endfor %}
-        <br>
-    </form>
+<div class="orf-panel p-3 mt-3">
+    <h3 class="section-title">Select a report</h3>
+    {% for report in reports %}
+      <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+        <span>Report {{ loop.index }}</span>
+        <button class="btn btn-sm btn-primary" type="button" onclick="displayReport('{{ report.id }}')">Display</button>
+      </div>
+    {% endfor %}
 </div>
+</div>
+{% endblock %}
 
+{% block scripts %}
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 {% endblock %}

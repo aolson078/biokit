@@ -285,40 +285,60 @@ class SequenceTools:
         
         return ''.join(protein)
     
-    def find_orfs(self, sequence: str, min_length: int = 100) -> List[Tuple[int, int, str]]:
-        """
-        Find all open reading frames (ORFs) in a sequence.
-        
-        Args:
-            sequence: DNA sequence
-            min_length: Minimum ORF length in nucleotides
-            
-        Returns:
-            List of tuples: (start_pos, end_pos, protein_sequence)
+    def find_orfs_detailed(self, sequence: str, min_length: int = 100) -> List[Dict[str, Union[int, str]]]:
+        """Find complete ORFs with strand/frame metadata.
+
+        Coordinates are returned 0-based with end-exclusive indexing.
         """
         sequence = sequence.upper().replace('\n', '').replace(' ', '')
-        orfs = []
-        
-        # Check all three reading frames in both directions
+        stop_codons = set(self.codon_table.STOP_CODONS_DNA)
+        start_codons = set(self.codon_table.EUKARYOTIC_START_CODONS)
+        results: List[Dict[str, Union[int, str]]] = []
+
         for strand, seq in [('+', sequence), ('-', self.reverse_complement(sequence))]:
+            seq_len = len(seq)
             for frame in range(3):
-                # Find all start codons
-                for i in range(frame, len(seq) - 2, 3):
-                    codon = seq[i:i+3]
-                    if codon in self.codon_table.EUKARYOTIC_START_CODONS:
-                        # Translate until stop codon
-                        protein = self.translate(seq[i:], to_stop=True)
-                        orf_length = len(protein) * 3
-                        
-                        if orf_length >= min_length:
-                            if strand == '+':
-                                orfs.append((i, i + orf_length, protein))
-                            else:
-                                # Adjust positions for reverse strand
-                                orfs.append((len(sequence) - i - orf_length, 
-                                           len(sequence) - i, protein))
-        
-        return orfs
+                i = frame
+                while i <= seq_len - 3:
+                    codon = seq[i:i + 3]
+                    if codon not in start_codons:
+                        i += 3
+                        continue
+
+                    j = i + 3
+                    while j <= seq_len - 3:
+                        stop_codon = seq[j:j + 3]
+                        if stop_codon in stop_codons:
+                            dna_orf = seq[i:j + 3]
+                            protein = self.translate(dna_orf, to_stop=True)
+                            orf_length = len(dna_orf)
+
+                            if orf_length >= min_length:
+                                if strand == '+':
+                                    start, end = i, j + 3
+                                else:
+                                    start = len(sequence) - (j + 3)
+                                    end = len(sequence) - i
+
+                                results.append({
+                                    'start': start,
+                                    'end': end,
+                                    'length_nt': orf_length,
+                                    'length_aa': len(protein),
+                                    'protein': protein,
+                                    'strand': strand,
+                                    'frame': frame + 1
+                                })
+                            break
+                        j += 3
+                    i += 3
+
+        return results
+
+    def find_orfs(self, sequence: str, min_length: int = 100) -> List[Tuple[int, int, str]]:
+        """Backward-compatible ORF API returning (start, end, protein)."""
+        detailed_orfs = self.find_orfs_detailed(sequence, min_length=min_length)
+        return [(orf['start'], orf['end'], orf['protein']) for orf in detailed_orfs]
     
     def analyze_sequence(self, sequence: str, seq_type: SequenceType) -> SequenceAnalysis:
         """
@@ -600,6 +620,15 @@ class NCBITools:
 
 # Convenience module-level helpers used by other modules
 _seq_tools = SequenceTools()
+
+
+def fetch_records(query: str, retmax: int = 10) -> List[str]:
+    """Search NCBI nucleotide records and return FASTA text payloads."""
+    ncbi_tools = NCBITools(email=os.environ.get('NCBI_EMAIL', 'your-email@example.com'))
+    ids = ncbi_tools.search_database(query, database="nucleotide", retmax=retmax)
+    if not ids:
+        return []
+    return ncbi_tools.fetch_records(ids, database="nucleotide", rettype="fasta", parse=False)
 
 def gc_content(sequence: str) -> float:
     """Return GC content percentage for a sequence."""
