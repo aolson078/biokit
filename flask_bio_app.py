@@ -715,6 +715,8 @@ def dashboard():
 @role_required('admin')
 def edit_user(user_id):
     """Edit user details and permissions."""
+    from forms import UserEditForm
+
     user = User.query.get_or_404(user_id)
     form = UserEditForm(obj=user)
     
@@ -732,7 +734,7 @@ def edit_user(user_id):
             
             # Update password if provided
             if form.password.data:
-                user.password = generate_password_hash(form.password.data)
+                user.set_password(form.password.data)
             
             db.session.commit()
             flash(f'User {user.username} updated successfully', 'success')

@@ -52,3 +52,28 @@ class register_form(FlaskForm):
 class login_form(FlaskForm):
 	email = StringField(validators=[InputRequired(), Email(), Length(5, 100)])
 	password = PasswordField(validators=[InputRequired(), Length(2, 100)])
+	remember_me = BooleanField()
+
+
+class UserEditForm(FlaskForm):
+	username = StringField(
+		validators=[
+			InputRequired(),
+			Length(1, 50, message="Please provide a valid name"),
+		]
+	)
+	email = StringField(validators=[InputRequired(), Email(), Length(5, 100)])
+	password = PasswordField(validators=[Length(0, 100)])
+	role = RadioField(
+		'Role',
+		choices=[
+			('employee', 'Employee'),
+			('manager', 'Manager'),
+			('admin', 'Admin'),
+		],
+		validators=[InputRequired()]
+	)
+	view_reports = BooleanField()
+	delete_reports = BooleanField()
+	print_reports = BooleanField()
+	change_reports = BooleanField()
