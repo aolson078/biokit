@@ -1,0 +1,26 @@
+services:
+  web:
+    environment:
+      VITE_DEV_SERVER_URL: http://127.0.0.1:5174
+      SEQUENCE_WORKSPACE_ENABLED: "true"
+      SEQUENCE_WORKSPACE_CTA_ENABLED: "true"
+    volumes:
+      - .:/app
+  worker:
+    environment:
+      SEQUENCE_WORKSPACE_ENABLED: "true"
+      SEQUENCE_WORKSPACE_CTA_ENABLED: "true"
+    volumes:
+      - .:/app
+  client:
+    image: node:24-alpine
+    working_dir: /app/client
+    command: sh -c "npm ci && npm run dev"
+    volumes:
+      - .:/app
+      - client_node_modules:/app/client/node_modules
+    ports:
+      - "5174:5173"
+
+volumes:
+  client_node_modules:

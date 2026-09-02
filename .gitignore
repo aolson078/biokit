@@ -5,3 +5,7 @@
 ncbi_cache/
 __pycache__/
 *.png
+client/node_modules/
+client/*.tsbuildinfo
+client/vite.config.js
+client/vite.config.d.ts

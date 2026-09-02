@@ -1,0 +1,6 @@
+.git
+client/node_modules
+client/*.tsbuildinfo
+instance
+__pycache__
+.pytest_cache

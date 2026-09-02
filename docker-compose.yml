@@ -1,10 +1,12 @@
-version: '3'
 services:
   web:
     build: .
     command: gunicorn flask_bio_app:create_app\(\) -b 0.0.0.0:5000
-    volumes:
-      - .:/app
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      SESSION_COOKIE_SECURE: "false"
+      SEQUENCE_WORKSPACE_ENABLED: "false"
+      SEQUENCE_WORKSPACE_CTA_ENABLED: "false"
     ports:
       - "5000:5000"
     depends_on:
@@ -12,9 +14,12 @@ services:
   worker:
     build: .
     command: celery -A tasks.celery worker --loglevel=info
-    volumes:
-      - .:/app
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      SESSION_COOKIE_SECURE: "false"
+      SEQUENCE_WORKSPACE_ENABLED: "false"
+      SEQUENCE_WORKSPACE_CTA_ENABLED: "false"
     depends_on:
       - redis
   redis:
-    image: redis:6
+    image: redis:7-alpine

@@ -22,12 +22,12 @@ from flask_login import (
     login_required, current_user
 )
 from flask_wtf import FlaskForm
-from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFError, CSRFProtect
+from flask_migrate import Migrate
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_caching import Cache
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import joinedload
@@ -67,17 +67,22 @@ csrf = CSRFProtect()
 cache = Cache()
 limiter = Limiter(key_func=get_remote_address)
 celery = Celery(__name__)
+migrate = Migrate()
 
 
 # Configuration classes
 class Config:
     """Base configuration."""
     SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///bioinformatics.db')
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        'DATABASE_URL',
+        f"sqlite:///{Path(__file__).resolve().with_name('database.db').as_posix()}"
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Security
-    SESSION_COOKIE_SECURE = True
+    # Secure by default; local HTTP environments must opt out explicitly.
+    SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE') != 'false'
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = 'Lax'
     WTF_CSRF_TIME_LIMIT = None
@@ -98,6 +103,9 @@ class Config:
     # NCBI
     NCBI_EMAIL = os.environ.get('NCBI_EMAIL', 'your-email@example.com')
     NCBI_API_KEY = os.environ.get('NCBI_API_KEY')
+    SEQUENCE_WORKSPACE_ENABLED = os.environ.get('SEQUENCE_WORKSPACE_ENABLED', 'false').lower() == 'true'
+    SEQUENCE_WORKSPACE_CTA_ENABLED = os.environ.get('SEQUENCE_WORKSPACE_CTA_ENABLED', 'false').lower() == 'true'
+    VITE_DEV_SERVER_URL = os.environ.get('VITE_DEV_SERVER_URL')
     
     # Rate limiting
     RATELIMIT_STORAGE_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/2')
@@ -111,7 +119,7 @@ class SearchSchema(Schema):
 
 class ORFFinderSchema(Schema):
     """Validation schema for ORF finder requests."""
-    sequence = fields.Str(required=True, validate=validate.Length(min=3, max=50000))
+    sequence = fields.Str(required=True, validate=validate.Length(min=3, max=100000))
     min_length = fields.Int(load_default=90, validate=validate.Range(min=30, max=5000))
 
 
@@ -439,6 +447,7 @@ auth_bp = Blueprint('auth', __name__)
 def login():
     """Handle user login."""
     from forms import login_form
+    from models import User
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
 
@@ -477,7 +486,9 @@ main_bp = Blueprint('main', __name__)
 @main_bp.route('/')
 def index():
     """Home page."""
-    return render_template('index.html', title="Home")
+    workspace_enabled = current_app.config.get('SEQUENCE_WORKSPACE_ENABLED', False)
+    cta_enabled = workspace_enabled and current_app.config.get('SEQUENCE_WORKSPACE_CTA_ENABLED', False)
+    return render_template('index.html', title="Home", sequence_workspace_cta_enabled=cta_enabled)
 
 
 @main_bp.route('/search', methods=['POST'])
@@ -487,37 +498,33 @@ def index():
 def search():
     """Handle NCBI search requests."""
     try:
-        query = ' '.join(request.validated_data['search'].split())
-        if not query:
-            return jsonify({'error': 'Search query cannot be empty'}), 400
-        
-        # Use caching for repeated searches
-        cache_key = f"search:{query.lower()}"
-        cached_results = cache.get(cache_key)
-        
-        if cached_results:
-            return jsonify(cached_results)
-        
-        # Perform search
-        results = utilities.fetch_records(query)
-        if not isinstance(results, list):
-            logger.warning("Unexpected search result payload type: %s", type(results).__name__)
-            results = []
-        
-        # Cache results for 1 hour
-        cache.set(cache_key, results, timeout=3600)
-        
-        return jsonify(results)
-        
-    except Exception as e:
-        logger.error(f"Search error: {e}")
-        return jsonify({'error': 'Search failed'}), 500
+        from sequence_workspace.ncbi import NcbiClient, NcbiError
+
+        result = NcbiClient(
+            cache,
+            email=current_app.config.get('NCBI_EMAIL', ''),
+            api_key=current_app.config.get('NCBI_API_KEY'),
+        ).search(request.validated_data['search'])
+        return jsonify([{
+            'title': item['title'],
+            'description': item['accession_version'],
+            'organism': item.get('organism'),
+            'length': item['length'],
+        } for item in result['results']])
+    except NcbiError as error:
+        status = 503 if error.retryable or error.code == 'ncbi_not_configured' else 400
+        return jsonify({'error': error.message}), status
 
 
 @main_bp.route('/orf-finder', methods=['GET'])
 @login_required
 def orf_finder_page():
     """Render ORF finder utility page."""
+    if (
+        current_app.config.get('SEQUENCE_WORKSPACE_ENABLED', False)
+        and current_app.config.get('SEQUENCE_WORKSPACE_CTA_ENABLED', False)
+    ):
+        return redirect(url_for('sequence_workspace.wizard_page', analysis='orf'))
     return render_template('orf_finder.html', title="ORF Finder")
 
 
@@ -528,72 +535,41 @@ def orf_finder_page():
 def find_orfs():
     """Find ORFs in a DNA sequence and return structured results."""
     try:
-        sequence = request.validated_data['sequence']
-        min_length = request.validated_data['min_length']
-        sequence_tools = utilities.SequenceTools()
-        cleaned_sequence = ''.join(
+        from sequence_workspace.domain import normalize_sequence, run_analysis
+
+        sequence = ''.join(
             line.strip()
-            for line in sequence.splitlines()
+            for line in request.validated_data['sequence'].splitlines()
             if line.strip() and not line.strip().startswith('>')
-        ).upper().replace(' ', '')
-
-        if not sequence_tools.validate_sequence(cleaned_sequence, utilities.SequenceType.DNA):
-            return jsonify({'error': 'Invalid DNA sequence. Use only A, T, C, G, and N.'}), 400
-
-        found_orfs = sequence_tools.find_orfs_detailed(cleaned_sequence, min_length=min_length)
-        formatted_orfs = [{
-            'start': orf['start'] + 1,
-            'end': orf['end'],
-            'length_nt': orf['length_nt'],
-            'length_aa': orf['length_aa'],
-            'protein': orf['protein'],
-            'strand': orf['strand'],
-            'frame': orf['frame']
-        } for orf in found_orfs]
-        formatted_orfs.sort(key=lambda item: (-item['length_nt'], item['start'], item['strand']))
+        )
+        normalized = normalize_sequence(sequence, molecule_hint='dna')
+        result = run_analysis('orf', [{
+            'client_id': 'legacy-orf',
+            'source': 'manual',
+            'sequence': normalized.sequence,
+            'molecule_type': normalized.molecule_type,
+        }], {'min_length': request.validated_data['min_length']})
         return jsonify({
-            'count': len(formatted_orfs),
-            'sequence_length': len(cleaned_sequence),
-            'min_length': min_length,
-            'orfs': formatted_orfs[:100]
+            'count': result['count'],
+            'sequence_length': len(normalized.sequence),
+            'min_length': request.validated_data['min_length'],
+            'orfs': result['orfs']
         })
-    except Exception as e:
-        logger.error(f"ORF finder error: {e}")
-        return jsonify({'error': 'ORF analysis failed'}), 500
+    except ValueError as error:
+        return jsonify({'error': str(error)}), 400
 
 
 @main_bp.route('/process_sequence', methods=['POST'])
 @login_required
 def process_sequence():
-    """Process selected sequence and create record."""
-    try:
-        selected_result = request.json.get('selected_result')
-        if not selected_result:
-            return jsonify({'error': 'No sequence selected'}), 400
-        
-        # Process sequence data
-        sequence_data = BioinformaticsService.process_sequence_data(selected_result)
-        
-        # Create record
-        record = Record(
-            **sequence_data,
-            employee_id=current_user.id
-        )
-        
-        db.session.add(record)
-        db.session.commit()
-        
-        return jsonify({
-            'message': 'Record created successfully',
-            'record_id': record.id
-        })
-        
-    except ValueError as e:
-        return jsonify({'error': str(e)}), 400
-    except Exception as e:
-        logger.error(f"Error processing sequence: {e}")
-        db.session.rollback()
-        return jsonify({'error': 'Failed to process sequence'}), 500
+    """Retire the legacy implicit-write endpoint."""
+    return jsonify({
+        'error': {
+            'code': 'legacy_save_retired',
+            'message': 'Use POST /api/v1/records to explicitly save a sequence.',
+            'retryable': False,
+        }
+    }), 410
 
 
 @main_bp.route('/compile_report', methods=['POST'])
@@ -692,9 +668,11 @@ admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 @role_required('admin')
 def dashboard():
     """Admin dashboard."""
+    from models import User, Report, Record
+
     users = User.query.all()
-    reports_count = Report.query.count()
-    records_count = Record.query.count()
+    reports_count = db.session.query(Report.id).count()
+    records_count = db.session.query(Record.id).count()
     
     stats = {
         'total_users': len(users),
@@ -716,6 +694,7 @@ def dashboard():
 def edit_user(user_id):
     """Edit user details and permissions."""
     from forms import UserEditForm
+    from models import User
 
     user = User.query.get_or_404(user_id)
     form = UserEditForm(obj=user)
@@ -871,6 +850,7 @@ def create_app(config_class=Config):
     
     # Initialize extensions
     db.init_app(app)
+    migrate.init_app(app, db)
     login_manager.init_app(app)
     from models import User
     @login_manager.user_loader
@@ -879,21 +859,36 @@ def create_app(config_class=Config):
     csrf.init_app(app)
     cache.init_app(app)
     limiter.init_app(app)
+
+    from sequence_workspace import create_sequence_blueprint, register_sequence_tasks
+    sequence_blueprint = create_sequence_blueprint(db, cache)
     
     # Register blueprints
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(api_bp)
+    app.register_blueprint(sequence_blueprint)
     
     # Configure login
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Please log in to access this page.'
+
+    @login_manager.unauthorized_handler
+    def unauthorized():
+        if request.path.startswith('/api/') or request.path in {'/search', '/process_sequence'}:
+            return jsonify({'error': {
+                'code': 'authentication_required',
+                'message': 'Authentication is required.',
+                'retryable': False,
+            }}), 401
+        return redirect(url_for('auth.login', next=request.url))
     
     # Create Celery
     global celery
     celery = make_celery(app)
     app.celery = celery
+    app.extensions['sequence_tasks'] = register_sequence_tasks(celery, cache)
     
     # Error handlers
     @app.errorhandler(404)
@@ -902,7 +897,23 @@ def create_app(config_class=Config):
     
     @app.errorhandler(403)
     def forbidden_error(error):
+        if request.path.startswith('/api/'):
+            return jsonify({'error': {
+                'code': 'permission_denied',
+                'message': 'Permission denied.',
+                'retryable': False,
+            }}), 403
         return render_template('errors/403.html'), 403
+
+    @app.errorhandler(CSRFError)
+    def csrf_error(error):
+        if request.path.startswith('/api/') or request.path in {'/search', '/process_sequence'}:
+            return jsonify({'error': {
+                'code': 'csrf_failed',
+                'message': 'The request security token is missing or expired.',
+                'retryable': False,
+            }}), 400
+        return render_template('errors/403.html'), 400
     
     @app.errorhandler(500)
     def internal_error(error):

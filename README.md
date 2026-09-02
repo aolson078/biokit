@@ -3,6 +3,7 @@
 BioKit is a Flask web application offering researchers a simple interface for processing nucleotide sequences and generating reports. It was developed by Alex Olson, Sola Yun and Will Hutcheon as part of a W.A.S. software project.
 
 ## Features
+- Guided NCBI/FASTA nucleotide discovery and analysis workspace
 - Upload sequences and store results
 - Automatic phylogenetic tree generation
 - Role-based access (employee, manager, admin)
@@ -57,5 +58,24 @@ Run the complete stack with Docker:
 docker-compose up --build
 ```
 This launches the web server, Celery worker and Redis broker.
+
+The sequence workspace is shipped behind two flags. Keep both off until the
+database fingerprint, backup/restore evidence, and migrations are approved.
+After migration, enable routes first with
+`SEQUENCE_WORKSPACE_ENABLED=true`; enable the home-page cutover separately
+with `SEQUENCE_WORKSPACE_CTA_ENABLED=true`.
+
+For local Vite development:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+```
+
+Flask remains the page and API origin at `http://localhost:5000`; Vite serves
+development assets at port 5173. Configure `NCBI_EMAIL` to enable public NCBI
+search. Manual DNA/RNA and FASTA import remains available without it.
+
+The authenticated routes are `/sequence-wizard` for the novice flow and
+`/sequence-workbench` for the advanced workspace.
 
 ![Use case](https://github.com/aolson078/biokit/assets/69769089/97b19bdb-c369-4d3a-a883-24ca40f4b959)

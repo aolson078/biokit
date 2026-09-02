@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>BioKit Sequence Workspace</title>
+  {% for style in styles %}<link rel="stylesheet" href="{{ style }}">{% endfor %}
+</head>
+<body>
+  <div
+    id="sequence-workspace-root"
+    data-mode="{{ mode }}"
+    data-user-key="{{ workspace_user_key }}"
+  ></div>
+  {% if dev_server %}
+  <script type="module" src="{{ dev_server }}/@vite/client"></script>
+  <script type="module" src="{{ dev_server }}/src/main.tsx"></script>
+  {% else %}
+    {% for script in scripts %}<script type="module" src="{{ script }}"></script>{% endfor %}
+  {% endif %}
+</body>
+</html>

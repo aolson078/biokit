@@ -14,7 +14,12 @@
     <div class="hero-callout text-center">
         <h2>Asynchronous bioinformatics workflows</h2>
         <p class="lead">Launch compute-heavy sequence tasks and continue working while results generate.</p>
+        {% if sequence_workspace_cta_enabled %}
+        <a class="btn btn-primary" href="{{ url_for('sequence_workspace.wizard_page') }}">Find and analyze a sequence</a>
+        <p class="mt-2"><a href="{{ url_for('sequence_workspace.workbench_page') }}">Open the advanced workbench</a></p>
+        {% else %}
         <a class="btn btn-primary" href="{{ url_for('main.orf_finder_page') }}">Open ORF Finder</a>
+        {% endif %}
         <div class="feature-badges">
           <span>Phylogenetic Reports</span><span>ORF Discovery</span><span>Comparative Charts</span>
         </div>

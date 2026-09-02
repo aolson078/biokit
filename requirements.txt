@@ -4,6 +4,7 @@ Flask-Bcrypt
 Flask-Migrate
 Flask-Login
 Flask-WTF
+email-validator
 celery
 redis
 biopython
